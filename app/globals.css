@@ -50,9 +50,11 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* #05010f background */
+
 :root {
   color-scheme: dark;
-  --background: #05010f;
+  --background: #000000;
   --foreground: #f7f1ff;
   --card: rgba(14, 6, 24, 0.92);
   --card-foreground: #f7f1ff;
@@ -87,7 +89,7 @@
 }
 
 .dark {
-  --background: #05010f;
+  --background: #000000;
   --foreground: #f7f1ff;
   --card: rgba(14, 6, 24, 0.92);
   --card-foreground: #f7f1ff;

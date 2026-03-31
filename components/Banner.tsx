@@ -7,32 +7,34 @@ const learners = ["MK", "SA", "AR", "TN", "FA"];
 
 export default function Banner() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
+    <section className="relative min-h-screen w-full">
       <div
         aria-hidden
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0"
         style={{
           backgroundImage: "url('/hero-background.png')",
+          backgroundPosition: "top center",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
         }}
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,1,15,0.94)_0%,rgba(5,1,15,0.82)_42%,rgba(5,1,15,0.58)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(92,20,167,0.35),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(227,185,138,0.14),transparent_26%)]" />
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full container items-center px-6 py-20 sm:px-8 md:px-10 lg:px-14">
-        <div className="max-w-2xl space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-secondary/35 bg-black/35 px-3 py-1 text-sm text-secondary shadow-lg shadow-secondary/10 backdrop-blur">
-            <Sparkles className="size-4" />
-            স্মার্ট স্কিল ডেভেলপমেন্ট প্ল্যাটফর্ম
+        <div className="max-w-5xl space-y-6">
+          <div className="inline-flex rounded-full p-[1px] bg-gradient-to-r from-secondary to-primary">
+            <div className="inline-flex items-center gap-2 rounded-full border border-transparent bg-black px-3 py-2 text-sm text-white shadow-lg shadow-secondary/10 backdrop-blur">
+              <Sparkles className="size-4 text-secondary" />
+              স্মার্ট স্কিল ডেভেলপমেন্ট প্ল্যাটফর্ম
+            </div>
           </div>
 
           <div className="space-y-4">
-            <h1 className="max-w-2xl text-4xl font-black leading-none tracking-tight text-balance sm:text-5xl lg:text-6xl">
-              বাংলায় শিখুন ২১ শতকের{" "}
-              <span className="bg-gradient-to-r from-secondary via-white to-primary bg-clip-text text-transparent">
-                ক্রিয়েটিভ স্কিল
-              </span>
+            <h1 className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-4xl font-black lg:text-6xl py-5">
+              বাংলায় শিখুন ২১ শতকের <br /> ক্রিয়েটিভ স্কিল
             </h1>
-            <p className="max-w-xl text-base leading-7 text-white/72 sm:text-lg">
+            <p className="max-w-xl text-base leading-7 text-white sm:text-lg">
               আজকের শেখা থেকেই শুরু হোক আপনার আধুনিক ক্যারিয়ার—লাইভ
               ক্লাস, প্রজেক্ট, আর মেন্টরশিপসহ এক প্ল্যাটফর্মে।
             </p>
@@ -42,7 +44,7 @@ export default function Banner() {
             <Button
               asChild
               size="lg"
-              className="h-11 rounded-full bg-gradient-to-r from-secondary to-primary px-6 text-primary-foreground shadow-[0_12px_40px_rgba(92,20,167,0.35)] hover:opacity-90"
+              className="h-11 rounded-full bg-gradient-to-r from-secondary to-primary px-6 text-primary-foreground shadow-[0_12px_40px_rgba(92,20,167,0.35)] hover:opacity-90 border-white"
             >
               <Link href="#">
                 কোর্সগুলো দেখুন <ArrowRight className="size-4" />
@@ -53,7 +55,7 @@ export default function Banner() {
               asChild
               variant="outline"
               size="lg"
-              className="h-11 rounded-full border-white/15 bg-black/25 px-6 text-white hover:bg-white/10 hover:text-white dark:border-white/15 dark:bg-black/25 dark:hover:bg-white/10"
+              className="h-11 rounded-full border-white/15 bg-black/25 px-6 text-white hover:bg-white/10 hover:text-white dark:border-white/15 dark:bg-black/25 dark:hover:bg-white/10 border-white"
             >
               <Link href="#">
                 <PlayCircle className="size-4" /> ফ্রি ক্লাস দেখুন
