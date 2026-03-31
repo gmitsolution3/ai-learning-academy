@@ -1,10 +1,8 @@
-import React from "react";
-import {
-  Sparkles,
-  Users,
-  Star,
-  ShoppingCart,
-} from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Sparkles, Users, Star, ShoppingCart } from "lucide-react";
+import CourseCard from "./CourseCard";
 
 const courses = [
   {
@@ -83,24 +81,20 @@ const courses = [
   },
 ];
 
-const difficultyColors: { [key: string]: string } = {
-  Beginner: "bg-green-500/20 text-green-400 border-green-500/30",
-  Intermediate:
-    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  Advanced: "bg-red-500/20 text-red-400 border-red-500/30",
-};
-
 export default function Course() {
-  const getDiscountedPrice = (
-    price: number,
-    discountPercent: number,
-  ) => {
-    return price - (price * discountPercent) / 100;
-  };
+  const [activeTab, setActiveTab] = useState("UI/UX Design");
+
+  // Filter courses based on active tab
+  const filteredCourses =
+    activeTab === "All"
+      ? courses
+      : courses.filter((course) => course.category === activeTab);
+
+  const tabCategories = courses.map((course) => course.category);
 
   return (
     <section className="relative py-14 sm:py-16 md:py-20">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(227,185,138,0.14),transparent_28%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(227,185,138,0.14),transparent_28%)] -z-10" />
 
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         {/* Header */}
@@ -124,102 +118,51 @@ export default function Course() {
           </div>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-10 sm:mt-12 md:mt-16">
-          {courses.map((course, index) => (
-            <div
-              key={index}
-              className="group relative bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/10 overflow-hidden hover:border-secondary/50 transition-all duration-300 sm:hover:-translate-y-2"
+        {/* Tab Filter - Exactly like the picture */}
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-10 sm:mt-12 md:mt-16">
+          <button
+            onClick={() => {
+              setActiveTab("All");
+            }}
+            className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+              activeTab === "All"
+                ? "bg-gradient-to-r from-secondary to-primary text-white "
+                : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
+            }`}
+          >
+            All
+          </button>
+          {tabCategories.map((category) => (
+            <button
+              key={category}
+              onClick={() => {
+                console.log("hi");
+                setActiveTab(category);
+              }}
+              className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+                activeTab === category
+                  ? "bg-gradient-to-r from-secondary to-primary text-white"
+                  : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
+              }`}
             >
-              {/* Image */}
-              <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
-                <img
-                  src={course.image}
-                  alt={course.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-
-                <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-black/70 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs text-white border border-white/20">
-                  {course.category}
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-4 sm:p-5">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-secondary">
-                  {course.title}
-                </h3>
-
-                <p className="text-gray-400 text-xs sm:text-sm mb-2 line-clamp-2">
-                  {course.overview}
-                </p>
-
-                <p className="text-gray-500 text-[11px] sm:text-xs mb-3 line-clamp-2">
-                  {course.description}
-                </p>
-
-                {/* Stats */}
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <span
-                    className={`text-[10px] sm:text-xs px-2 py-1 rounded-full border ${difficultyColors[course.difficultyLevel]}`}
-                  >
-                    {course.difficultyLevel}
-                  </span>
-
-                  <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
-                    <div className="flex items-center gap-1 text-yellow-400">
-                      <Star className="size-3 fill-yellow-400" />
-                      {course.rating}
-                    </div>
-
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <Users className="size-3" />
-                      {course.totalEnrolled.toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="flex items-end justify-between pt-3 border-t border-white/10">
-                  <div>
-                    {course.discountPercent > 0 ? (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                            ৳
-                            {getDiscountedPrice(
-                              course.price,
-                              course.discountPercent,
-                            ).toFixed(0)}
-                          </span>
-                          <span className="text-xs sm:text-sm text-gray-500 line-through">
-                            ৳{course.price}
-                          </span>
-                        </div>
-
-                        <p className="text-[10px] sm:text-xs text-green-400">
-                          Save ৳
-                          {(
-                            (course.price * course.discountPercent) /
-                            100
-                          ).toFixed(0)}
-                        </p>
-                      </>
-                    ) : (
-                      <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                        ৳{course.price}
-                      </span>
-                    )}
-                  </div>
-
-                  <button className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all">
-                    <ShoppingCart className="size-3 sm:size-4" />
-                    Enroll
-                  </button>
-                </div>
-              </div>
-            </div>
+              {category}
+            </button>
           ))}
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-10 sm:mt-12">
+          {filteredCourses.length > 0 ? (
+            filteredCourses.map((course, index) => (
+              <CourseCard key={index} course={course} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-400 text-lg">
+                No courses found in this category.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* CTA */}
