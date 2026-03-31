@@ -2,12 +2,23 @@ import Link from "next/link";
 import { ArrowRight, PlayCircle, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
-const learners = ["MK", "SA", "AR", "TN", "FA"];
+const learners = [
+  { initials: "MK", src: "" },
+  { initials: "SA", src: "" },
+  { initials: "AR", src: "" },
+  { initials: "TN", src: "" },
+  { initials: "FA", src: "" },
+];
 
 export default function Banner() {
   return (
-    <section className="relative min-h-screen w-full">
+    <section className="relative w-full">
       <div
         aria-hidden
         className="absolute inset-0"
@@ -21,8 +32,14 @@ export default function Banner() {
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,1,15,0.94)_0%,rgba(5,1,15,0.82)_42%,rgba(5,1,15,0.58)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(92,20,167,0.35),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(227,185,138,0.14),transparent_26%)]" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full container items-center px-6 py-20 sm:px-8 md:px-10 lg:px-14">
-        <div className="max-w-5xl space-y-6">
+      <div className="relative z-10 mx-auto flex min-h-screen w-full container items-center px-6 py-20 sm:px-8 md:px-10 lg:px-14 ">
+        <div className="max-w-5xl space-y-6 relative p-8">
+          {/* Top border */}
+          <div className="pointer-events-none absolute top-0 left-0 h-[3px] w-1/2 bg-gradient-to-r from-secondary to-transparent" />
+
+          {/* Left border */}
+          <div className="pointer-events-none absolute top-0 left-0 w-[3px] h-1/2 bg-gradient-to-b from-secondary to-transparent" />
+
           <div className="inline-flex rounded-full p-[1px] bg-gradient-to-r from-secondary to-primary">
             <div className="inline-flex items-center gap-2 rounded-full border border-transparent bg-black px-3 py-2 text-sm text-white shadow-lg shadow-secondary/10 backdrop-blur">
               <Sparkles className="size-4 text-secondary" />
@@ -32,10 +49,10 @@ export default function Banner() {
 
           <div className="space-y-4">
             <h1 className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-4xl font-black lg:text-6xl py-5">
-              বাংলায় শিখুন ২১ শতকের <br /> ক্রিয়েটিভ স্কিল
+              বাংলায় শিখুন ২১ শতকের <br /> ক্রিয়েটিভ স্কিল
             </h1>
             <p className="max-w-xl text-base leading-7 text-white sm:text-lg">
-              আজকের শেখা থেকেই শুরু হোক আপনার আধুনিক ক্যারিয়ার—লাইভ
+              আজকের শেখা থেকেই শুরু হোক আপনার আধুনিক ক্যারিয়ার—লাইভ
               ক্লাস, প্রজেক্ট, আর মেন্টরশিপসহ এক প্ল্যাটফর্মে।
             </p>
           </div>
@@ -66,12 +83,18 @@ export default function Banner() {
           <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:gap-5">
             <div className="flex -space-x-2">
               {learners.map((learner) => (
-                <div
-                  key={learner}
-                  className="flex size-9 items-center justify-center rounded-full border border-black/30 bg-gradient-to-br from-secondary to-primary text-xs font-semibold text-primary-foreground"
+                <Avatar
+                  key={learner.initials}
+                  className="size-9 border-2 border-white/80 ring-0"
                 >
-                  {learner}
-                </div>
+                  <AvatarImage
+                    src={learner.src}
+                    alt={learner.initials}
+                  />
+                  <AvatarFallback className="bg-gradient-to-br from-secondary to-primary text-xs font-semibold text-primary-foreground">
+                    {learner.initials}
+                  </AvatarFallback>
+                </Avatar>
               ))}
             </div>
             <div className="text-sm text-white/75">
