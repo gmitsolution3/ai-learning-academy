@@ -19,14 +19,17 @@ const learners = [
 export default function Banner() {
   return (
     <section className="relative w-full">
+      {/* Background Image with bottom fade mask */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           backgroundImage: "url('/hero-background.png')",
           backgroundPosition: "top center",
-          backgroundSize: "contain",
+          backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
+          maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
         }}
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,1,15,0.94)_0%,rgba(5,1,15,0.82)_42%,rgba(5,1,15,0.58)_100%)]" />
@@ -48,7 +51,7 @@ export default function Banner() {
           </div>
 
           <div className="space-y-4">
-            <h1 className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-4xl font-black lg:text-6xl py-5">
+            <h1 className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-4xl font-black lg:text-6xl py-5 leading-20">
               বাংলায় শিখুন ২১ শতকের <br /> ক্রিয়েটিভ স্কিল
             </h1>
             <p className="max-w-xl text-base leading-7 text-white sm:text-lg">
