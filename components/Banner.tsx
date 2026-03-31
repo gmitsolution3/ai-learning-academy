@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, PlayCircle, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Sparkles, Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,11 +9,26 @@ import {
 } from "@/components/ui/avatar";
 
 const learners = [
-  { initials: "MK", src: "" },
-  { initials: "SA", src: "" },
-  { initials: "AR", src: "" },
-  { initials: "TN", src: "" },
-  { initials: "FA", src: "" },
+  {
+    initials: "MK",
+    src: "https://randomuser.me/api/portraits/men/78.jpg",
+  },
+  {
+    initials: "SA",
+    src: "https://randomuser.me/api/portraits/men/78.jpg",
+  },
+  {
+    initials: "AR",
+    src: "https://randomuser.me/api/portraits/men/78.jpg",
+  },
+  {
+    initials: "TN",
+    src: "https://randomuser.me/api/portraits/men/78.jpg",
+  },
+  {
+    initials: "FA",
+    src: "https://randomuser.me/api/portraits/men/78.jpg",
+  },
 ];
 
 export default function Banner() {
@@ -28,8 +43,10 @@ export default function Banner() {
           backgroundPosition: "top center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
-          maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
         }}
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,1,15,0.94)_0%,rgba(5,1,15,0.82)_42%,rgba(5,1,15,0.58)_100%)]" />
@@ -78,7 +95,7 @@ export default function Banner() {
               className="h-11 rounded-full border-white/15 bg-black/25 px-6 text-white hover:bg-white/10 hover:text-white dark:border-white/15 dark:bg-black/25 dark:hover:bg-white/10 border-white"
             >
               <Link href="#">
-                <PlayCircle className="size-4" /> ফ্রি ক্লাস দেখুন
+                <Play className="size-4" /> ফ্রি ক্লাস দেখুন
               </Link>
             </Button>
           </div>
@@ -100,7 +117,12 @@ export default function Banner() {
                 </Avatar>
               ))}
             </div>
-            <div className="text-sm text-white/75">
+            <div className="text-sm text-white/75 flex items-center">
+              <span className="flex items-center me-2">
+                {Array.from({ length: 5 }).map((_, i: number) => (
+                  <Star className="size-5 text-secondary" key={i} />
+                ))}
+              </span>
               <span className="font-semibold text-secondary">
                 5.0
               </span>{" "}
