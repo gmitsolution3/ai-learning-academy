@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Anek_Bangla } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const anekBangla = Anek_Bangla({
+  weight: ["400", "700"], 
+  subsets: ["bengali", "latin"], 
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="bn"
-      className={`${inter.className} h-full antialiased`}
+      className={`${inter.className} ${anekBangla.className} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <Header />

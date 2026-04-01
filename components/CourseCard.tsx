@@ -1,4 +1,4 @@
-import { Users, Star, ShoppingCart } from "lucide-react";
+import { Users, Star, ShoppingCart, ArrowRight } from "lucide-react";
 
 const difficultyColors: { [key: string]: string } = {
   Beginner: "bg-green-500/20 text-green-400 border-green-500/30",
@@ -106,8 +106,8 @@ export default function CourseCard({ course }: { course: any }) {
         </div>
 
         <button className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-3 rounded-full text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all w-full text-center justify-center mt-5">
-          <ShoppingCart className="size-3 sm:size-4" />
           বিস্তারিত দেখুন
+          <ArrowRight className="size-3 sm:size-4" />
         </button>
       </div>
     </div>

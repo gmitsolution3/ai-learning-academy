@@ -82,7 +82,7 @@ const courses = [
 ];
 
 export default function Course() {
-  const [activeTab, setActiveTab] = useState("UI/UX Design");
+  const [activeTab, setActiveTab] = useState("All");
 
   // Filter courses based on active tab
   const filteredCourses =
