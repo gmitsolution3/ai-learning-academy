@@ -1,5 +1,5 @@
 import Banner from "@/components/Home/Banner";
-import Course from "@/components/Home/Course";
+import Course from "@/components/Home/Course/Course";
 import Features from "@/components/Home/Features";
 import Testimonial from "@/components/Home/Testimonial";
 import ConnectWithUs from "@/components/Home/ConnectWithUs";
