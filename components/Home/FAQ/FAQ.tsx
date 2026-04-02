@@ -1,12 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import FAQAccordion from "./FAQAccordion";
 
 const faqData = [
   {
@@ -48,34 +40,28 @@ const faqData = [
 
 export default function FAQ() {
   return (
-    <section className="relative py-14 sm:py-16 md:py-20 overflow-hidden">
+    <section
+      className="relative py-14 sm:py-16 md:py-20 overflow-hidden"
+      aria-labelledby="faq-heading"
+    >
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
+        {/* Header */}
         <div className="space-y-3 sm:space-y-4 text-center mb-6 sm:mb-8">
-          <h2 className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5">
+          <h2
+            id="faq-heading"
+            className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5"
+          >
             প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী
           </h2>
 
           <p className="max-w-xl mx-auto text-sm sm:text-base md:text-lg text-white leading-6 sm:leading-7">
             আমাদের কোর্স এবং সেবাগুলি সম্পর্কে আপনার যদি কোন প্রশ্ন
-            থাকে, তাহলে এখানে আপনি প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী দেখতে
-            পারেন। যদি আপনার প্রশ্নের উত্তর না পান, তাহলে আমাদের সাথে
-            যোগাযোগ করতে দ্বিধা করবেন না।
+            থাকে...
           </p>
         </div>
 
         <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden p-5 sm:p-8 md:p-10 lg:p-14 max-w-5xl mx-auto">
-          <div>
-            <Accordion type="single" collapsible className="w-full">
-              {faqData.map((faq) => (
-                <AccordionItem key={faq.id} value={faq.id} className="py-5">
-                  <AccordionTrigger className="text-left text-base lg:text-lg">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm lg:text-base text-white">{faq.answer}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
+          <FAQAccordion faqData={faqData} />
         </div>
       </div>
     </section>

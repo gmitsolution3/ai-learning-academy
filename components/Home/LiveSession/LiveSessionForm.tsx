@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -5,9 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 
-// Form validation schema
+// Schema (unchanged)
 const formSchema = z.object({
   name: z
     .string()
@@ -24,7 +26,7 @@ const formSchema = z.object({
   detail: z
     .string()
     .min(50, "বিস্তারিত কমপক্ষে ৫০ অক্ষরের হতে হবে")
-    .max(1000, "বিস্তারিত ১০০০ অক্ষরের বেশি হতে পারবে না")
+    .max(1000, "বিস্তারিত ১০০০ অক্ষরের বেশি হতে পারবে না"),
 });
 
 export type FormData = z.infer<typeof formSchema>;
@@ -47,14 +49,15 @@ export default function LiveSessionForm() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = useCallback(async (data: FormData) => {
     setIsSubmitting(true);
     try {
       console.log("Form submitted:", data);
-      // Add your form submission logic here
+
       alert(
-        "ফর্ম জমা দেওয়ার জন্য ধন্যবাদ! আমরা শীঘ্রই যোগাযোগ করবো।",
+        "ফর্ম জমা দেওয়ার জন্য ধন্যবাদ! আমরা শীঘ্রই যোগাযোগ করবো।"
       );
+
       reset();
     } catch (error) {
       console.error("Form submission error:", error);
@@ -62,88 +65,113 @@ export default function LiveSessionForm() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      
+      {/* Name */}
       <div className="space-y-2">
         <Label htmlFor="name" className="text-white/80 text-sm">
           আপনার নাম <span className="text-[#F9D49B]">*</span>
         </Label>
+
         <Input
           id="name"
           type="text"
+          autoComplete="name"
+          aria-invalid={!!errors.name}
+          aria-describedby="name-error"
           placeholder="আপনার নাম লিখুন"
           className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
             errors.name ? "border-red-500 focus:border-red-500" : ""
           }`}
           {...register("name")}
         />
+
         {errors.name && (
-          <p className="text-red-400 text-xs mt-1">
+          <p id="name-error" className="text-red-400 text-xs mt-1">
             {errors.name.message}
           </p>
         )}
       </div>
 
+      {/* Email */}
       <div className="space-y-2">
         <Label htmlFor="email" className="text-white/80 text-sm">
           ইমেইল ঠিকানা <span className="text-[#F9D49B]">*</span>
         </Label>
+
         <Input
           id="email"
           type="email"
+          autoComplete="email"
+          aria-invalid={!!errors.email}
+          aria-describedby="email-error"
           placeholder="you@example.com"
           className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
             errors.email ? "border-red-500 focus:border-red-500" : ""
           }`}
           {...register("email")}
         />
+
         {errors.email && (
-          <p className="text-red-400 text-xs mt-1">
+          <p id="email-error" className="text-red-400 text-xs mt-1">
             {errors.email.message}
           </p>
         )}
       </div>
 
+      {/* Phone */}
       <div className="space-y-2">
         <Label htmlFor="phone" className="text-white/80 text-sm">
           ফোন নম্বর <span className="text-[#F9D49B]">*</span>
         </Label>
+
         <Input
           id="phone"
           type="tel"
+          autoComplete="tel"
+          aria-invalid={!!errors.phone}
+          aria-describedby="phone-error"
           placeholder="০১XXXXXXXXX"
           className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
             errors.phone ? "border-red-500 focus:border-red-500" : ""
           }`}
           {...register("phone")}
         />
+
         {errors.phone && (
-          <p className="text-red-400 text-xs mt-1">
+          <p id="phone-error" className="text-red-400 text-xs mt-1">
             {errors.phone.message}
           </p>
         )}
       </div>
 
+      {/* Detail */}
       <div className="space-y-2">
         <Label htmlFor="detail" className="text-white/80 text-sm">
           বিস্তারিত
         </Label>
+
         <Textarea
           id="detail"
-          placeholder="আপনার প্রশ্ন বা মন্তব্য লিখুন..."
           rows={8}
+          aria-invalid={!!errors.detail}
+          aria-describedby="detail-error"
+          placeholder="আপনার প্রশ্ন বা মন্তব্য লিখুন..."
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 resize-none !p-5 h-[100px]"
           {...register("detail")}
         />
+
         {errors.detail && (
-          <p className="text-red-400 text-xs mt-1">
+          <p id="detail-error" className="text-red-400 text-xs mt-1">
             {errors.detail.message}
           </p>
         )}
       </div>
 
+      {/* Submit */}
       <Button
         type="submit"
         disabled={isSubmitting}

@@ -1,9 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import LiveSessionPreview from "./LiveSessionPreview";
-import LiveSessionForm from "@/components/Home/LiveSessionForm";
-import PreviewVideoModal from "@/components/modal/PreviewVideoModal";
+import LiveSessionClient from "./LiveSessionClient";
+import LiveSessionForm from "@/components/Home/LiveSession/LiveSessionForm";
 
 const videos = [
   {
@@ -37,74 +33,49 @@ const videos = [
 ];
 
 export default function LiveSession() {
-  const [selectedVideo, setSelectedVideo] = useState<
-    (typeof videos)[0] | null
-  >(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleVideoClick = (video: (typeof videos)[0]) => {
-    setSelectedVideo(video);
-    setIsModalOpen(true);
-  };
-
   return (
-    <section className="relative py-14 sm:py-16 md:py-20 overflow-hidden">
+    <section
+      className="relative py-14 sm:py-16 md:py-20 overflow-hidden"
+      aria-labelledby="live-session-heading"
+    >
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
+        {/* Header */}
         <div className="space-y-3 sm:space-y-4 text-center mb-6 sm:mb-8">
-          <h2 className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5">
+          <h2
+            id="live-session-heading"
+            className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5"
+          >
             ফ্রি লাইভ সেশান
           </h2>
 
           <p className="max-w-xl mx-auto text-sm sm:text-base md:text-lg text-white leading-6 sm:leading-7">
             আমাদের যেকোনো কোর্স বা অনলাইনে ক্যারিয়ার গড়া সম্পর্কে
-            পরামর্শ পেতে Google Meet-এ ফ্রি লাইভ সেশন করতে পারেন ফ্রি
-            সেশন নিতে নিচের ফর্মটি পূরণ করুন।
+            পরামর্শ পেতে Google Meet-এ ফ্রি লাইভ সেশন করতে পারেন।
           </p>
         </div>
 
         <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10 lg:p-14">
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0e0e12]/90 via-[#0a0a0f]/90 to-[#0e0e12]/90" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-br from-[#0e0e12]/90 via-[#0a0a0f]/90 to-[#0e0e12]/90"
+          />
 
           <div className="relative z-10">
-            {/* Two Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              {/* Left Section - Video Grid */}
-              <div className="space-y-4">
-                <h3 className="text-white text-xl sm:text-2xl font-semibold mb-4">
-                  ভিডিও টিউটোরিয়াল
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {videos.map((video) => (
-                    <LiveSessionPreview
-                      key={video.id}
-                      video={video}
-                      handleVideoClick={handleVideoClick}
-                    />
-                  ))}
-                </div>
-              </div>
+              <LiveSessionClient videos={videos} />
 
-              {/* Right Section - Form */}
+              {/* Form (can remain server if no state) */}
               <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8">
                 <h3 className="text-white text-xl sm:text-2xl font-semibold mb-6">
                   যোগাযোগ করুন
                 </h3>
 
-                <div>
-                  <LiveSessionForm />
-                </div>
+                <LiveSessionForm />
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <PreviewVideoModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        selectedVideo={selectedVideo}
-      />
     </section>
   );
 }
