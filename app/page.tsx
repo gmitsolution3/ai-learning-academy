@@ -3,6 +3,7 @@ import Course from "@/components/Course";
 import Features from "@/components/Features";
 import Testimonial from "@/components/Testimonial";
 import ConnectWithUs from "@/components/ConnectWithUs";
+import LiveSession from "@/components/LiveSession";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Features />
       <Testimonial />
       <ConnectWithUs />
+      <LiveSession />
     </>
   );
 }
