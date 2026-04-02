@@ -162,11 +162,37 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 pt-6 mt-6 text-center">
-          <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} IF SOLUTION. All rights
-            reserved.
-          </p>
+        <div className="border-t border-gray-800 pt-6 mt-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start lg:items-center gap-4">
+            <p className="text-gray-400 text-sm">
+              &copy; {new Date().getFullYear()} IF SOLUTION. All rights reserved.
+            </p>
+            <div className="flex flex-col text-start lg:items-end gap-1">
+              <p className="text-gray-400 text-sm">
+                powered by{" "}
+                <a
+                  href="https://gmgroupbd.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition"
+                >
+                  GM Group
+                </a>
+              </p>
+              <p className="text-gray-400 text-sm">
+                developed by{" "}
+                <a
+                  href="https://gmitsolution.net"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition"
+                >
+                  GM IT Solution
+                </a>
+                .
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
