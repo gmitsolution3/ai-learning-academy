@@ -4,6 +4,7 @@ import Features from "@/components/Home/Features";
 import Testimonial from "@/components/Home/Testimonial";
 import ConnectWithUs from "@/components/Home/ConnectWithUs";
 import LiveSession from "@/components/Home/LiveSession";
+import FAQ from "@/components/Home/FAQ";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Testimonial />
       <ConnectWithUs />
       <LiveSession />
+      <FAQ />
     </>
   );
 }
