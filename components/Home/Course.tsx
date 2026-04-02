@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Users, Star, ShoppingCart } from "lucide-react";
-import CourseCard from "./CourseCard";
+import { Sparkles } from "lucide-react";
+import CourseCard from "@/components/Home/CourseCard";
 
 const courses = [
   {

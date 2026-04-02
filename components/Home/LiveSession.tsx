@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
 import LiveSessionPreview from "./LiveSessionPreview";
-import LiveSessionForm from "./LiveSessionForm";
-import LiveSessionPreviewModal from "./modal/LiveSessionPreviewModal";
+import LiveSessionForm from "@/components/Home/LiveSessionForm";
+import LiveSessionPreviewModal from "@/components/modal/LiveSessionPreviewModal";
 
 const videos = [
   {

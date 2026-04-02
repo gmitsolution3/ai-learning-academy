@@ -4,7 +4,7 @@ import { Autoplay } from "swiper/modules";
 import { useState } from "react";
 import "swiper/css";
 
-import TestimonialVideoModal from "./modal/TestimonialVideoModal";
+import TestimonialVideoModal from "../modal/TestimonialVideoModal";
 
 const testimonials = [
   {

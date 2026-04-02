@@ -1,4 +1,4 @@
-import { Users, Star, ShoppingCart, ArrowRight } from "lucide-react";
+import { Users, Star, ArrowRight } from "lucide-react";
 
 const difficultyColors: { [key: string]: string } = {
   Beginner: "bg-green-500/20 text-green-400 border-green-500/30",
