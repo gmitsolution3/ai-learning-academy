@@ -6,7 +6,7 @@ import ConnectWithUs from "@/components/Home/ConnectWithUs/ConnectWithUs";
 import LiveSession from "@/components/Home/LiveSession/LiveSession";
 import FAQ from "@/components/Home/FAQ/FAQ";
 import CTA from "@/components/Home/CTA";
-import WorkSample from "@/components/Home/WorkSample";
+import WorkSample from "@/components/Home/WorkSample/WorkSample";
 
 export default function Home() {
   return (
