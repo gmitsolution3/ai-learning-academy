@@ -1,7 +1,7 @@
 import React from "react";
 import { Dialog, DialogContent } from "../ui/dialog";
 
-export default function LiveSessionPreviewModal({
+export default function PreviewVideoModal({
   isModalOpen,
   setIsModalOpen,
   selectedVideo,

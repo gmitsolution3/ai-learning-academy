@@ -5,7 +5,8 @@ import Testimonial from "@/components/Home/Testimonial";
 import ConnectWithUs from "@/components/Home/ConnectWithUs";
 import LiveSession from "@/components/Home/LiveSession";
 import FAQ from "@/components/Home/FAQ";
-import CTA from './../components/Home/CTA';
+import CTA from "@/components/Home/CTA";
+import WorkSample from "@/components/Home/WorkSample";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <LiveSession />
       <FAQ />
       <CTA />
+      <WorkSample />
     </>
   );
 }

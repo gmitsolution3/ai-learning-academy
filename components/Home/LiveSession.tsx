@@ -3,7 +3,7 @@
 import { useState } from "react";
 import LiveSessionPreview from "./LiveSessionPreview";
 import LiveSessionForm from "@/components/Home/LiveSessionForm";
-import LiveSessionPreviewModal from "@/components/modal/LiveSessionPreviewModal";
+import PreviewVideoModal from "@/components/modal/PreviewVideoModal";
 
 const videos = [
   {
@@ -100,7 +100,7 @@ export default function LiveSession() {
         </div>
       </div>
 
-      <LiveSessionPreviewModal
+      <PreviewVideoModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         selectedVideo={selectedVideo}
