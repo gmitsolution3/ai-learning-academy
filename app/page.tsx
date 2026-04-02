@@ -1,7 +1,8 @@
 import Banner from "@/components/Banner";
-import Course from '@/components/Course';
-import Features from '@/components/Features';
-import Testimonial from '@/components/Testimonial';
+import Course from "@/components/Course";
+import Features from "@/components/Features";
+import Testimonial from "@/components/Testimonial";
+import ConnectWithUs from "@/components/ConnectWithUs";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <Course />
       <Features />
       <Testimonial />
+      <ConnectWithUs />
     </>
   );
 }
