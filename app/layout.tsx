@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Anek_Bangla } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import Footer from "./../components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -9,8 +10,8 @@ const inter = Inter({
 });
 
 const anekBangla = Anek_Bangla({
-  weight: ["400", "700"], 
-  subsets: ["bengali", "latin"], 
+  weight: ["400", "700"],
+  subsets: ["bengali", "latin"],
   display: "swap",
 });
 
@@ -32,7 +33,8 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <Header />
-        {children}
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );
