@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Sparkles } from "lucide-react";
-import CourseCard from "@/components/Home/CourseCard";
+import CourseCard from "@/components/Home/Course/CourseCard";
 
 type Course = {
   title: string;
@@ -10,7 +10,7 @@ type Course = {
   overview: string;
   description: string;
   category: string;
-  difficultyLevel: string;
+  difficultyLevel: "Beginner" | "Intermediate" | "Advanced";
   totalEnrolled: number;
   rating: number;
   price: number;

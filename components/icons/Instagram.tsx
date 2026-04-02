@@ -28,8 +28,8 @@ export function Instagram() {
           y2="29.1613"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#F0F0F1" />
-          <stop offset="1" stop-color="#61656C" />
+          <stop stopColor="#F0F0F1" />
+          <stop offset="1" stopColor="#61656C" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_instagram"
@@ -39,8 +39,8 @@ export function Instagram() {
           y2="29.1613"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#F0F0F1" />
-          <stop offset="1" stop-color="#61656C" />
+          <stop stopColor="#F0F0F1" />
+          <stop offset="1" stopColor="#61656C" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_instagram"
@@ -50,8 +50,8 @@ export function Instagram() {
           y2="29.1613"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#F0F0F1" />
-          <stop offset="1" stop-color="#61656C" />
+          <stop stopColor="#F0F0F1" />
+          <stop offset="1" stopColor="#61656C" />
         </linearGradient>
       </defs>
     </svg>
