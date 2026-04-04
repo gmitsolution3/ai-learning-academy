@@ -21,7 +21,7 @@ import {
 export default function CourseOverview() {
   return (
     <Card className="w-full max-w-7xl mx-auto border-2 border-white/70 shadow-lg bg-[#03050A] p-5 pr-8">
-      <div className="flex flex-col items-center md:flex-row">
+      <div className="flex flex-col items-center lg:flex-row">
         {/* Left Column - Course Info */}
         <div className="w-full md:flex-1 p-6 md:p-8">
           <CardHeader className="p-0 pb-4">
@@ -45,7 +45,7 @@ export default function CourseOverview() {
         </div>
 
         {/* Right Column - Pricing & Insights Card */}
-        <div className="w-full md:w-80 p-6 md:p-8 bg-[#191B22] rounded-xl">
+        <div className="w-full lg:w-80 p-6 md:p-8 bg-[#191B22] rounded-xl">
           {/* Pricing Section */}
           <div className="space-y-2">
             <div className="flex items-baseline gap-2 justify-between">
