@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SectionHeading from "./../SectionHeading";
 
 const features = [
   {
@@ -28,10 +29,8 @@ export default function Features() {
       aria-labelledby="features-heading"
     >
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
-        
         {/* Outer Card */}
         <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10 lg:p-14 lg:pt-18">
-          
           {/* Background */}
           <div
             aria-hidden
@@ -39,21 +38,14 @@ export default function Features() {
           />
 
           <div className="relative z-10">
-            
             {/* Header */}
-            <div className="space-y-3 sm:space-y-4 text-center mb-6 sm:mb-8">
-              <h2
-                id="features-heading"
-                className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5"
-              >
-                আমরা ৪,০০০+ শিক্ষার্থীর পরিবার
-              </h2>
-
-              <p className="max-w-xl mx-auto text-sm sm:text-base md:text-lg text-white leading-6 sm:leading-7">
-                ইউটিউবে ইতিমধ্যে ৪,০০০+ শিক্ষার্থী আমার সাথে ডিজাইন
-                শেখার পথে যুক্ত হয়েছেন আপনিও হতে পারেন তাদের একজন।
-              </p>
-            </div>
+            <SectionHeading
+              id={"features-heading"}
+              title={"আমরা ৪,০০০+ শিক্ষার্থীর পরিবার"}
+              description={
+                "ইউটিউবে ইতিমধ্যে ৪,০০০+ শিক্ষার্থী আমার সাথে ডিজাইন শেখার পথে যুক্ত হয়েছেন আপনিও হতে পারেন তাদের একজন।"
+              }
+            />
 
             {/* Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -62,7 +54,6 @@ export default function Features() {
                   key={feature.image} // stable key
                   className="group w-full backdrop-blur-sm rounded-md transition-all duration-300 sm:hover:-translate-y-1"
                 >
-                  
                   {/* Image */}
                   <div className="relative overflow-hidden rounded-md h-44 sm:h-48 md:h-52">
                     <Image
@@ -96,7 +87,6 @@ export default function Features() {
                 </div>
               ))}
             </div>
-
           </div>
         </div>
       </div>

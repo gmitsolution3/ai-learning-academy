@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SectionHeading from "./../SectionHeading";
 
 export default function CTASection() {
   return (
@@ -11,19 +12,13 @@ export default function CTASection() {
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="bg-gradient-to-br from-secondary/10 via-transparent to-primary/10 rounded-2xl border border-white/10 shadow-2xl p-8 md:p-12">
           <div className="text-center">
-            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-              <h2
-                id="cta-heading"
-                className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5"
-              >
-                এখনি শুরু করুন আপনার শেখার যাত্রা
-              </h2>
-
-              <p className="max-w-xl mx-auto text-sm sm:text-base md:text-lg text-white leading-6 sm:leading-7">
-                আজকের শেখা থেকেই শুরু হোক আপনার আধুনিক ক্যারিয়ার—লাইভ
-                ক্লাস, প্রজেক্ট, আর মেন্টরশিপসহ এক প্ল্যাটফর্মে।
-              </p>
-            </div>
+            <SectionHeading
+              id={"cta-heading"}
+              title={"এখনি শুরু করুন আপনার শেখার যাত্রা"}
+              description={
+                "আজকের শেখা থেকেই শুরু হোক আপনার আধুনিক ক্যারিয়ার—লাইভ ক্লাস, প্রজেক্ট, আর মেন্টরশিপসহ এক প্ল্যাটফর্মে।"
+              }
+            />
 
             {/* Button */}
             <div className="inline-block border-2 border-white/40 p-1 rounded-full">

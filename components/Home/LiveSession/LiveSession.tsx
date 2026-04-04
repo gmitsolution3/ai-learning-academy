@@ -1,5 +1,6 @@
 import LiveSessionClient from "./LiveSessionClient";
 import LiveSessionForm from "@/components/Home/LiveSession/LiveSessionForm";
+import SectionHeading from "./../../SectionHeading";
 
 const videos = [
   {
@@ -40,19 +41,13 @@ export default function LiveSession() {
     >
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         {/* Header */}
-        <div className="space-y-3 sm:space-y-4 text-center mb-6 sm:mb-8">
-          <h2
-            id="live-session-heading"
-            className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight lg:py-5"
-          >
-            ফ্রি লাইভ সেশান
-          </h2>
-
-          <p className="max-w-xl mx-auto text-sm sm:text-base md:text-lg text-white leading-6 sm:leading-7">
-            আমাদের যেকোনো কোর্স বা অনলাইনে ক্যারিয়ার গড়া সম্পর্কে
-            পরামর্শ পেতে Google Meet-এ ফ্রি লাইভ সেশন করতে পারেন।
-          </p>
-        </div>
+        <SectionHeading
+          id={"live-session-heading"}
+          title={"ফ্রি লাইভ সেশান"}
+          description={
+            "আমাদের যেকোনো কোর্স বা অনলাইনে ক্যারিয়ার গড়া সম্পর্কে পরামর্শ পেতে Google Meet-এ ফ্রি লাইভ সেশন করতে পারেন।"
+          }
+        />
 
         <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10 lg:p-14">
           <div

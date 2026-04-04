@@ -48,7 +48,7 @@ export default function WorkSample() {
         <div className="space-y-3 sm:space-y-4 text-center mb-6 sm:mb-8">
           <h2
             id="work-heading"
-            className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black"
+            className="bg-gradient-to-r from-[#F9D49B] to-[#C994FF] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black pt-8"
           >
             বাংলায় আনিমেশন শিখতে ১০০ দিনে
           </h2>
@@ -65,7 +65,7 @@ export default function WorkSample() {
 
           {/* Right Content */}
           <div className="space-y-6 lg:space-y-8 lg:sticky lg:top-24">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent py-5">
               বাংলা ভাষায় অ্যানিমেশন ও ক্রিয়েটিভ ক্লাস শিখতে ১০০ দিনের
               কোর্স
             </h3>

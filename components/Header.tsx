@@ -5,17 +5,20 @@ import Image from "next/image";
 import { useState } from "react";
 import { CircleUser, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 
 const navItems = [
-  "হোম",
-  "সকল কোর্স",
-  "লাইভ সেশন",
-  "শিক্ষার্থীদের অভিজ্ঞতা",
-  "ফ্রি রিসোর্স",
+  { label: "হোম", href: "/" },
+  { label: "সকল কোর্স", href: "/courses" },
+  { label: "লাইভ সেশন", href: "/live-session" },
+  { label: "শিক্ষার্থীদের অভিজ্ঞতা", href: "/student-reviews" },
+  { label: "ফ্রি রিসোর্স", href: "/free-resources" },
 ];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const pathname = usePathname();
 
   return (
     <header
@@ -41,17 +44,17 @@ export default function Header() {
           className="hidden items-center gap-1 p-1 lg:flex"
           aria-label="Main navigation"
         >
-          {navItems.map((item, index) => (
+          {navItems.map((item) => (
             <Link
-              key={item}
-              href="#"
+              key={item.href}
+              href={item.href}
               className={`rounded-full px-5 py-3 text-sm transition ${
-                index === 0
+                pathname === item.href
                   ? "bg-white/10 text-white"
                   : "text-white/70 hover:bg-white/5 hover:text-white"
               }`}
             >
-              {item}
+              {item.label}
             </Link>
           ))}
         </nav>
@@ -98,16 +101,16 @@ export default function Header() {
           >
             {navItems.map((item, index) => (
               <Link
-                key={item}
-                href="#"
+                key={item.href}
+                href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={`rounded-xl px-4 py-3 text-sm transition ${
-                  index === 0
+                  pathname === item.href
                     ? "bg-white/10 text-white"
                     : "text-white/70 hover:bg-white/5 hover:text-white"
                 }`}
               >
-                {item}
+                {item.label}
               </Link>
             ))}
           </nav>
