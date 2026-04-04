@@ -3,25 +3,14 @@
 import { useMemo, useState } from "react";
 import { Sparkles } from "lucide-react";
 import CourseCard from "@/components/Home/Course/CourseCard";
-
-type Course = {
-  title: string;
-  slug: string;
-  overview: string;
-  description: string;
-  category: string;
-  difficultyLevel: "Beginner" | "Intermediate" | "Advanced";
-  totalEnrolled: number;
-  rating: number;
-  price: number;
-  discountPercent: number;
-  image: string;
-};
+import { ICourse } from "@/types";
 
 export default function CourseTabs({
   courses,
+  showCTA = true,
 }: {
-  courses: Course[];
+  courses: ICourse[];
+  showCTA?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState("All");
 
@@ -82,15 +71,17 @@ export default function CourseTabs({
       </div>
 
       {/* CTA */}
-      <div className="text-center mt-10 sm:mt-12">
-        <button
-          className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-secondary to-primary text-white text-sm sm:text-base font-semibold hover:shadow-xl hover:shadow-secondary/30 transition-all"
-          aria-label="View all courses"
-        >
-          সকল কোর্স দেখুন
-          <Sparkles className="size-4" aria-hidden />
-        </button>
-      </div>
+      {showCTA && (
+        <div className="text-center mt-10 sm:mt-12">
+          <button
+            className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-secondary to-primary text-white text-sm sm:text-base font-semibold hover:shadow-xl hover:shadow-secondary/30 transition-all"
+            aria-label="View all courses"
+          >
+            সকল কোর্স দেখুন
+            <Sparkles className="size-4" aria-hidden />
+          </button>
+        </div>
+      )}
     </>
   );
 }

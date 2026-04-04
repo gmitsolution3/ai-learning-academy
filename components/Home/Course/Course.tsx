@@ -1,21 +1,8 @@
 import { Sparkles } from "lucide-react";
 import CourseTabs from "./CourseTabs";
+import { ICourse } from "@/types";
 
-type Course = {
-  title: string;
-  slug: string;
-  overview: string;
-  description: string;
-  category: string;
-  difficultyLevel: "Beginner" | "Intermediate" | "Advanced";
-  totalEnrolled: number;
-  rating: number;
-  price: number;
-  discountPercent: number;
-  image: string;
-};
-
-const courses: Course[] = [
+const courses: ICourse[] = [
   {
     title: "Full Stack Web Development Bootcamp",
     slug: "full-stack-web-development-bootcamp",
