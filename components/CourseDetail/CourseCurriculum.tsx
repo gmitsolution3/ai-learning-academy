@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export default function CourseCurriculum({
   modules,
@@ -16,6 +16,8 @@ export default function CourseCurriculum({
   modules: any[];
 }) {
   const [openModules, setOpenModules] = useState<number[]>([1]);
+  const [heights, setHeights] = useState<{ [key: number]: number }>({});
+  const contentRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const toggleModule = (moduleId: number) => {
     setOpenModules((prev) =>
@@ -24,6 +26,17 @@ export default function CourseCurriculum({
         : [...prev, moduleId],
     );
   };
+
+  useEffect(() => {
+    // Measure heights after render
+    const newHeights: { [key: number]: number } = {};
+    modules.forEach((module) => {
+      if (contentRefs.current[module.id]) {
+        newHeights[module.id] = contentRefs.current[module.id]?.scrollHeight || 0;
+      }
+    });
+    setHeights(newHeights);
+  }, [modules]);
 
   return (
     <section id="course-curriculamn" className="scroll-mt-24">
@@ -40,11 +53,11 @@ export default function CourseCurriculum({
           {modules.map((module) => (
             <div
               key={module.id}
-              className="border border-white/10 rounded-lg overflow-hidden"
+              className="border border-white/10 rounded-lg overflow-hidden bg-white/5"
             >
               <button
                 onClick={() => toggleModule(module.id)}
-                className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 transition-colors text-left"
+                className="w-full flex items-center justify-between p-4 hover:bg-white/10 transition-all duration-300 text-left group"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-secondary font-bold">
@@ -58,20 +71,38 @@ export default function CourseCurriculum({
                   <span className="text-white/60 text-sm">
                     {module.lessonCount}টি লেসন
                   </span>
-                  {openModules.includes(module.id) ? (
-                    <ChevronUp className="h-4 w-4 text-white/60" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-white/60" />
-                  )}
+                  <ChevronDown 
+                    className={`h-4 w-4 text-white/60 transition-all duration-500 ease-in-out ${
+                      openModules.includes(module.id) ? "rotate-180" : ""
+                    }`}
+                  />
                 </div>
               </button>
 
-              {openModules.includes(module.id) && (
-                <div className="border-t border-white/10 bg-white/5 p-4 space-y-2">
+              <div
+                className="transition-all duration-500 ease-in-out overflow-hidden"
+                style={{
+                  maxHeight: openModules.includes(module.id)
+                    ? `${heights[module.id] || 500}px`
+                    : "0px",
+                  opacity: openModules.includes(module.id) ? 1 : 0,
+                }}
+              >
+                <div
+                  ref={(el) => {
+                    contentRefs.current[module.id] = el;
+                  }}
+                  className="border-t border-white/10 p-4 space-y-2"
+                >
                   {module.lessons.map((lesson: any, idx: number) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 text-white/70 text-sm py-1"
+                      className="flex items-center gap-2 text-white/70 text-sm py-1 transition-all duration-300 ease-in-out"
+                      style={{
+                        transform: openModules.includes(module.id) ? "translateX(0)" : "translateX(-10px)",
+                        opacity: openModules.includes(module.id) ? 1 : 0,
+                        transitionDelay: openModules.includes(module.id) ? `${idx * 30}ms` : "0ms",
+                      }}
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-secondary"></div>
                       <span>
@@ -80,12 +111,15 @@ export default function CourseCurriculum({
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
             </div>
           ))}
 
-          <button className="w-full mt-4 py-3 text-center text-secondary hover:text-primary transition-colors font-medium">
-            আরও মডিউল দেখুন +
+          <button className="w-full mt-4 py-3 text-center text-secondary hover:text-primary transition-all duration-300 font-medium group">
+            <span className="inline-block transition-all duration-300 group-hover:scale-105">
+              আরও মডিউল দেখুন 
+              <span className="inline-block transition-transform duration-300 group-hover:translate-x-1"> +</span>
+            </span>
           </button>
         </CardContent>
       </Card>
