@@ -81,7 +81,7 @@ const courses: ICourse[] = [
   },
 ];
 
-export default function Page() {
+export default function CoursesPage() {
   return (
     <div className="relative min-h-screen">
       <GlobalBanner>

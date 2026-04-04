@@ -10,9 +10,9 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { label: "হোম", href: "/" },
   { label: "সকল কোর্স", href: "/courses" },
-  { label: "লাইভ সেশন", href: "/live-session" },
   { label: "শিক্ষার্থীদের অভিজ্ঞতা", href: "/student-reviews" },
-  { label: "ফ্রি রিসোর্স", href: "/free-resources" },
+  { label: "আমাদের টিম", href: "/our-team" },
+  { label: "লাইভ সেশন", href: "/live-session" },
 ];
 
 export default function Header() {
