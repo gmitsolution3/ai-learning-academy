@@ -1,7 +1,7 @@
 // app/components/CourseDetail.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CourseDetailNavigation from "./CourseDetailNavigation";
 import CourseDetailContent from "./CourseDetailContent";
 import {
@@ -42,6 +42,29 @@ export default function CourseDetail() {
       setActiveSection(id);
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100;
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetBottom = offsetTop + element.offsetHeight;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetBottom
+          ) {
+            setActiveSection(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sections]);
 
   return (
     <div className="relative">
