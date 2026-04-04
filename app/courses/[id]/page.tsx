@@ -8,7 +8,7 @@ export default function CourseDetailPage() {
 
       <div className="container mx-auto px-5 lg:px-0 relative z-10">
         <div className="relative">
-          <div className="-mt-35 md:-mt-50 lg:-mt-80 pb-16 md:pb-20 lg:pb-24">
+          <div className="-mt-35 md:-mt-50 lg:-mt-[800px] pb-16 md:pb-20 lg:pb-24">
             <CourseOverviewDetail />
           </div>
         </div>
