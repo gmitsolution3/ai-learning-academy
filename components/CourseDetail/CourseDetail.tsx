@@ -27,11 +27,6 @@ export default function CourseDetail() {
     },
     { id: "teacher", title: "যার কাছ থেকে শিখবেন", icon: Speech },
     { id: "qna", title: "প্রশ্ন এবং উত্তর", icon: Laptop },
-    {
-      id: "reviews",
-      title: "শিক্ষার্থীদের অভিজ্ঞতা",
-      icon: ListChecks,
-    },
   ];
 
   const scrollToSection = (id: string) => {

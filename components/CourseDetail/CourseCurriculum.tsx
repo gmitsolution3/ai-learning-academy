@@ -16,8 +16,12 @@ export default function CourseCurriculum({
   modules: any[];
 }) {
   const [openModules, setOpenModules] = useState<number[]>([1]);
-  const [heights, setHeights] = useState<{ [key: number]: number }>({});
-  const contentRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const [heights, setHeights] = useState<{ [key: number]: number }>(
+    {},
+  );
+  const contentRefs = useRef<{
+    [key: number]: HTMLDivElement | null;
+  }>({});
 
   const toggleModule = (moduleId: number) => {
     setOpenModules((prev) =>
@@ -32,7 +36,8 @@ export default function CourseCurriculum({
     const newHeights: { [key: number]: number } = {};
     modules.forEach((module) => {
       if (contentRefs.current[module.id]) {
-        newHeights[module.id] = contentRefs.current[module.id]?.scrollHeight || 0;
+        newHeights[module.id] =
+          contentRefs.current[module.id]?.scrollHeight || 0;
       }
     });
     setHeights(newHeights);
@@ -40,7 +45,7 @@ export default function CourseCurriculum({
 
   return (
     <section id="course-curriculamn" className="scroll-mt-24">
-      <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm">
+      <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm p-5">
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
             কোর্সের পুর্ন কারিকুলাম
@@ -63,7 +68,7 @@ export default function CourseCurriculum({
                   <span className="text-secondary font-bold">
                     মডিউল {module.id}
                   </span>
-                  <span className="text-white font-medium">
+                  <span className="hidden md:block text-white font-medium">
                     {module.title}
                   </span>
                 </div>
@@ -71,9 +76,11 @@ export default function CourseCurriculum({
                   <span className="text-white/60 text-sm">
                     {module.lessonCount}টি লেসন
                   </span>
-                  <ChevronDown 
+                  <ChevronDown
                     className={`h-4 w-4 text-white/60 transition-all duration-500 ease-in-out ${
-                      openModules.includes(module.id) ? "rotate-180" : ""
+                      openModules.includes(module.id)
+                        ? "rotate-180"
+                        : ""
                     }`}
                   />
                 </div>
@@ -99,9 +106,17 @@ export default function CourseCurriculum({
                       key={idx}
                       className="flex items-center gap-2 text-white/70 text-sm py-1 transition-all duration-300 ease-in-out"
                       style={{
-                        transform: openModules.includes(module.id) ? "translateX(0)" : "translateX(-10px)",
-                        opacity: openModules.includes(module.id) ? 1 : 0,
-                        transitionDelay: openModules.includes(module.id) ? `${idx * 30}ms` : "0ms",
+                        transform: openModules.includes(module.id)
+                          ? "translateX(0)"
+                          : "translateX(-10px)",
+                        opacity: openModules.includes(module.id)
+                          ? 1
+                          : 0,
+                        transitionDelay: openModules.includes(
+                          module.id,
+                        )
+                          ? `${idx * 30}ms`
+                          : "0ms",
                       }}
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-secondary"></div>
@@ -117,8 +132,11 @@ export default function CourseCurriculum({
 
           <button className="w-full mt-4 py-3 text-center text-secondary hover:text-primary transition-all duration-300 font-medium group">
             <span className="inline-block transition-all duration-300 group-hover:scale-105">
-              আরও মডিউল দেখুন 
-              <span className="inline-block transition-transform duration-300 group-hover:translate-x-1"> +</span>
+              আরও মডিউল দেখুন
+              <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+                {" "}
+                +
+              </span>
             </span>
           </button>
         </CardContent>

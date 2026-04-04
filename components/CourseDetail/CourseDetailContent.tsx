@@ -16,6 +16,7 @@ import {
   Shield,
 } from "lucide-react";
 import CourseCurriculum from "./CourseCurriculum";
+import CourseQNA from "./CourseQNA";
 
 const modules = [
   {
@@ -152,7 +153,7 @@ export default function CourseDetailContent() {
 
       {/* Section 3 - Teacher */}
       <section id="teacher" className="scroll-mt-24">
-        <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm">
+        <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm p-10">
           <CardHeader>
             <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
               যার কাছ থেকে শিখবেন
@@ -174,97 +175,48 @@ export default function CourseDetailContent() {
                 </p>
               </div>
             </div>
+
             <p className="text-white/80 leading-relaxed mt-4">
               Lorem ipsum is simply dummy text of the printing and
               typesetting industry. Lorem Ipsum has been the
               industry's standard dummy text ever since the 1500s.
             </p>
+
+            {/* Statistics Section */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/10">
+              <div className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-secondary">
+                  100k+
+                </p>
+                <p className="text-xs text-white/50">Students</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-secondary">
+                  100k+
+                </p>
+                <p className="text-xs text-white/50">YouTube Fans</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-secondary">
+                  100k+
+                </p>
+                <p className="text-xs text-white/50">
+                  Years of Experience
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-secondary">
+                  Live
+                </p>
+                <p className="text-xs text-white/50">Course</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>
 
       {/* Section 4 - Q&A */}
-      <section id="qna" className="scroll-mt-24">
-        <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              প্রশ্ন এবং উত্তর
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-white/5">
-                <h4 className="font-semibold text-white mb-2">
-                  প্রশ্ন: এই কোর্সটি কার জন্য?
-                </h4>
-                <p className="text-white/70">
-                  উত্তর: এই কোর্সটি সকল স্তরের শিক্ষার্থীদের জন্য
-                  তৈরি।
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-white/5">
-                <h4 className="font-semibold text-white mb-2">
-                  প্রশ্ন: কোর্স শেষে সার্টিফিকেট দেওয়া হবে?
-                </h4>
-                <p className="text-white/70">
-                  উত্তর: হ্যাঁ, কোর্স সফলভাবে সম্পন্ন করলে সার্টিফিকেট
-                  দেওয়া হবে।
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Section 5 - Reviews */}
-      <section id="reviews" className="scroll-mt-24">
-        <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              শিক্ষার্থীদের অভিজ্ঞতা
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-white/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-                    <span className="font-bold text-secondary">
-                      R
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-white">
-                      Rakib Hasan
-                    </p>
-                    <div className="flex text-yellow-500">★★★★★</div>
-                  </div>
-                </div>
-                <p className="text-white/70 text-sm">
-                  অসাধারণ একটি কোর্স! খুবই উপকারী হয়েছে আমার জন্য।
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-white/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="font-bold text-primary">S</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-white">
-                      Sadia Ahmed
-                    </p>
-                    <div className="flex text-yellow-500">★★★★★</div>
-                  </div>
-                </div>
-                <p className="text-white/70 text-sm">
-                  শিক্ষক খুবই অভিজ্ঞ এবং সহায়ক। কোর্সটি সবার জন্য
-                  রেকমেন্ড করব।
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
+      <CourseQNA />
     </div>
   );
 }
