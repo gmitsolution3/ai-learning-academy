@@ -5,19 +5,11 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import { ITestimonial } from "@/types";
 
 import TestimonialVideoModal from "@/components/modal/TestimonialVideoModal";
 
-type Testimonial = {
-  id: number;
-  name: string;
-  location: string;
-  image: string;
-  videoUrl: string;
-  thumbnail: string;
-};
-
-const testimonials: Testimonial[] = [
+const testimonials: ITestimonial[] = [
   {
     id: 1,
     name: "সাবিহা লুবাৰা তাসফিয়া",
@@ -110,7 +102,11 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-export default function TestimonialCarousel() {
+export default function TestimonialContent({
+  displayType,
+}: {
+  displayType: string;
+}) {
   const [currentVideo, setCurrentVideo] = useState<string | null>(
     null,
   );
@@ -119,72 +115,126 @@ export default function TestimonialCarousel() {
 
   return (
     <div className="relative px-4 md:px-12">
-      <Swiper
-        modules={[Autoplay]}
-        spaceBetween={20}
-        slidesPerView={1}
-        breakpoints={{
-          640: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          1024: { slidesPerView: 5 },
-        }}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }}
-        loop
-      >
-        {testimonials.map((item) => (
-          <SwiperSlide key={item.id}>
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-white/20">
-              {/* Image */}
-              <div className="relative group">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  width={500}
-                  height={600}
-                  className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+      {displayType === "slider" ? (
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={20}
+          slidesPerView={1}
+          breakpoints={{
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 5 },
+          }}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          loop
+        >
+          {testimonials.map((item) => (
+            <SwiperSlide key={item.id}>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-white/20">
+                {/* Image */}
+                <div className="relative group">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={500}
+                    height={600}
+                    className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
 
-                <div
-                  aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
-                />
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
+                  />
 
-                {/* Play Button */}
-                <button
-                  onClick={() => setCurrentVideo(item.videoUrl)}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                  {/* Play Button */}
+                  <button
+                    onClick={() => setCurrentVideo(item.videoUrl)}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
                   w-12 h-12 bg-white/95 hover:bg-white rounded-full 
                   flex items-center justify-center shadow-2xl 
                   transition-all duration-300 hover:scale-110"
-                  aria-label={`Play video of ${item.name}`}
-                >
-                  <svg
-                    className="w-8 h-8 text-primary ml-1"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+                    aria-label={`Play video of ${item.name}`}
                   >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </button>
-              </div>
+                    <svg
+                      className="w-8 h-8 text-primary ml-1"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </button>
+                </div>
 
-              {/* Text */}
-              <div className="p-6 h-[120px]">
-                <h3 className="text-xl font-bold text-white mb-2">
-                  {item.name}
-                </h3>
-                <p className="text-sm text-gray-300">
-                  {item.location}
-                </p>
+                {/* Text */}
+                <div className="p-6 h-[120px]">
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-gray-300">
+                    {item.location}
+                  </p>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {testimonials.map((item) => (
+            <div key={item.id}>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-white/20">
+                {/* Image */}
+                <div className="relative group">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={500}
+                    height={600}
+                    className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
+                  />
+
+                  {/* Play Button */}
+                  <button
+                    onClick={() => setCurrentVideo(item.videoUrl)}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                  w-12 h-12 bg-white/95 hover:bg-white rounded-full 
+                  flex items-center justify-center shadow-2xl 
+                  transition-all duration-300 hover:scale-110"
+                    aria-label={`Play video of ${item.name}`}
+                  >
+                    <svg
+                      className="w-8 h-8 text-primary ml-1"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Text */}
+                <div className="p-6 h-[120px]">
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-gray-300">
+                    {item.location}
+                  </p>
+                </div>
               </div>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+          ))}
+        </div>
+      )}
 
       {/* Modal only when needed */}
       {currentVideo && (

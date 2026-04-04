@@ -2,8 +2,8 @@
 
 import dynamic from "next/dynamic";
 
-const TestimonialCarousel = dynamic(
-  () => import("./TestimonialCarousel"),
+const TestimonialContent = dynamic(
+  () => import("./TestimonialContent"),
   {
     ssr: false,
     loading: () => (
@@ -14,6 +14,10 @@ const TestimonialCarousel = dynamic(
   },
 );
 
-export default function TestimonialClient() {
-  return <TestimonialCarousel />;
+export default function TestimonialClient({
+  displayType,
+}: {
+  displayType: string;
+}) {
+  return <TestimonialContent displayType={displayType} />;
 }

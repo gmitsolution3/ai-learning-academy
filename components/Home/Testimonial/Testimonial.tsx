@@ -16,7 +16,7 @@ export default function Testimonial() {
           }
         />
 
-        <TestimonialClient />
+        <TestimonialClient displayType="slider" />
       </div>
     </section>
   );
