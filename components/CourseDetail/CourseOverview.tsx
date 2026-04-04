@@ -18,7 +18,7 @@ import {
   Calander,
 } from "@/components/icons";
 
-export default function CourseOverviewDetail() {
+export default function CourseOverview() {
   return (
     <Card className="w-full max-w-7xl mx-auto border-2 border-white/70 shadow-lg bg-[#03050A] p-5 pr-8">
       <div className="flex flex-col items-center md:flex-row">
