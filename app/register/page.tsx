@@ -1,61 +1,89 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
+// Define validation schema with Zod
+const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "নাম প্রয়োজন")
+      .min(2, "নাম কমপক্ষে ২ অক্ষরের হতে হবে")
+      .max(50, "নাম সর্বোচ্চ ৫০ অক্ষরের হতে পারে"),
+    email: z
+      .string()
+      .min(1, "ইমেইল প্রয়োজন")
+      .email("সঠিক ইমেইল ফরম্যাট দিন (উদাহরণ: name@example.com)"),
+    phone: z
+      .string()
+      .min(1, "মোবাইল নাম্বার প্রয়োজন")
+      .regex(
+        /^(01)[3-9]\d{8}$/,
+        "সঠিক মোবাইল নাম্বার দিন (উদাহরণ: 01XXXXXXXXX)",
+      ),
+    password: z
+      .string()
+      .min(1, "পাসওয়ার্ড প্রয়োজন")
+      .min(8, "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে")
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/,
+        "পাসওয়ার্ডে কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*) থাকতে হবে",
+      ),
+    cpassword: z.string().min(1, "পাসওয়ার্ড নিশ্চিত করুন"),
+  })
+  .refine((data) => data.password === data.cpassword, {
+    message: "পাসওয়ার্ড দুটি মিলছে না",
+    path: ["cpassword"],
+  });
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    cpassword: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    watch,
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      cpassword: "",
+    },
   });
-  const [passwordError, setPasswordError] = useState("");
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Watch password field for real-time validation feedback
+  const password = watch("password");
 
-    // Clear password match error when user types
-    if (name === "password" || name === "cpassword") {
-      setPasswordError("");
-    }
-  };
+  const onSubmit = async (data: RegisterFormData) => {
+    // Simulate API call
+    console.log("Registration form submitted:", data);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    // Remove cpassword before sending to API (optional)
+    const { cpassword, ...submitData } = data;
 
-    // Check if passwords match
-    if (formData.password !== formData.cpassword) {
-      setPasswordError("পাসওয়ার্ড দুটি মিলছে না");
-      return;
-    }
+    // You can add your actual registration logic here
+    // Example: await fetch('/api/register', { method: 'POST', body: JSON.stringify(submitData) })
 
-    // Check password strength
-    const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/;
-    if (!passwordRegex.test(formData.password)) {
-      setPasswordError(
-        "পাসওয়ার্ডে কমপক্ষে ৮ অক্ষর, ১টি সংখ্যা ও ১টি বিশেষ অক্ষর থাকতে হবে",
-      );
-      return;
-    }
-
-    console.log("Registration form submitted:", formData);
     alert("নিবন্ধন সফল! এখন লগইন করুন।");
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative py-40 overflow-hidden">
+    <section className="min-h-screen flex items-center justify-center relative py-30 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="max-w-xl mx-auto">
           <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10">
@@ -73,7 +101,10 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
                 {/* Name Field */}
                 <div className="space-y-2">
                   <Label
@@ -85,14 +116,24 @@ export default function RegisterPage() {
                   </Label>
                   <Input
                     id="name"
-                    name="name"
                     type="text"
                     placeholder="আপনার নাম লিখুন"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5"
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
+                      errors.name
+                        ? "border-red-500 focus:border-red-500"
+                        : ""
+                    }`}
+                    {...register("name")}
+                    aria-invalid={errors.name ? "true" : "false"}
                   />
+                  {errors.name && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email Field */}
@@ -106,14 +147,24 @@ export default function RegisterPage() {
                   </Label>
                   <Input
                     id="email"
-                    name="email"
                     type="email"
                     placeholder="আপনার ইমেইল লিখুন"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5"
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
+                      errors.email
+                        ? "border-red-500 focus:border-red-500"
+                        : ""
+                    }`}
+                    {...register("email")}
+                    aria-invalid={errors.email ? "true" : "false"}
                   />
+                  {errors.email && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Phone Field */}
@@ -127,14 +178,24 @@ export default function RegisterPage() {
                   </Label>
                   <Input
                     id="phone"
-                    name="phone"
                     type="tel"
                     placeholder="০১XXXXXXXXX"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5"
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
+                      errors.phone
+                        ? "border-red-500 focus:border-red-500"
+                        : ""
+                    }`}
+                    {...register("phone")}
+                    aria-invalid={errors.phone ? "true" : "false"}
                   />
+                  {errors.phone && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.phone.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password Field */}
@@ -149,18 +210,27 @@ export default function RegisterPage() {
                   <div className="relative">
                     <Input
                       id="password"
-                      name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="আপনার পাসওয়ার্ড দিন"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 pr-12"
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 pr-12 ${
+                        errors.password
+                          ? "border-red-500 focus:border-red-500"
+                          : ""
+                      }`}
+                      {...register("password")}
+                      aria-invalid={
+                        errors.password ? "true" : "false"
+                      }
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                      aria-label={
+                        showPassword
+                          ? "Hide password"
+                          : "Show password"
+                      }
                     >
                       {showPassword ? (
                         <EyeOff size={20} />
@@ -173,6 +243,14 @@ export default function RegisterPage() {
                     পাসওয়ার্ডে কমপক্ষে ৮ অক্ষর, ১টি সংখ্যা ও ১টি
                     বিশেষ অক্ষর (@#$%^&*) ব্যবহার করুন
                   </p>
+                  {errors.password && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Confirm Password Field */}
@@ -187,18 +265,27 @@ export default function RegisterPage() {
                   <div className="relative">
                     <Input
                       id="cpassword"
-                      name="cpassword"
                       type={showCPassword ? "text" : "password"}
                       placeholder="আবার পাসওয়ার্ড দিন"
-                      value={formData.cpassword}
-                      onChange={handleInputChange}
-                      required
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 pr-12"
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 pr-12 ${
+                        errors.cpassword
+                          ? "border-red-500 focus:border-red-500"
+                          : ""
+                      }`}
+                      {...register("cpassword")}
+                      aria-invalid={
+                        errors.cpassword ? "true" : "false"
+                      }
                     />
                     <button
                       type="button"
                       onClick={() => setShowCPassword(!showCPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                      aria-label={
+                        showCPassword
+                          ? "Hide password"
+                          : "Show password"
+                      }
                     >
                       {showCPassword ? (
                         <EyeOff size={20} />
@@ -207,19 +294,34 @@ export default function RegisterPage() {
                       )}
                     </button>
                   </div>
-                  {passwordError && (
-                    <p className="text-red-400 text-xs mt-1">
-                      {passwordError}
+                  {errors.cpassword && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.cpassword.message}
                     </p>
                   )}
+
+                  {/* Password strength indicator (optional) */}
+                  {password &&
+                    password.length > 0 &&
+                    !errors.password && (
+                      <p className="text-green-400 text-xs mt-1">
+                        ✓ পাসওয়ার্ড শক্তিশালী
+                      </p>
+                    )}
                 </div>
 
                 {/* Register Button */}
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-secondary to-primary text-black font-semibold py-6 hover:opacity-90 transition-opacity rounded-full text-white border-2 border-white/70 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-secondary to-primary text-black font-semibold py-6 hover:opacity-90 transition-opacity rounded-full text-white border-2 border-white/70 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  নিবন্ধন করুন →
+                  {isSubmitting
+                    ? "নিবন্ধন হচ্ছে..."
+                    : "নিবন্ধন করুন →"}
                 </Button>
               </form>
 

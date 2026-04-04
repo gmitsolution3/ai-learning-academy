@@ -1,34 +1,60 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
+// Define validation schema with Zod
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "ইমেইল প্রয়োজন")
+    .email("সঠিক ইমেইল ফরম্যাট দিন (উদাহরণ: name@example.com)"),
+  password: z
+    .string()
+    .min(1, "পাসওয়ার্ড প্রয়োজন")
+    .min(8, "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে")
+    .regex(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*])/,
+      "পাসওয়ার্ডে কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*) থাকতে হবে",
+    ),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const onSubmit = async (data: LoginFormData) => {
+    // Simulate API call
+    console.log("Login form submitted:", data);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Login form submitted:", formData);
+    // You can add your actual login logic here
+    // Example: await signIn('credentials', { ...data })
+
     alert("লগইন সফল! স্বাগতম।");
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative py-14 sm:py-16 md:py-20 overflow-hidden">
+    <section className="min-h-screen flex items-center justify-center relative py-30 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="max-w-xl mx-auto">
           <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10">
@@ -46,7 +72,10 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
                 {/* Email Field */}
                 <div className="space-y-2">
                   <Label
@@ -58,14 +87,24 @@ export default function LoginPage() {
                   </Label>
                   <Input
                     id="email"
-                    name="email"
                     type="email"
                     placeholder="আপনার ইমেইল লিখুন"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5"
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 ${
+                      errors.email
+                        ? "border-red-500 focus:border-red-500"
+                        : ""
+                    }`}
+                    {...register("email")}
+                    aria-invalid={errors.email ? "true" : "false"}
                   />
+                  {errors.email && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password Field */}
@@ -80,18 +119,27 @@ export default function LoginPage() {
                   <div className="relative">
                     <Input
                       id="password"
-                      name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="আপনার পাসওয়ার্ড দিন"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 pr-12"
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#C994FF] focus:ring-[#C994FF]/20 !p-5 pr-12 ${
+                        errors.password
+                          ? "border-red-500 focus:border-red-500"
+                          : ""
+                      }`}
+                      {...register("password")}
+                      aria-invalid={
+                        errors.password ? "true" : "false"
+                      }
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                      aria-label={
+                        showPassword
+                          ? "Hide password"
+                          : "Show password"
+                      }
                     >
                       {showPassword ? (
                         <EyeOff size={20} />
@@ -104,14 +152,23 @@ export default function LoginPage() {
                     পাসওয়ার্ড ক্যাম্পের ৮ অক্ষর, ১টি সংখ্যা ও ১টি
                     বিশেষ অক্ষর (@#$%^&*) ব্যাবহার করুন
                   </p>
+                  {errors.password && (
+                    <p
+                      className="text-red-400 text-xs mt-1"
+                      role="alert"
+                    >
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Login Button */}
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-secondary to-primary text-black font-semibold py-6 hover:opacity-90 transition-opacity rounded-full text-white border-2 border-white/70 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-secondary to-primary text-black font-semibold py-6 hover:opacity-90 transition-opacity rounded-full text-white border-2 border-white/70 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  লগইন করুন →
+                  {isSubmitting ? "লগইন হচ্ছে..." : "লগইন করুন →"}
                 </Button>
               </form>
 
@@ -127,7 +184,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Google Login Button */}
+              {/* Google Login Button - Uncomment and use if needed */}
               {/* <Button
                 onClick={() => {
                   console.log("Continue with Google");
