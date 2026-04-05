@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Anek_Bangla } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header/Header";
-import Footer from "./../components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,19 +21,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="bn"
       className={`${inter.className} ${anekBangla.className} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
-        <Header />
-        <main>{children}</main>
-        <Footer />
-      </body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }
