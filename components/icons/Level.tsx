@@ -14,22 +14,16 @@ export function Level() {
       <path
         d="M10 12V16M6 18H14M7 14.5V16.5C7 17.5 7.5 18 8 18H12C12.5 18 13 17.5 13 16.5V14.5"
         stroke="url(#trophyGradient)"
-        stroke-width="1.2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
       />
-      <circle
-        cx="10"
-        cy="6"
-        r="2"
-        fill="#61656C"
-        fill-opacity="0.4"
-      />
+      <circle cx="10" cy="6" r="2" fill="#61656C" fillOpacity="0.4" />
       <path
         d="M5 3.5C5 1.5 7.5 0 10 0C12.5 0 15 1.5 15 3.5"
         stroke="#61656C"
-        stroke-width="0.8"
+        strokeWidth="0.8"
         fill="none"
         opacity="0.5"
       />
@@ -42,8 +36,8 @@ export function Level() {
           y2="19"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#F0F0F1" />
-          <stop offset="1" stop-color="#61656C" />
+          <stop stopColor="#F0F0F1" />
+          <stop offset="1" stopColor="#61656C" />
         </linearGradient>
       </defs>
     </svg>

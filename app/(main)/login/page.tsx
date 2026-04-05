@@ -9,27 +9,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
-// Define validation schema with Zod
 const loginSchema = z.object({
   email: z
     .string()
     .min(1, "ইমেইল প্রয়োজন")
     .email("সঠিক ইমেইল ফরম্যাট দিন (উদাহরণ: name@example.com)"),
-  password: z
-    .string()
-    .min(1, "পাসওয়ার্ড প্রয়োজন")
-    .min(8, "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে")
-    .regex(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*])/,
-      "পাসওয়ার্ডে কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*) থাকতে হবে",
-    ),
+  password: z.string().min(1, "পাসওয়ার্ড প্রয়োজন"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+
+  console.log(process.env.NODE_ENV)
 
   const {
     register,
@@ -44,13 +39,9 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    // Simulate API call
-    console.log("Login form submitted:", data);
+    const res = await authClient.signIn.email(data);
 
-    // You can add your actual login logic here
-    // Example: await signIn('credentials', { ...data })
-
-    alert("লগইন সফল! স্বাগতম।");
+    console.log(res);
   };
 
   return (

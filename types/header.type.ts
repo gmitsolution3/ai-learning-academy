@@ -1,7 +1,8 @@
 export interface INavItem {
   label: string;
+  key: string;
   href?: string;
-  items?: { label: string; href: string }[];
+  items?: { label: string; key: string; href: string }[];
 }
 
 export interface IRenderNavItem {

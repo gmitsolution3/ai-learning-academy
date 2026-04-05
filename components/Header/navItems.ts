@@ -1,19 +1,26 @@
 import { INavItem } from "@/types";
 
 export const navItems: INavItem[] = [
-  { label: "হোম", href: "/" },
-  { label: "সকল কোর্স", href: "/courses" },
-  { label: "শিক্ষার্থীদের অভিজ্ঞতা", href: "/student-reviews" },
-  { label: "আমাদের টিম", href: "/our-team" },
+  { label: "হোম", key: "home", href: "/" },
+  { label: "সকল কোর্স", key: "courses", href: "/courses" },
+  {
+    label: "শিক্ষার্থীদের অভিজ্ঞতা",
+    key: "student-review",
+    href: "/student-reviews",
+  },
+  { label: "আমাদের টিম", key: "our-team", href: "/our-team" },
   {
     label: "লাইভ সেশন",
     href: "/live-sessions",
+    key: "live-session",
   },
   {
     label: "অন্যান্য",
+    key: "others",
     items: [
       {
         label: "আমাদের সম্পর্কে",
+        key: "about-us",
         href: "/about-us",
       },
     ],

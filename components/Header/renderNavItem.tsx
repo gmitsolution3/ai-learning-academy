@@ -1,5 +1,5 @@
 import { IRenderNavItem } from "@/types";
-import Link from 'next/link';
+import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 
 export const renderNavItem = ({
@@ -27,6 +27,7 @@ export const renderNavItem = ({
   if (!hasDropdown) {
     return (
       <Link
+        key={item.key}
         href={item.href!}
         onClick={() => isMobile && closeMobileMenu()}
         className={`${baseClass} ${stateClass}`}
@@ -37,7 +38,7 @@ export const renderNavItem = ({
   }
 
   return (
-    <div className={isMobile ? "w-full" : "relative"}>
+    <div key={item.key} className={isMobile ? "w-full" : "relative"}>
       <button
         onClick={onToggle}
         onMouseEnter={() => !isMobile && onOpen()}

@@ -95,7 +95,7 @@ export default function Header() {
             asChild
             className="hidden rounded-full bg-gradient-to-r from-secondary to-primary p-5 text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90 lg:inline-flex"
           >
-            <Link href="#" aria-label="Login or sign up">
+            <Link href="/login" aria-label="Login or sign up">
               <CircleUser aria-hidden className="mr-1" />
               লগইন/সাইনআপ
             </Link>
@@ -163,7 +163,7 @@ export default function Header() {
               className="w-full rounded-full bg-gradient-to-r from-secondary to-primary text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90"
             >
               <Link
-                href="#"
+                href="/login"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Login or sign up"
               >

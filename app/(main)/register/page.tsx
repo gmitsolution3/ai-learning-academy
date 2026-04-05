@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
+import { authClient } from "@/lib/auth-client";
+import { notify } from "@/utils/notify";
+import { useRouter } from "next/navigation";
+
 // Define validation schema with Zod
 const registerSchema = z
   .object({
@@ -25,6 +29,8 @@ const registerSchema = z
     phone: z
       .string()
       .min(1, "মোবাইল নাম্বার প্রয়োজন")
+      .min(8, "পাসওয়ার্ড কমপক্ষে ১১ অক্ষরের হতে হবে")
+      .max(11, "পাসওয়ার্ড সর্বচ্চ ১১ অক্ষরের হতে হবে")
       .regex(
         /^(01)[3-9]\d{8}$/,
         "সঠিক মোবাইল নাম্বার দিন (উদাহরণ: 01XXXXXXXXX)",
@@ -34,8 +40,8 @@ const registerSchema = z
       .min(1, "পাসওয়ার্ড প্রয়োজন")
       .min(8, "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে")
       .regex(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/,
-        "পাসওয়ার্ডে কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*) থাকতে হবে",
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!.])[A-Za-z\d@#$%^&*!.]{8,}$/,
+        "পাসওয়ার্ডে কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*.) থাকতে হবে",
       ),
     cpassword: z.string().min(1, "পাসওয়ার্ড নিশ্চিত করুন"),
   })
@@ -49,6 +55,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+
+  const router = useRouter();
 
   const {
     register,
@@ -70,16 +78,17 @@ export default function RegisterPage() {
   const password = watch("password");
 
   const onSubmit = async (data: RegisterFormData) => {
-    // Simulate API call
-    console.log("Registration form submitted:", data);
-
-    // Remove cpassword before sending to API (optional)
     const { cpassword, ...submitData } = data;
 
-    // You can add your actual registration logic here
-    // Example: await fetch('/api/register', { method: 'POST', body: JSON.stringify(submitData) })
+    const res = await authClient.signUp.email(submitData);
 
-    alert("নিবন্ধন সফল! এখন লগইন করুন।");
+    if (res.data) {
+      notify.success("Registration successfull! Login to continue.");
+
+      router.push("/login");
+    } else {
+      notify.error(res?.error?.message as string);
+    }
   };
 
   return (
@@ -241,7 +250,7 @@ export default function RegisterPage() {
                   </div>
                   <p className="text-white/50 text-xs mt-1">
                     পাসওয়ার্ডে কমপক্ষে ৮ অক্ষর, ১টি সংখ্যা ও ১টি
-                    বিশেষ অক্ষর (@#$%^&*) ব্যবহার করুন
+                    বিশেষ অক্ষর (@#$%^&*.) ব্যবহার করুন
                   </p>
                   {errors.password && (
                     <p

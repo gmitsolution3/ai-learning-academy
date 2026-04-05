@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Anek_Bangla } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <TooltipProvider>{children}</TooltipProvider>
+        <Toaster />
       </body>
     </html>
   );
