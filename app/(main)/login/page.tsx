@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { notify } from "@/utils/notify";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z
@@ -24,7 +26,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
-  console.log(process.env.NODE_ENV)
+  const router = useRouter();
 
   const {
     register,
@@ -41,7 +43,13 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     const res = await authClient.signIn.email(data);
 
-    console.log(res);
+    if (res.data) {
+      notify.success("Login to successful!");
+
+      router.push("/dashboard");
+    } else {
+      notify.error(res?.error?.message as string);
+    }
   };
 
   return (
