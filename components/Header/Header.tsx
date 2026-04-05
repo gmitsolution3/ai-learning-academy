@@ -6,19 +6,38 @@ import { useState } from "react";
 import { CircleUser, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-
-const navItems = [
-  { label: "হোম", href: "/" },
-  { label: "সকল কোর্স", href: "/courses" },
-  { label: "শিক্ষার্থীদের অভিজ্ঞতা", href: "/student-reviews" },
-  { label: "আমাদের টিম", href: "/our-team" },
-  { label: "লাইভ সেশন", href: "/live-session" },
-];
+import { INavItem } from "@/types";
+import { renderNavItem } from "./renderNavItem";
+import { navItems } from "./navItems";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [mobileOpenDropdowns, setMobileOpenDropdowns] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const pathname = usePathname();
+
+  const updateDropdown = (
+    label: string,
+    type: "toggle" | "open" | "close",
+    isMobile = false,
+  ) => {
+    const setter = isMobile
+      ? setMobileOpenDropdowns
+      : setOpenDropdowns;
+
+    setter((prev) => ({
+      ...prev,
+      [label]: type === "toggle" ? !prev[label] : type === "open",
+    }));
+  };
+
+  const isDropdownActive = (item: INavItem): boolean =>
+    item.items?.some((sub) => pathname === sub.href) ?? false;
 
   return (
     <header
@@ -44,19 +63,29 @@ export default function Header() {
           className="hidden items-center gap-1 p-1 lg:flex"
           aria-label="Main navigation"
         >
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`rounded-full px-5 py-3 text-sm transition ${
-                pathname === item.href
-                  ? "bg-white/10 text-white"
-                  : "text-white/70 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const hasDropdown = Boolean(item.items);
+
+            const isOpen = openDropdowns[item.label];
+            const isActive = hasDropdown
+              ? isDropdownActive(item)
+              : item.href
+                ? pathname === item.href
+                : false;
+
+            return renderNavItem({
+              item,
+              isMobile: false,
+              pathname,
+              isOpen,
+              isActive,
+              onToggle: () => updateDropdown(item.label, "toggle"),
+              onOpen: () => updateDropdown(item.label, "open"),
+              onClose: () => updateDropdown(item.label, "close"),
+              closeMobileMenu: () => setMobileOpen(false),
+              resetMobileDropdowns: () => setMobileOpenDropdowns({}),
+            });
+          })}
         </nav>
 
         {/* Right side */}
@@ -99,20 +128,33 @@ export default function Header() {
             className="flex flex-col gap-1"
             aria-label="Mobile navigation"
           >
-            {navItems.map((item, index) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={`rounded-xl px-4 py-3 text-sm transition ${
-                  pathname === item.href
-                    ? "bg-white/10 text-white"
-                    : "text-white/70 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const hasDropdown = Boolean(item.items);
+
+              const isOpen = mobileOpenDropdowns[item.label];
+              const isActive = hasDropdown
+                ? isDropdownActive(item)
+                : item.href
+                  ? pathname === item.href
+                  : false;
+
+              return renderNavItem({
+                item,
+                isMobile: true,
+                pathname,
+                isOpen,
+                isActive,
+                onToggle: () =>
+                  updateDropdown(item.label, "toggle", true),
+                onOpen: () =>
+                  updateDropdown(item.label, "open", true),
+                onClose: () =>
+                  updateDropdown(item.label, "close", true),
+                closeMobileMenu: () => setMobileOpen(false),
+                resetMobileDropdowns: () =>
+                  setMobileOpenDropdowns({}),
+              });
+            })}
           </nav>
 
           <div className="mt-3 border-t border-white/10 pt-3">

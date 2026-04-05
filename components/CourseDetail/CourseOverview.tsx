@@ -31,12 +31,10 @@ export default function CourseOverview() {
       aria-labelledby="course-overview-heading"
       className="relative"
     >
-      {/* Optional: Overlay for better text readability */}
-
       <div className="relative z-10">
         <Card
           style={{
-            backgroundImage: "url('/kids-learning-ai.jpg')", // Replace with your image path
+            backgroundImage: "url('/kids-learning-ai.jpg')",
           }}
           className="w-full max-w-7xl mx-auto border-2 border-white/70 shadow-lg bg-[#03050A] p-5 pr-8 bg-opacity-90 bg-cover bg-center bg-no-repeat relative"
         >
