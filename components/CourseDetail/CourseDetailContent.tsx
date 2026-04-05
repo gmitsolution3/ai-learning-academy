@@ -12,8 +12,6 @@ import {
 import {
   Briefcase,
   GraduationCap,
-  TrendingUp,
-  Shield,
 } from "lucide-react";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseQNA from "./CourseQNA";
