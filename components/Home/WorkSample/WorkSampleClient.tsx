@@ -52,7 +52,7 @@ export default function WorkSampleClient({
                 className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100"
               >
                 <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#F9D49B] to-[#C994FF] flex items-center justify-center">
-                  <Play className="w-7 h-7 text-black ml-0.5" />
+                  <Play className="w-7 h-7 text-white ml-0.5" />
                 </div>
               </div>
             </div>

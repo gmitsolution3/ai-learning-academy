@@ -40,15 +40,6 @@ export default function LiveSession() {
       aria-labelledby="live-session-heading"
     >
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
-        {/* Header */}
-        <SectionHeading
-          id={"live-session-heading"}
-          title={"ফ্রি লাইভ সেশান"}
-          description={
-            "আমাদের যেকোনো কোর্স বা অনলাইনে ক্যারিয়ার গড়া সম্পর্কে পরামর্শ পেতে Google Meet-এ ফ্রি লাইভ সেশন করতে পারেন।"
-          }
-        />
-
         <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10 lg:p-14">
           <div
             aria-hidden
