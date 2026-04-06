@@ -2,14 +2,29 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { CircleUser, Menu, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import {
+  CircleUser,
+  Menu,
+  X,
+  LayoutDashboard,
+  LogOut,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { INavItem } from "@/types";
 import { renderNavItem } from "./renderNavItem";
 import { navItems } from "./navItems";
 import { useSession } from "@/lib/auth-context";
+import { getAvatarInitial } from "@/utils";
+import useLogout from "@/hooks/useLogout";
+import { useRouter } from "next/navigation";
+import { ROLE_ROUTE, ROLE } from "@/utils/roleRoute";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -19,10 +34,30 @@ export default function Header() {
   const [mobileOpenDropdowns, setMobileOpenDropdowns] = useState<{
     [key: string]: boolean;
   }>({});
+  const [profileDropdownOpen, setProfileDropdownOpen] =
+    useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
-
   const { session } = useSession();
+  const { handleLogout } = useLogout();
+  const router = useRouter();
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const updateDropdown = (
     label: string,
@@ -42,7 +77,10 @@ export default function Header() {
   const isDropdownActive = (item: INavItem): boolean =>
     item.items?.some((sub) => pathname === sub.href) ?? false;
 
-  console.log(session)
+  const handleRedirect = () => {
+    const user = session.user;
+    router.push(ROLE_ROUTE[user.role as ROLE] || "/");
+  };
 
   return (
     <header
@@ -95,16 +133,75 @@ export default function Header() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Desktop login */}
-          <Button
-            asChild
-            className="hidden rounded-full bg-gradient-to-r from-secondary to-primary p-5 text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90 lg:inline-flex"
-          >
-            <Link href="/login" aria-label="Login or sign up">
-              <CircleUser aria-hidden className="mr-1" />
-              লগইন/সাইনআপ
-            </Link>
-          </Button>
+          {/* Desktop auth section */}
+          {session ? (
+            <div
+              className="relative hidden lg:block"
+              ref={profileDropdownRef}
+            >
+              <button
+                onClick={() =>
+                  setProfileDropdownOpen(!profileDropdownOpen)
+                }
+                className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-full"
+                aria-label="Profile menu"
+              >
+                <Avatar className="h-10 w-10 ring-2 ring-secondary/20">
+                  <AvatarImage
+                    src={session.user?.image || ""}
+                    alt={session.user?.name || "User"}
+                  />
+                  <AvatarFallback className="bg-gradient-to-r from-secondary to-primary text-white">
+                    {getAvatarInitial(session)}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+
+              {/* Profile Dropdown */}
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 rounded-lg border border-white/10 bg-black/90 py-1 shadow-lg backdrop-blur-xl">
+                  {/* User Info Section */}
+                  <div className="border-b border-white/10 px-4 py-3">
+                    <p className="text-sm font-medium text-white">
+                      {session.user?.name || "User"}
+                    </p>
+                    <p className="text-xs text-white/60 mt-0.5">
+                      {session.user?.email}
+                    </p>
+                  </div>
+
+                  {/* Menu Items */}
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      handleRedirect();
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-colors hover:bg-white/10 w-full"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-white transition-colors hover:bg-white/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Button
+              asChild
+              className="hidden rounded-full bg-gradient-to-r from-secondary to-primary p-5 text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90 lg:inline-flex"
+            >
+              <Link href="/login" aria-label="Login or sign up">
+                <CircleUser aria-hidden className="mr-1" />
+                লগইন/সাইনআপ
+              </Link>
+            </Button>
+          )}
 
           {/* Mobile toggle */}
           <button
@@ -163,19 +260,58 @@ export default function Header() {
           </nav>
 
           <div className="mt-3 border-t border-white/10 pt-3">
-            <Button
-              asChild
-              className="w-full rounded-full bg-gradient-to-r from-secondary to-primary text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90"
-            >
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                aria-label="Login or sign up"
+            {session ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 rounded-lg bg-white/5 p-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={session.user?.image || ""}
+                      alt={session.user?.name || "User"}
+                    />
+                    <AvatarFallback className="bg-gradient-to-r from-secondary to-primary text-white">
+                      {getAvatarInitial(session)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white">
+                      {session.user?.name || "User"}
+                    </p>
+                    <p className="text-xs text-white/60">
+                      {session.user?.email}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-secondary to-primary px-4 py-2 text-sm font-medium text-white shadow-lg shadow-primary/25 transition hover:opacity-90"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Button
+                asChild
+                className="w-full rounded-full bg-gradient-to-r from-secondary to-primary text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90"
               >
-                <CircleUser aria-hidden className="mr-1" />
-                লগইন/সাইনআপ
-              </Link>
-            </Button>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Login or sign up"
+                >
+                  <CircleUser aria-hidden className="mr-1" />
+                  লগইন/সাইনআপ
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       )}

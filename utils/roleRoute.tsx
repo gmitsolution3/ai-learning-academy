@@ -1,5 +1,6 @@
 export const ROLE_ROUTE = {
   admin: "/admin-dashboard",
+  instructor: "/instructor-dashboard",
   user: "/dashboard",
 } as const;
 

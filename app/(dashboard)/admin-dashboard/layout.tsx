@@ -1,12 +1,15 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/layout/Admin/DashboardSidebar";
 import { DashboardHeader } from "@/layout/Admin/DashboardHeader";
+import { requireAuth } from "@/lib/requireAuth";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await requireAuth(["admin", ""]);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">

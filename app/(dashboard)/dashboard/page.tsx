@@ -1,16 +1,8 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import useLogout from "@/hooks/useLogout";
 
 export default function UserDashboard() {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await authClient.signOut();
-
-    router.push("/");
-  };
-
+  const { handleLogout } = useLogout();
 
   return (
     <div>
