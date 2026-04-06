@@ -30,8 +30,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  AlertCircle,
-  Package,
+  Plus,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -40,38 +39,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-
-// Category type definition
-interface Category {
-  _id: string;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  slug: string;
-  image: string;
-  description: string;
-  parent_id: string | null;
-}
-
-// Format date function
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import Link from "next/link";
+import { ICategory } from "@/types";
+import { formatDate } from "@/utils";
+import ImageCell from "./ImageCell";
+import AllCaregoryLoader from "@/components/loaders/AllCaregoryLoader";
+import AllCategoryError from "@/components/errors/AllCategoryError";
+import AllCategoryEmpty from "@/components/empties/AllCategoryEmpty";
+import AllCategoryActionCell from '@/components/ActionCells/AllCategoryActionCell';
 
 // Table columns definition
-const columns: ColumnDef<Category>[] = [
+const columns: ColumnDef<ICategory>[] = [
+  {
+    id: "image",
+    header: "Image",
+    cell: ({ row }) => (
+      <ImageCell
+        imageUrl={row.original.image}
+        name={row.original.name}
+      />
+    ),
+  },
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -149,31 +137,9 @@ const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => formatDate(row.original.created_at),
   },
   {
-    accessorKey: "updated_at",
-    header: "Updated At",
-    cell: ({ row }) => formatDate(row.original.updated_at),
-  },
-  {
-    id: "image",
-    header: "Image",
-    cell: ({ row }) => (
-      <div className="w-10 h-10 rounded-md overflow-hidden bg-muted">
-        {row.original.image ? (
-          <img
-            src={row.original.image}
-            alt={row.original.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-5 h-5 text-muted-foreground" />
-          </div>
-        )}
-      </div>
-    ),
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => <AllCategoryActionCell category={row.original} />,
   },
 ];
 
@@ -184,7 +150,7 @@ export default function AllCategoryPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const categoryList: Category[] = data?.data || [];
+  const categoryList: ICategory[] = data?.data || [];
 
   const table = useReactTable({
     data: categoryList,
@@ -208,73 +174,17 @@ export default function AllCategoryPage() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="container mx-auto py-10 px-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <Skeleton className="h-8 w-48" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Skeleton className="h-10 w-full" />
-              <div className="space-y-2">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AllCaregoryLoader />;
   }
 
   // Error state
   if (isError) {
-    return (
-      <div className="container mx-auto py-10 px-4">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription className="flex items-center justify-between">
-            <span>Failed to load categories. Please try again.</span>
-            <Button
-              onClick={() => refetch()}
-              variant="outline"
-              size="sm"
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Retry
-            </Button>
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+    return <AllCategoryError refetch={refetch} />;
   }
 
   // Empty state
   if (categoryList.length === 0) {
-    return (
-      <div className="container mx-auto py-10 px-4">
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Package className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              No categories found
-            </h3>
-            <p className="text-muted-foreground text-center mb-4">
-              There are no categories available at the moment.
-            </p>
-            <Button onClick={() => refetch()} variant="outline">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AllCategoryEmpty refetch={refetch} />;
   }
 
   return (
@@ -282,7 +192,7 @@ export default function AllCategoryPage() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle className="text-2xl">Categories</CardTitle>
+            <CardTitle className="text-2xl">All Categories</CardTitle>
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => refetch()}
@@ -297,14 +207,22 @@ export default function AllCategoryPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {/* Search Input */}
-          <div className="mb-4">
-            <Input
-              placeholder="Search categories..."
-              value={globalFilter ?? ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="max-w-sm"
-            />
+          {/* Search and Create Button Row */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <div className="flex-1">
+              <Input
+                placeholder="Search categories..."
+                value={globalFilter ?? ""}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                className="w-full p-5"
+              />
+            </div>
+            <Button asChild className="gap-2 p-5">
+              <Link href="/categories/create">
+                <Plus className="h-4 w-4" />
+                Create New Category
+              </Link>
+            </Button>
           </div>
 
           {/* Table */}
@@ -344,7 +262,7 @@ export default function AllCategoryPage() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
             <div className="text-sm text-muted-foreground">
               Showing{" "}
               {table.getState().pagination.pageIndex *
@@ -375,7 +293,7 @@ export default function AllCategoryPage() {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm">
+              <span className="text-sm whitespace-nowrap">
                 Page {table.getState().pagination.pageIndex + 1} of{" "}
                 {table.getPageCount()}
               </span>
