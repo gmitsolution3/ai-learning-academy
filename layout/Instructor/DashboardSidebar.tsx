@@ -21,7 +21,6 @@ import {
   FileText,
   Settings,
   LogOut,
-  ClipboardList,
   UserCircle,
 } from "lucide-react";
 import {
@@ -31,10 +30,15 @@ import {
 } from "@/components/ui/avatar";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "@/lib/auth-context";
+import { getAvatarInitial } from "@/utils";
+import useLogout from "@/hooks/useLogout";
 
-const baseAdminUrl = "/admin-dashboard";
+const baseDashboardUrl = "/instructor-dashboard";
 function defineUrl(url: string) {
-  return url === "/" ? baseAdminUrl : baseAdminUrl.concat(url);
+  return url === "/"
+    ? baseDashboardUrl
+    : baseDashboardUrl.concat(url);
 }
 
 const mainMenuItems = [
@@ -54,8 +58,8 @@ const courseManagement = [
     icon: LayoutDashboard,
   },
   {
-    title: "Create Course",
-    url: defineUrl("/course/create"),
+    title: "All Category",
+    url: defineUrl("/all-category"),
     icon: Calendar,
   },
   {
@@ -99,6 +103,12 @@ const settingsItems = [
 export function DashboardSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+
+  const { session } = useSession();
+
+  const user = session?.user;
+
+  const { handleLogout } = useLogout();
 
   return (
     <Sidebar
@@ -144,7 +154,7 @@ export function DashboardSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
                       href={item.url}
-                      exact={item.url === "/admin"}
+                      exact={item.url === "/instructor-dashboard"}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
@@ -220,7 +230,6 @@ export function DashboardSidebar() {
                     <NavLink
                       href={item.url}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
                       {!isCollapsed && <span>{item.title}</span>}
@@ -236,23 +245,26 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-sidebar-border p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10 shrink-0">
-            <AvatarImage src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face" />
+            <AvatarImage src={user?.image} />
             <AvatarFallback className="bg-primary text-primary-foreground">
-              DR
+              {getAvatarInitial(session)}
             </AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex flex-1 flex-col overflow-hidden">
               <span className="truncate text-sm font-medium text-sidebar-foreground">
-                Dr. Sarah Wilson
+                {user?.name}
               </span>
               <span className="truncate text-xs text-muted-foreground">
-                Cardiologist
+                {user?.role}
               </span>
             </div>
           )}
           {!isCollapsed && (
-            <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+            <button
+              onClick={handleLogout}
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            >
               <LogOut className="h-4 w-4" />
             </button>
           )}

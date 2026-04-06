@@ -3,11 +3,13 @@ import { DashboardSidebar } from "@/layout/Instructor/DashboardSidebar";
 import { DashboardHeader } from "@/layout/Instructor/DashboardHeader";
 import { requireAuth } from "@/lib/requireAuth";
 
-export default function InstructorLayout({
+export default async function InstructorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await requireAuth(["instructor"]);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">

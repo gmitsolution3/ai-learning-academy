@@ -32,9 +32,9 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
-const baseAdminUrl = "/admin-dashboard";
+const baseDashboardUrl = "/admin-dashboard";
 function defineUrl(url: string) {
-  return url === "/" ? baseAdminUrl : baseAdminUrl.concat(url);
+  return url === "/" ? baseDashboardUrl : baseDashboardUrl.concat(url);
 }
 
 const mainMenuItems = [
@@ -220,7 +220,6 @@ export function DashboardSidebar() {
                     <NavLink
                       href={item.url}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
                       {!isCollapsed && <span>{item.title}</span>}

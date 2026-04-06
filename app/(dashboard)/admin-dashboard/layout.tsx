@@ -8,7 +8,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireAuth(["admin", ""]);
+  await requireAuth(["admin"]);
 
   return (
     <SidebarProvider>
