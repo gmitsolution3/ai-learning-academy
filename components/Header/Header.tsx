@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { INavItem } from "@/types";
 import { renderNavItem } from "./renderNavItem";
 import { navItems } from "./navItems";
+import { useSession } from "@/lib/auth-context";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,6 +21,8 @@ export default function Header() {
   }>({});
 
   const pathname = usePathname();
+
+  const { session } = useSession();
 
   const updateDropdown = (
     label: string,
@@ -38,6 +41,8 @@ export default function Header() {
 
   const isDropdownActive = (item: INavItem): boolean =>
     item.items?.some((sub) => pathname === sub.href) ?? false;
+
+  console.log(session)
 
   return (
     <header

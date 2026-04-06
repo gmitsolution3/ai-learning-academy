@@ -4,26 +4,18 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { notify } from "@/utils/notify";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+import { authClient } from "@/lib/auth-client";
+import { ROLE_ROUTE, ROLE } from "@/utils/roleRoute";
+import { useSession } from "@/lib/auth-context";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
-import { notify } from "@/utils/notify";
-import { useRouter } from "next/navigation";
-import { ROLE_ROUTE, ROLE } from "@/utils/roleRoute";
-
-type Role = "admin" | "user";
-
-type TUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  phone: string;
-  image?: string | null;
-};
 
 const loginSchema = z.object({
   email: z
@@ -39,6 +31,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
+  const { setSession } = useSession();
 
   const {
     register,
@@ -55,13 +48,15 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     const res = await authClient.signIn.email(data);
 
+    const session = await authClient.getSession();
+
     if (res.data) {
+      setSession(session?.data);
+
       const user = res?.data?.user;
       notify.success("Login to successful!");
 
-      console.log(user)
-
-      router.push(ROLE_ROUTE[(user?.role as ROLE)] || "/");
+      router.push(ROLE_ROUTE[user?.role as ROLE] || "/");
     } else {
       notify.error(res?.error?.message as string);
     }

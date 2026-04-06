@@ -3,6 +3,9 @@ import { Inter, Anek_Bangla } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "react-hot-toast";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import AuthProvider from "@/lib/auth-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,19 +24,24 @@ export const metadata: Metadata = {
     "বাংলায় ২১ শতকের ক্রিয়েটিভ স্কিল শেখার আধুনিক প্ল্যাটফর্ম",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   return (
     <html
       lang="bn"
       className={`${inter.className} ${anekBangla.className} h-full antialiased`}
     >
       <body className="min-h-full">
-        <TooltipProvider>{children}</TooltipProvider>
-        <Toaster />
+        <AuthProvider session={session}>
+          <TooltipProvider>{children}</TooltipProvider>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
