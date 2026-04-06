@@ -40,8 +40,8 @@ const registerSchema = z
       .min(1, "পাসওয়ার্ড প্রয়োজন")
       .min(8, "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে")
       .regex(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&*!.])[A-Za-z\d@#$%^&*!.]{8,}$/,
-        "পাসওয়ার্ডে কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*.) থাকতে হবে",
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!.])[A-Za-z\d@#$%^&*!.]{8,}$/,
+        "পাসওয়ার্ডে কমপক্ষে ১টি বড় হাতের অক্ষর, কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*.) থাকতে হবে",
       ),
     cpassword: z.string().min(1, "পাসওয়ার্ড নিশ্চিত করুন"),
   })
@@ -49,6 +49,28 @@ const registerSchema = z
     message: "পাসওয়ার্ড দুটি মিলছে না",
     path: ["cpassword"],
   });
+
+const getPasswordStrength = (password: string) => {
+  let score = 0;
+
+  if (password.length >= 8) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/\d/.test(password)) score++;
+  if (/[@#$%^&*.]/.test(password)) score++;
+
+  return score;
+};
+
+const getStrengthMeta = (score: number) => {
+  if (score <= 2) {
+    return { label: "দুর্বল", color: "bg-red-500" };
+  }
+  if (score === 3 || score === 4) {
+    return { label: "মাঝারি", color: "bg-yellow-500" };
+  }
+  return { label: "শক্তিশালী", color: "bg-green-500" };
+};
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -76,6 +98,9 @@ export default function RegisterPage() {
 
   // Watch password field for real-time validation feedback
   const password = watch("password");
+
+  const score = getPasswordStrength(password);
+  const { label, color } = getStrengthMeta(score);
 
   const onSubmit = async (data: RegisterFormData) => {
     const { cpassword, ...submitData } = data;
@@ -249,8 +274,7 @@ export default function RegisterPage() {
                     </button>
                   </div>
                   <p className="text-white/50 text-xs mt-1">
-                    পাসওয়ার্ডে কমপক্ষে ৮ অক্ষর, ১টি সংখ্যা ও ১টি
-                    বিশেষ অক্ষর (@#$%^&*.) ব্যবহার করুন
+                    পাসওয়ার্ডে কমপক্ষে ১টি বড় হাতের অক্ষর, কমপক্ষে ১টি সংখ্যা ও ১টি বিশেষ অক্ষর (@#$%^&*.) ব্যবহার করুন
                   </p>
                   {errors.password && (
                     <p
@@ -313,13 +337,23 @@ export default function RegisterPage() {
                   )}
 
                   {/* Password strength indicator (optional) */}
-                  {password &&
-                    password.length > 0 &&
-                    !errors.password && (
-                      <p className="text-green-400 text-xs mt-1">
-                        ✓ পাসওয়ার্ড শক্তিশালী
+                  {password && (
+                    <div className="mt-2 space-y-2">
+                      {/* Progress Bar */}
+                      <div className="w-full h-2 bg-gray-200 rounded">
+                        <div
+                          className={`h-2 rounded transition-all duration-300 ${color}`}
+                          style={{ width: `${(score / 5) * 100}%` }}
+                        />
+                      </div>
+
+                      {/* Label */}
+                      <p className="text-xs">
+                        পাসওয়ার্ড শক্তি:{" "}
+                        <span className="font-medium">{label}</span>
                       </p>
-                    )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Register Button */}

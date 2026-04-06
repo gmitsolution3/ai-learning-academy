@@ -1,5 +1,6 @@
-// lib/auth-client.ts
 import { createAuthClient } from "better-auth/react";
+import { inferAdditionalFields } from "better-auth/client/plugins";
+import { auth } from "./auth";
 
 const baseURL =
   process.env.NODE_ENV === "development"
@@ -8,4 +9,7 @@ const baseURL =
 
 export const authClient = createAuthClient({
   baseURL: `${baseURL}/api/auth`,
+  plugins: [
+    inferAdditionalFields<typeof auth>(),
+  ],
 });

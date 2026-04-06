@@ -12,6 +12,18 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { notify } from "@/utils/notify";
 import { useRouter } from "next/navigation";
+import { ROLE_ROUTE, ROLE } from "@/utils/roleRoute";
+
+type Role = "admin" | "user";
+
+type TUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  phone: string;
+  image?: string | null;
+};
 
 const loginSchema = z.object({
   email: z
@@ -44,9 +56,12 @@ export default function LoginPage() {
     const res = await authClient.signIn.email(data);
 
     if (res.data) {
+      const user = res?.data?.user;
       notify.success("Login to successful!");
 
-      router.push("/dashboard");
+      console.log(user)
+
+      router.push(ROLE_ROUTE[(user?.role as ROLE)] || "/");
     } else {
       notify.error(res?.error?.message as string);
     }
@@ -147,10 +162,6 @@ export default function LoginPage() {
                       )}
                     </button>
                   </div>
-                  <p className="text-white/50 text-xs mt-1">
-                    পাসওয়ার্ড ক্যাম্পের ৮ অক্ষর, ১টি সংখ্যা ও ১টি
-                    বিশেষ অক্ষর (@#$%^&*) ব্যাবহার করুন
-                  </p>
                   {errors.password && (
                     <p
                       className="text-red-400 text-xs mt-1"

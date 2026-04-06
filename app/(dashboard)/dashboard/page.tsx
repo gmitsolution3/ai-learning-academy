@@ -2,8 +2,6 @@
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-import React from "react";
-
 export default function UserDashboard() {
   const router = useRouter();
 
@@ -12,6 +10,7 @@ export default function UserDashboard() {
 
     router.push("/");
   };
+
 
   return (
     <div>

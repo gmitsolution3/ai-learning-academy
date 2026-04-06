@@ -17,13 +17,14 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      profilePhoto: {
+      image: {
         type: "string",
         required: false,
         defaultValue: "",
       },
       role: {
         type: "string",
+        required: true,
         defaultValue: "user",
       },
     },
