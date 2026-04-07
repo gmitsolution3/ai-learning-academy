@@ -43,10 +43,11 @@ import Link from "next/link";
 import { ICategory } from "@/types";
 import { formatDate } from "@/utils";
 import ImageCell from "./ImageCell";
-import AllCaregoryLoader from "@/components/loaders/AllCaregoryLoader";
-import AllCategoryError from "@/components/errors/AllCategoryError";
-import AllCategoryEmpty from "@/components/empties/AllCategoryEmpty";
-import AllCategoryActionCell from '@/components/ActionCells/AllCategoryActionCell';
+import AllCaregoryLoader from "@/components/InstructorDashboard/loaders/AllCaregoryLoader";
+import AllCategoryError from "@/components/InstructorDashboard/errors/AllCategoryError";
+import AllCategoryEmpty from "@/components/InstructorDashboard/empties/AllCategoryEmpty";
+import AllCategoryActionCell from "@/components/InstructorDashboard/ActionCells/AllCategoryActionCell";
+import CreateCategoryModal from "@/components/InstructorDashboard/modals/CreateCategoryModal";
 
 // Table columns definition
 const columns: ColumnDef<ICategory>[] = [
@@ -139,7 +140,9 @@ const columns: ColumnDef<ICategory>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <AllCategoryActionCell category={row.original} />,
+    cell: ({ row }) => (
+      <AllCategoryActionCell category={row.original} />
+    ),
   },
 ];
 
@@ -149,6 +152,7 @@ export default function AllCategoryPage() {
   );
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const categoryList: ICategory[] = data?.data || [];
 
@@ -184,141 +188,164 @@ export default function AllCategoryPage() {
 
   // Empty state
   if (categoryList.length === 0) {
-    return <AllCategoryEmpty refetch={refetch} />;
+    return (
+      <>
+        <AllCategoryEmpty refetch={refetch} />
+        <CreateCategoryModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          onSuccess={refetch}
+          categories={categoryList}
+        />
+      </>
+    );
   }
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle className="text-2xl">All Categories</CardTitle>
-            <div className="flex items-center gap-2">
+    <>
+      <div className="container mx-auto py-10 px-4">
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <CardTitle className="text-2xl">
+                All Categories
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => refetch()}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Search and Create Button Row */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Search categories..."
+                  value={globalFilter ?? ""}
+                  onChange={(e) => setGlobalFilter(e.target.value)}
+                  className="w-full p-5"
+                />
+              </div>
               <Button
-                onClick={() => refetch()}
-                variant="outline"
-                size="sm"
-                className="gap-2"
+                className="gap-2 p-5"
+                onClick={() => setShowCreateModal(true)}
               >
-                <RefreshCw className="h-4 w-4" />
-                Refresh
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {/* Search and Create Button Row */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search categories..."
-                value={globalFilter ?? ""}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="w-full p-5"
-              />
-            </div>
-            <Button asChild className="gap-2 p-5">
-              <Link href="/categories/create">
                 <Plus className="h-4 w-4" />
                 Create New Category
-              </Link>
-            </Button>
-          </div>
-
-          {/* Table */}
-          <div className="rounded-md border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
-            <div className="text-sm text-muted-foreground">
-              Showing{" "}
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}{" "}
-              to{" "}
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) *
-                  table.getState().pagination.pageSize,
-                table.getFilteredRowModel().rows.length,
-              )}{" "}
-              of {table.getFilteredRowModel().rows.length} categories
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm whitespace-nowrap">
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  table.setPageIndex(table.getPageCount() - 1)
-                }
-                disabled={!table.getCanNextPage()}
-              >
-                <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+
+            {/* Table */}
+            <div className="rounded-md border overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+              <div className="text-sm text-muted-foreground">
+                Showing{" "}
+                {table.getState().pagination.pageIndex *
+                  table.getState().pagination.pageSize +
+                  1}{" "}
+                to{" "}
+                {Math.min(
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
+                  table.getFilteredRowModel().rows.length,
+                )}{" "}
+                of {table.getFilteredRowModel().rows.length}{" "}
+                categories
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm whitespace-nowrap">
+                  Page {table.getState().pagination.pageIndex + 1} of{" "}
+                  {table.getPageCount()}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    table.setPageIndex(table.getPageCount() - 1)
+                  }
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <CreateCategoryModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        onSuccess={refetch}
+        categories={categoryList}
+      />
+    </>
   );
 }
