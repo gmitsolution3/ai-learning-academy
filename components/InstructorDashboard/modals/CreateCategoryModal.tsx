@@ -29,10 +29,11 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, X, Image as ImageIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { ICategory } from "@/types";
 import { generateSlug } from "@/utils";
 import { usePost } from "@/hooks/swr/usePost";
+import { ImageUploader } from "@/components/ImageUploader"; 
 
 // Form validation schema
 const categorySchema = z.object({
@@ -76,7 +77,6 @@ export default function CreateCategoryModal({
   categories = [],
 }: CreateCategoryModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string>("");
 
   const { mutate } = usePost("/categories/create-categories", {
     revalidateKey: "/categories/get-categories",
@@ -99,7 +99,6 @@ export default function CreateCategoryModal({
   useEffect(() => {
     if (!open) {
       form.reset();
-      setImagePreview("");
     }
   }, [open, form]);
 
@@ -110,7 +109,6 @@ export default function CreateCategoryModal({
 
       if (res?.success) {
         form.reset();
-        setImagePreview("");
         onOpenChange(false);
 
         if (onSuccess) {
@@ -125,8 +123,7 @@ export default function CreateCategoryModal({
     }
   };
 
-  const handleImageUrlChange = (url: string) => {
-    setImagePreview(url);
+  const handleImageChange = (url: string) => {
     form.setValue("image", url, { shouldValidate: true });
   };
 
@@ -241,59 +238,17 @@ export default function CreateCategoryModal({
               </FieldError>
             </Field>
 
-            {/* Image URL - Optional */}
+            {/* Image Uploader */}
             <Field>
-              <FieldLabel>Image URL</FieldLabel>
+              <FieldLabel>Category Image</FieldLabel>
               <FieldContent>
-                <div className="space-y-3 w-full">
-                  <Input
-                    placeholder="https://example.com/image.jpg (optional)"
-                    {...form.register("image")}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      form.setValue("image", value, {
-                        shouldValidate: true,
-                      });
-                      handleImageUrlChange(value);
-                    }}
-                    className="p-5"
-                  />
-                  {imagePreview ? (
-                    <div className="relative inline-block">
-                      <div className="relative w-24 h-24 rounded-lg overflow-hidden border">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={imagePreview}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                          onError={() => setImagePreview("")}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2 h-6 w-6"
-                        onClick={() => {
-                          setImagePreview("");
-                          form.setValue("image", "", {
-                            shouldValidate: true,
-                          });
-                        }}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <ImageIcon className="h-4 w-4" />
-                      <span>No image selected</span>
-                    </div>
-                  )}
-                </div>
+                <ImageUploader
+                  value={form.getValues("image")}
+                  onChange={handleImageChange}
+                />
               </FieldContent>
               <FieldDescription>
-                Provide a valid image URL for the category (optional).
+                Upload an image for the category (optional).
               </FieldDescription>
               <FieldError>
                 {form.formState.errors.image?.message}
@@ -332,7 +287,6 @@ export default function CreateCategoryModal({
               variant="outline"
               onClick={() => {
                 form.reset();
-                setImagePreview("");
                 onOpenChange(false);
               }}
               className="p-5"
