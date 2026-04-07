@@ -39,7 +39,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
 import { ICategory } from "@/types";
 import { formatDate } from "@/utils";
 import ImageCell from "./ImageCell";

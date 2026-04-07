@@ -33,7 +33,7 @@ import { Loader2 } from "lucide-react";
 import { ICategory } from "@/types";
 import { generateSlug } from "@/utils";
 import { usePost } from "@/hooks/swr/usePost";
-import { ImageUploader } from "@/components/ImageUploader"; 
+import { ImageUploader } from "@/components/ImageUploader";
 
 // Form validation schema
 const categorySchema = z.object({
@@ -77,6 +77,7 @@ export default function CreateCategoryModal({
   categories = [],
 }: CreateCategoryModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePublicId, setImagePublicId] = useState("");
 
   const { mutate } = usePost("/categories/create-categories", {
     revalidateKey: "/categories/get-categories",
@@ -105,7 +106,12 @@ export default function CreateCategoryModal({
   const onSubmit = async (values: CategoryFormValues) => {
     setIsSubmitting(true);
     try {
-      const res = await mutate(values);
+      const payload = {
+        ...values,
+        imagePublicId,
+      };
+
+      const res = await mutate(payload);
 
       if (res?.success) {
         form.reset();
@@ -123,8 +129,10 @@ export default function CreateCategoryModal({
     }
   };
 
-  const handleImageChange = (url: string) => {
+  const handleImageChange = (url: string, public_id: string) => {
     form.setValue("image", url, { shouldValidate: true });
+
+    setImagePublicId(public_id);
   };
 
   const handleParentChange = (value: string) => {

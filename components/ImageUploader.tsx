@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Loader2, UploadCloud, X } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { deleteImage } from "@/utils";
 
 interface ImageUploaderProps {
   value?: string;
-  onChange: (url: string) => void;
+  onChange: (url: string, public_id: string) => void;
 }
 
 export const ImageUploader = ({
@@ -20,6 +21,8 @@ export const ImageUploader = ({
   );
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const [imagePublicId, setImagePublicId] = useState("");
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -50,8 +53,12 @@ export const ImageUploader = ({
 
       xhr.onload = () => {
         const data = JSON.parse(xhr.responseText);
+
         const url = data.url;
-        onChange(url);
+        const public_id = data.public_id;
+
+        onChange(url, public_id);
+        setImagePublicId(public_id);
         setPreview(url);
         setUploading(false);
       };
@@ -60,7 +67,7 @@ export const ImageUploader = ({
         console.error("Upload failed");
         setUploading(false);
       };
-      
+
       xhr.send(formData);
     } catch (err) {
       console.error(err);
@@ -70,7 +77,10 @@ export const ImageUploader = ({
 
   const removeImage = () => {
     setPreview(null);
-    onChange("");
+
+    deleteImage(imagePublicId);
+    setImagePublicId("");
+    onChange("", "");
   };
 
   return (

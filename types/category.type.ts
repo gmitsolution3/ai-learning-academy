@@ -5,6 +5,7 @@ export interface ICategory {
   name: string;
   slug: string;
   image: string;
+  imagePublicId: string;
   description: string;
   parent_id: string | null;
 }
