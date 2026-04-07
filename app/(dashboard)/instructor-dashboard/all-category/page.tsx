@@ -48,7 +48,7 @@ import AllCategoryEmpty from "@/components/InstructorDashboard/empties/AllCatego
 import AllCategoryActionCell from "@/components/InstructorDashboard/actionCells/AllCategoryActionCell";
 import CreateCategoryModal from "@/components/InstructorDashboard/modals/CreateCategoryModal";
 
-export default function AllCategoryPage() {
+export default function AllCategoryPage() { 
   const { data, isLoading, isError, refetch } = useFetch(
     "/categories/get-categories",
   );
