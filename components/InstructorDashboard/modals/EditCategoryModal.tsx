@@ -32,8 +32,9 @@ import * as z from "zod";
 import { Loader2 } from "lucide-react";
 import { ICategoryListType } from "@/types";
 import { generateSlug } from "@/utils";
-import { usePost } from "@/hooks/swr/usePost";
+import { usePatch } from "@/hooks/swr/usePatch";
 import { ImageUploader } from "@/components/ImageUploader";
+import { notify } from "@/utils/notify";
 
 // Form validation schema
 const categorySchema = z.object({
@@ -53,7 +54,12 @@ const categorySchema = z.object({
     .string()
     .min(1, "Description is required")
     .max(500, "Description must be less than 500 characters"),
-  parent_id: z.string().nullable(),
+  parent_id: z
+    .object({
+      _id: z.string(),
+    })
+    .nullable()
+    .optional(),
   image: z
     .string()
     .url("Must be a valid URL")
@@ -63,25 +69,30 @@ const categorySchema = z.object({
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
 
-interface CreateCategoryModalProps {
+interface EditCategoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  category: ICategoryListType | null;
   categories?: ICategoryListType[];
 }
 
-export default function CreateCategoryModal({
+export default function EditCategoryModal({
   open,
   onOpenChange,
   onSuccess,
+  category,
   categories = [],
-}: CreateCategoryModalProps) {
+}: EditCategoryModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePublicId, setImagePublicId] = useState("");
 
-  const { mutate } = usePost("/categories/create-categories", {
-    revalidateKey: "/categories/get-categories",
-  });
+  const { mutate: updateCategory } = usePatch(
+    `/categories/updated-category`,
+    {
+      revalidateKey: "/categories/get-categories",
+    },
+  );
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -94,37 +105,55 @@ export default function CreateCategoryModal({
     },
   });
 
-  const parentId = form.watch("parent_id");
-
-  // Reset form when modal opens/closes
+  // Populate form when category data is available
   useEffect(() => {
-    if (!open) {
-      form.reset();
-      setImagePublicId("");
+    if (category && open) {
+      form.reset({
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        parent_id: category.parent_id || null,
+        image: category.image || "",
+      });
+
+      setImagePublicId(category.imagePublicId || "");
     }
-  }, [open, form]);
+  }, [category, open, form]);
 
   const onSubmit = async (values: CategoryFormValues) => {
+    if (!category) return;
+
     setIsSubmitting(true);
     try {
+      // Prepare payload - send parent_id as string if exists
       const payload = {
-        ...values,
-        imagePublicId,
+        name: values.name,
+        slug: values.slug,
+        description: values.description,
+        parent_id: values.parent_id?._id || null,
+        image: values.image,
+        imagePublicId: imagePublicId || undefined,
       };
 
-      const res = await mutate(payload);
+      const res = await updateCategory({
+        id: category._id,
+        data: payload,
+      });
 
       if (res?.success) {
+        notify.success("Category updated successfully");
         form.reset();
         onOpenChange(false);
 
         if (onSuccess) {
           onSuccess();
         }
+      } else {
+        notify.error(res?.message || "Failed to update category");
       }
     } catch (error) {
-      console.error("Error creating category:", error);
-      // Handle error (show toast notification, etc.)
+      console.error("Error updating category:", error);
+      notify.error("An error occurred while updating the category");
     } finally {
       setIsSubmitting(false);
     }
@@ -132,26 +161,49 @@ export default function CreateCategoryModal({
 
   const handleImageChange = (url: string, public_id: string) => {
     form.setValue("image", url, { shouldValidate: true });
-
     setImagePublicId(public_id);
   };
 
   const handleParentChange = (value: string) => {
-    form.setValue("parent_id", value === "none" ? null : value, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
+    if (value === "none") {
+      form.setValue("parent_id", null, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    } else {
+      // Find the selected category object
+      const selectedCategory = categories.find(
+        (cat) => cat._id === value,
+      );
+      if (selectedCategory) {
+        form.setValue("parent_id", selectedCategory, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    }
   };
+
+  // Helper function to get the current parent ID as string for Select value
+  const getCurrentParentId = () => {
+    const parent = form.getValues("parent_id");
+    return parent?._id || "none";
+  };
+
+  // Filter out current category from parent options to prevent self-parenting
+  const availableParentCategories = categories.filter(
+    (cat) => cat._id !== category?._id,
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full !max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            Create New Category
+            Edit Category
           </DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new category.
+            Update the details of "{category?.name}" category.
           </DialogDescription>
         </DialogHeader>
 
@@ -218,7 +270,7 @@ export default function CreateCategoryModal({
               <FieldLabel>Parent Category</FieldLabel>
               <FieldContent>
                 <Select
-                  value={parentId === null ? "none" : parentId}
+                  value={getCurrentParentId()}
                   onValueChange={handleParentChange}
                 >
                   <SelectTrigger className="w-full p-5">
@@ -228,12 +280,9 @@ export default function CreateCategoryModal({
                     <SelectItem value="none">
                       None (Top Level Category)
                     </SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem
-                        key={category._id}
-                        value={category._id}
-                      >
-                        {category.name}
+                    {availableParentCategories.map((cat) => (
+                      <SelectItem key={cat._id} value={cat._id}>
+                        {cat.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -253,6 +302,7 @@ export default function CreateCategoryModal({
               <FieldContent>
                 <ImageUploader
                   value={form.getValues("image")}
+                  imagePublicId={imagePublicId}
                   onChange={handleImageChange}
                 />
               </FieldContent>
@@ -310,7 +360,7 @@ export default function CreateCategoryModal({
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Create Category
+              Update Category
             </Button>
           </div>
         </form>

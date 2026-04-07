@@ -39,7 +39,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ICategory } from "@/types";
+import { ICategoryListType } from "@/types";
 import { formatDate } from "@/utils";
 import ImageCell from "./ImageCell";
 import AllCaregoryLoader from "@/components/InstructorDashboard/loaders/AllCaregoryLoader";
@@ -47,103 +47,6 @@ import AllCategoryError from "@/components/InstructorDashboard/errors/AllCategor
 import AllCategoryEmpty from "@/components/InstructorDashboard/empties/AllCategoryEmpty";
 import AllCategoryActionCell from "@/components/InstructorDashboard/ActionCells/AllCategoryActionCell";
 import CreateCategoryModal from "@/components/InstructorDashboard/modals/CreateCategoryModal";
-
-// Table columns definition
-const columns: ColumnDef<ICategory>[] = [
-  {
-    id: "image",
-    header: "Image",
-    cell: ({ row }) => (
-      <ImageCell
-        imageUrl={row.original.image}
-        name={row.original.name}
-      />
-    ),
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-          className="p-0 hover:bg-transparent"
-        >
-          Name
-          {column.getIsSorted() === "asc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          )}
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "slug",
-    header: "Slug",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original.slug}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="max-w-md truncate">
-        {row.original.description || "—"}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "parent_id",
-    header: "Parent Category",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original.parent_id === "null" || !row.original.parent_id
-          ? "None"
-          : row.original.parent_id}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "created_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-          className="p-0 hover:bg-transparent"
-        >
-          Created At
-          {column.getIsSorted() === "asc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          )}
-        </Button>
-      );
-    },
-    cell: ({ row }) => formatDate(row.original.created_at),
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <AllCategoryActionCell category={row.original} />
-    ),
-  },
-];
 
 export default function AllCategoryPage() {
   const { data, isLoading, isError, refetch } = useFetch(
@@ -153,7 +56,109 @@ export default function AllCategoryPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const categoryList: ICategory[] = data?.data || [];
+  console.log(isError)
+
+  const categoryList: ICategoryListType[] = data?.data || [];
+
+  const columns: ColumnDef<ICategoryListType>[] = [
+    {
+      id: "image",
+      header: "Image",
+      cell: ({ row }) => (
+        <ImageCell
+          imageUrl={row.original.image}
+          name={row.original.name}
+        />
+      ),
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc")
+            }
+            className="p-0 hover:bg-transparent"
+          >
+            Name
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "slug",
+      header: "Slug",
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">
+          {row.original.slug}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: ({ row }) => (
+        <div className="max-w-md truncate">
+          {row.original.description || "—"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "parent_id",
+      header: "Parent Category",
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">
+          {row.original.parent_id === null ||
+          !row.original.parent_id
+            ? "None"
+            : row.original.parent_id.name}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "created_at",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc")
+            }
+            className="p-0 hover:bg-transparent"
+          >
+            Created At
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => formatDate(row.original.created_at),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <AllCategoryActionCell
+          category={row.original}
+          categories={categoryList}
+        />
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data: categoryList,
@@ -183,13 +188,13 @@ export default function AllCategoryPage() {
   // Error state
   if (isError) {
     return <AllCategoryError refetch={refetch} />;
-  }
+  } 
 
   // Empty state
   if (categoryList.length === 0) {
     return (
       <>
-        <AllCategoryEmpty refetch={refetch} />
+        <AllCategoryEmpty refetch={refetch} onOpenChange={setShowCreateModal} />
         <CreateCategoryModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}

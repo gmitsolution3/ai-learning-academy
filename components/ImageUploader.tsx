@@ -9,11 +9,13 @@ import { deleteImage } from "@/utils";
 
 interface ImageUploaderProps {
   value?: string;
+  imagePublicId?: string;
   onChange: (url: string, public_id: string) => void;
 }
 
 export const ImageUploader = ({
   value,
+  imagePublicId: imagePublicInitialId,
   onChange,
 }: ImageUploaderProps) => {
   const [preview, setPreview] = useState<string | null>(
@@ -22,7 +24,9 @@ export const ImageUploader = ({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const [imagePublicId, setImagePublicId] = useState("");
+  const [imagePublicId, setImagePublicId] = useState(
+    imagePublicInitialId || "",
+  );
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -77,6 +81,8 @@ export const ImageUploader = ({
 
   const removeImage = () => {
     setPreview(null);
+
+    console.log(imagePublicId);
 
     deleteImage(imagePublicId);
     setImagePublicId("");

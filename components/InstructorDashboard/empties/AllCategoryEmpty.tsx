@@ -1,12 +1,14 @@
+import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Package, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import Link from 'next/link';
 
 export default function AllCategoryEmpty({
   refetch,
+  onOpenChange,
 }: {
   refetch: () => void;
+  onOpenChange: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div className="container mx-auto py-10 px-4">
@@ -24,11 +26,9 @@ export default function AllCategoryEmpty({
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
-            <Button asChild>
-              <Link href="/categories/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Create New Category
-              </Link>
+            <Button onClick={() => onOpenChange(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create New Category
             </Button>
           </div>
         </CardContent>

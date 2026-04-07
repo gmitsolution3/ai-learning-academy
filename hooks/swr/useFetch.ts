@@ -15,15 +15,15 @@ export const useFetch = <T = any>(
 
   const key = url ? (params ? [url, params] : url) : null;
 
-  const { data, error, isLoading, mutate } = useSWR<T>(
+  const { data, error, isLoading, mutate, isValidating } = useSWR<T>(
     key,
     fetcher,
-    swrOptions,
+    { ...swrOptions, revalidateOnFocus: false },
   );
 
   return {
     data,
-    isLoading,
+    isLoading: isLoading || isValidating,
     isError: error,
     refetch: mutate,
   };

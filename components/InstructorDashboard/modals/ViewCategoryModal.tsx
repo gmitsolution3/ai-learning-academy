@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ICategory } from "@/types";
+import { ICategoryListType } from "@/types";
 import { formatDate } from "@/utils";
 import {
   Calendar,
@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 
 interface IProps {
-  category: ICategory | null;
+  category: ICategoryListType | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -83,9 +83,9 @@ export default function ViewCategoryModal({
                 <span>Parent Category</span>
               </div>
               <p>
-                {category.parent_id === "null" || !category.parent_id
+                {category.parent_id === null || !category.parent_id
                   ? "None"
-                  : category.parent_id}
+                  : category.parent_id.name}
               </p>
             </div>
 

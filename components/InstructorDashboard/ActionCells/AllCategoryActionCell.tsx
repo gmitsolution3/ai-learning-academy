@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ICategory } from "@/types/category.type";
+import { ICategoryListType } from "@/types/category.type";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,15 +9,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Eye, Edit, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import ViewCategoryModal from "../modals/ViewCategoryModal";
+import ViewCategoryModal from "@/components/InstructorDashboard/modals/ViewCategoryModal";
+import EditCategoryModal from "@/components/InstructorDashboard/modals/EditCategoryModal";
 
 export default function AllCategoryActionCell({
   category,
+  categories,
 }: {
-  category: ICategory;
+  category: ICategoryListType;
+  categories?: ICategoryListType[];
 }) {
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   return (
     <>
@@ -34,14 +37,9 @@ export default function AllCategoryActionCell({
             <Eye className="mr-2 h-4 w-4" />
             View Details
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link
-              href={`/categories/edit/${category._id}`}
-              className="cursor-pointer"
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </Link>
+          <DropdownMenuItem onClick={() => setShowEditModal(true)}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -50,6 +48,16 @@ export default function AllCategoryActionCell({
         category={category}
         open={showViewModal}
         onOpenChange={setShowViewModal}
+      />
+
+      <EditCategoryModal
+        category={category}
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        onSuccess={() => {
+          setShowEditModal(false);
+        }}
+        categories={categories}
       />
     </>
   );

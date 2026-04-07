@@ -9,3 +9,10 @@ export interface ICategory {
   description: string;
   parent_id: string | null;
 }
+
+export interface ICategoryListType extends Omit<
+  ICategory,
+  "parent_id"
+> {
+  parent_id: ICategory | null;
+}

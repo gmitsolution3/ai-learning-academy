@@ -5,7 +5,16 @@ const baseUrl =
     ? process.env.NEXT_PUBLIC_DEV_API_BASE_URL
     : process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
 });
+
+axiosInstance.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    return Promise.reject(error.response.data);
+  },
+);
+
+export { axiosInstance };
