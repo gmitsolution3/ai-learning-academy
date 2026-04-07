@@ -7,10 +7,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, MoreHorizontal } from "lucide-react";
+import { Eye, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ViewCategoryModal from "@/components/AdminDashboard/modals/ViewCategoryModal";
 import EditCategoryModal from "@/components/AdminDashboard/modals/EditCategoryModal";
+import DeleteCategoryModal from "@/components/AdminDashboard/modals/DeleteCategoryModal";
 
 export default function AllCategoryActionCell({
   category,
@@ -21,6 +22,7 @@ export default function AllCategoryActionCell({
 }) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   return (
     <>
@@ -41,8 +43,22 @@ export default function AllCategoryActionCell({
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red-600 focus:text-red-600"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <DeleteCategoryModal
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        category={category}
+        categories={categories as ICategoryListType[]}
+      />
 
       <ViewCategoryModal
         category={category}
