@@ -41,12 +41,12 @@ import {
 } from "@/components/ui/card";
 import { ICategoryListType } from "@/types";
 import { formatDate } from "@/utils";
-import ImageCell from "@/components/InstructorDashboard/ImageCell";
-import AllCategoryLoader from "@/components/InstructorDashboard/loaders/AllCategoryLoader";
-import AllCategoryError from "@/components/InstructorDashboard/errors/AllCategoryError";
-import AllCategoryEmpty from "@/components/InstructorDashboard/empties/AllCategoryEmpty";
-import AllCategoryActionCell from "@/components/InstructorDashboard/actionCells/AllCategoryActionCell";
-import CreateCategoryModal from "@/components/InstructorDashboard/modals/CreateCategoryModal";
+import ImageCell from "@/components/AdminDashboard/ImageCell";
+import AllCategoryLoader from "@/components/AdminDashboard/loaders/AllCategoryLoader";
+import AllCategoryError from "@/components/AdminDashboard/errors/AllCategoryError";
+import AllCategoryEmpty from "@/components/AdminDashboard/empties/AllCategoryEmpty";
+import AllCategoryActionCell from "@/components/AdminDashboard/actionCells/AllCategoryActionCell";
+import CreateCategoryModal from "@/components/AdminDashboard/modals/CreateCategoryModal";
 
 export default function AllCategoryPage() {
   const { data, isLoading, isError, refetch } = useFetch(
@@ -115,8 +115,7 @@ export default function AllCategoryPage() {
       header: "Parent Category",
       cell: ({ row }) => (
         <span className="text-muted-foreground">
-          {row.original.parent_id === null ||
-          !row.original.parent_id
+          {row.original.parent_id === null || !row.original.parent_id
             ? "None"
             : row.original.parent_id.name}
         </span>
@@ -186,13 +185,16 @@ export default function AllCategoryPage() {
   // Error state
   if (isError) {
     return <AllCategoryError refetch={refetch} />;
-  } 
+  }
 
   // Empty state
   if (categoryList.length === 0) {
     return (
       <>
-        <AllCategoryEmpty refetch={refetch} onOpenChange={setShowCreateModal} />
+        <AllCategoryEmpty
+          refetch={refetch}
+          onOpenChange={setShowCreateModal}
+        />
         <CreateCategoryModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}

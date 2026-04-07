@@ -54,8 +54,8 @@ const courseManagement = [
     icon: LayoutDashboard,
   },
   {
-    title: "Create Course",
-    url: defineUrl("/course/create"),
+    title: "All Category",
+    url: defineUrl("/all-category"),
     icon: Calendar,
   },
   {
@@ -144,7 +144,7 @@ export function DashboardSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
                       href={item.url}
-                      exact={item.url === "/admin"}
+                      exact={item.url === "/admin-dashboard"}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
