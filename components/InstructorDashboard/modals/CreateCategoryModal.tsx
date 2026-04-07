@@ -34,6 +34,7 @@ import { ICategoryListType } from "@/types";
 import { generateSlug } from "@/utils";
 import { usePost } from "@/hooks/swr/usePost";
 import { ImageUploader } from "@/components/ImageUploader";
+import { notify } from "@/utils/notify";
 
 // Form validation schema
 const categorySchema = z.object({
@@ -115,6 +116,8 @@ export default function CreateCategoryModal({
       const res = await mutate(payload);
 
       if (res?.success) {
+        notify.success(res.message);
+
         form.reset();
         onOpenChange(false);
 
@@ -122,7 +125,8 @@ export default function CreateCategoryModal({
           onSuccess();
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      notify.error(error.message);
       console.error("Error creating category:", error);
       // Handle error (show toast notification, etc.)
     } finally {
