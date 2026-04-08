@@ -1,7 +1,7 @@
 // app/user-dashboard/page.tsx
 "use client";
 import { useState } from "react";
-import CourseCard from "@/components/UserDashboard/CourseCard";
+import CourseCard from "@/components/StudentDashboard/CourseCard";
 import {
   BookOpen,
 } from "lucide-react";

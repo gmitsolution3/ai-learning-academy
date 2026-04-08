@@ -120,7 +120,7 @@ export default function CourseCard({
             <Button
               size="default"
               onClick={onContinue}
-              className="flex-1 bg-gradient-to-r from-secondary to-primary hover:opacity-90 text-white rounded-full shadow-lg shadow-secondary/25 transition-all duration-300 group/btn p-5 border-0"
+              className="flex-1 bg-gradient-to-r from-secondary to-primary hover:opacity-90 text-white rounded-full shadow-lg hover:shadow-secondary/25 transition-all duration-300 group/btn p-5 border-0"
             >
               <Play className="mr-2 h-4 w-4 group-hover/btn:animate-pulse" />
               Continue Course
