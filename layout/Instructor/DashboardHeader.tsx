@@ -19,14 +19,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import useLogout from "@/hooks/useLogout";
+import { useSession } from "@/lib/auth-context";
+import { getAvatarInitial } from "@/utils";
 
 export function DashboardHeader() {
   const [isDark, setIsDark] = useState(false);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
-  };
+  const { session } = useSession();
+
+  const user = session?.user;
+
+  const { handleLogout } = useLogout();
 
   return (
     <header className="sticky top-0 z-50 flex h-19.5 items-center justify-between border-b border-border bg-card px-4 lg:px-6">
@@ -82,14 +86,11 @@ export function DashboardHeader() {
               className="relative flex items-center gap-2 px-2"
             >
               <Avatar className="h-8 w-8">
-                <AvatarImage src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face" />
+                <AvatarImage src={user?.image} />
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                  DR
+                  {getAvatarInitial(session)}
                 </AvatarFallback>
               </Avatar>
-              <span className="hidden text-sm font-medium lg:block">
-                Dr. Wilson
-              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -99,7 +100,10 @@ export function DashboardHeader() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Help & Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-destructive"
+            >
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
