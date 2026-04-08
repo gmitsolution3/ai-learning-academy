@@ -2,11 +2,10 @@
 "use client";
 import { useState } from "react";
 import CourseCard from "@/components/StudentDashboard/CourseCard";
-import {
-  BookOpen,
-} from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
 
 // Mock course data type
 interface Course {
@@ -97,6 +96,8 @@ export default function UserDashboard() {
   const [courses, setCourses] = useState<Course[]>(mockCourses);
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
+  const router = useRouter();
+
   // Filter courses based on search and filters
   const filteredCourses = courses.filter((course) => {
     // Status filter
@@ -114,8 +115,8 @@ export default function UserDashboard() {
 
   // Handle continue course action
   const handleContinueCourse = (courseId: number) => {
-    console.log(`Continue course: ${courseId}`);
-    // Navigate to course player or lesson
+    console.log("hello")
+    router.push("/dashboard/course/react");
   };
 
   // Handle view outline action
