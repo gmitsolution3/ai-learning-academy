@@ -34,7 +34,9 @@ import Image from "next/image";
 
 const baseDashboardUrl = "/admin-dashboard";
 function defineUrl(url: string) {
-  return url === "/" ? baseDashboardUrl : baseDashboardUrl.concat(url);
+  return url === "/"
+    ? baseDashboardUrl
+    : baseDashboardUrl.concat(url);
 }
 
 const mainMenuItems = [
@@ -70,6 +72,11 @@ const courseManagement = [
 
 const userManagement = [
   {
+    title: "User Management",
+    url: defineUrl("/user-management"),
+    icon: LayoutDashboard,
+  },
+  {
     title: "Students",
     url: defineUrl("/all-courses"),
     icon: LayoutDashboard,
@@ -81,11 +88,6 @@ const userManagement = [
   },
   {
     title: "Admin",
-    url: defineUrl("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Role Management",
     url: defineUrl("/all-courses"),
     icon: LayoutDashboard,
   },

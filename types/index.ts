@@ -4,3 +4,4 @@ export * from "./testimonial.type";
 export * from "./team-member.type";
 
 export * from "./category.type";
+export * from "./user.type";
