@@ -61,6 +61,7 @@ export default function DeleteUserModal({
   // Check if user is admin for special warning.
   const isAdmin = user?.role === "admin";
 
+  // Check is user is super admin
   const isUserSuperAdmin = user?.isSuperAdmin;
 
   // Check if user is currently logged in.
