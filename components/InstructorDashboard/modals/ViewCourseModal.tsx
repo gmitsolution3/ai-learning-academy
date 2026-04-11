@@ -185,26 +185,41 @@ export default function ViewCourseModal({
           )}
 
           {/* Preview Video Section */}
-          {course.preview_video && (
-            <Field>
-              <FieldLabel>Preview Video</FieldLabel>
-              <FieldContent>
-                <div className="aspect-video rounded-lg overflow-hidden border bg-muted">
-                  <video
-                    src={course.preview_video}
-                    controls
-                    className="w-full h-full"
-                    poster={course.thumbnail}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </FieldContent>
-              <FieldDescription>
-                Course preview/trailer video
-              </FieldDescription>
-            </Field>
-          )}
+          {course.preview_video &&
+            (() => {
+              const getYouTubeEmbedUrl = (url: string) => {
+                const match = url.match(
+                  /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/,
+                );
+                const videoId =
+                  match && match[2].length === 11 ? match[2] : null;
+                return videoId
+                  ? `https://www.youtube.com/embed/${videoId}`
+                  : null;
+              };
+              const embedUrl = getYouTubeEmbedUrl(
+                course.preview_video,
+              );
+              return embedUrl ? (
+                <Field>
+                  <FieldLabel>Preview Video</FieldLabel>
+                  <FieldContent>
+                    <div className="aspect-video rounded-lg overflow-hidden border bg-muted">
+                      <iframe
+                        src={embedUrl}
+                        title="Course preview video"
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  </FieldContent>
+                  <FieldDescription>
+                    Course preview/trailer video
+                  </FieldDescription>
+                </Field>
+              ) : null;
+            })()}
 
           <FieldGroup>
             {/* Course Title */}
@@ -445,7 +460,6 @@ export default function ViewCourseModal({
   );
 }
 
-// Missing Archive icon import - add to lucide-react imports
 const Archive = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

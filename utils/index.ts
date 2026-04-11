@@ -65,8 +65,8 @@ export const formatDuration = (minutes: number) => {
 };
 
 export const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("bn-BD", {
     style: "currency",
-    currency: "USD",
+    currency: "BDT",
   }).format(price);
 };

@@ -14,11 +14,17 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 
 import ViewCourseModal from "../modals/ViewCourseModal";
+import DeleteCourseModal from "../modals/DeleteCourseModal";
+import EditCourseModal from './../modals/EditCourseModal';
 
 export default function CourseManagementActionCell({
   course,
+  categories,
+  instructors,
 }: {
   course: ICourse;
+  categories?: any[];
+  instructors?: any[];
 }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -59,6 +65,23 @@ export default function CourseManagementActionCell({
         course={course}
         open={showViewModal}
         onOpenChange={setShowViewModal}
+      />
+
+      <EditCourseModal
+        course={course}
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        onSuccess={() => {
+          setShowEditModal(false);
+        }}
+        categories={categories}
+        instructors={instructors}
+      />
+
+      <DeleteCourseModal
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        course={course}
       />
     </>
   );
