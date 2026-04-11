@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, RefreshCw } from "lucide-react";
 import CourseCard from "@/components/Home/Course/CourseCard";
 import { ICourse } from "@/types";
+import { useFetch } from "@/hooks/swr/useFetch";
+import { ICategoryListType } from "@/types/category.type";
 
 export default function CourseTabs({
   courses,
@@ -14,18 +16,43 @@ export default function CourseTabs({
 }) {
   const [activeTab, setActiveTab] = useState("All");
 
-  const categories = useMemo(
-    () => [
-      "All",
-      ...Array.from(new Set(courses.map((c) => c.category))),
-    ],
-    [courses],
-  );
+  const {
+    data: categoriesData,
+    isLoading: isCategoriesLoading,
+    isError: isCategoryError,
+    refetch: categoryRefetch,
+  } = useFetch("/categories/get-categories");
+
+  const categories = categoriesData?.data;
 
   const filteredCourses = useMemo(() => {
     if (activeTab === "All") return courses;
     return courses.filter((c) => c.category === activeTab);
   }, [activeTab, courses]);
+
+  if (isCategoriesLoading) {
+    return (
+      <div className="text-center py-8">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+        <p className="text-gray-400 mt-2">Loading categories...</p>
+      </div>
+    );
+  }
+
+  if (isCategoryError) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-400 mb-3">Failed to load categories</p>
+        <button
+          onClick={() => categoryRefetch()}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all"
+        >
+          <RefreshCw className="size-4" />
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -34,22 +61,38 @@ export default function CourseTabs({
         role="tablist"
         className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-10 sm:mt-12 md:mt-16"
       >
-        {categories.map((category) => {
-          const isActive = activeTab === category;
+        {/* Add "All" category button */}
+        <button
+          key="all"
+          role="tab"
+          aria-selected={activeTab === "All"}
+          onClick={() => setActiveTab("All")}
+          className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
+            activeTab === "All"
+              ? "bg-gradient-to-r from-secondary to-primary text-white"
+              : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
+          }`}
+        >
+          All
+        </button>
+
+        {/* Map through categories */}
+        {categories?.map((category: ICategoryListType) => {
+          const isActive = activeTab === category.name;
 
           return (
             <button
-              key={category}
+              key={category._id}
               role="tab"
               aria-selected={isActive}
-              onClick={() => setActiveTab(category)}
+              onClick={() => setActiveTab(category.name)}
               className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
                 isActive
                   ? "bg-gradient-to-r from-secondary to-primary text-white"
                   : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
               }`}
             >
-              {category}
+              {category.name}
             </button>
           );
         })}
