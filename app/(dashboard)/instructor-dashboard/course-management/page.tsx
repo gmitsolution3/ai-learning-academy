@@ -167,6 +167,11 @@ const columns: ColumnDef<ICourse>[] = [
     ),
   },
   {
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => <div>{row.original.category.name}</div>,
+  },
+  {
     accessorKey: "course_level",
     header: "Level",
     cell: ({ row }) => (

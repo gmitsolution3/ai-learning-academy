@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 
+import ViewCourseModal from "../modals/ViewCourseModal";
+
 export default function CourseManagementActionCell({
   course,
 }: {
@@ -53,6 +55,11 @@ export default function CourseManagementActionCell({
       </DropdownMenu>
 
       {/* Modals would go here - you can create similar modal components for courses */}
+      <ViewCourseModal
+        course={course}
+        open={showViewModal}
+        onOpenChange={setShowViewModal}
+      />
     </>
   );
 }
