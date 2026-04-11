@@ -10,9 +10,9 @@ import {
 import { Eye, Edit, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ViewCategoryModal from "@/components/InstructorDashboard/modals/ViewCategoryModal";
-import EditCategoryModal from "@/components/InstructorDashboard/modals/EditCategoryModal"; 
+import EditCategoryModal from "@/components/InstructorDashboard/modals/EditCategoryModal";
 
-export default function AllCategoryActionCell({
+export default function CategoryManagementActionCell({
   category,
   categories,
 }: {

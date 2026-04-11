@@ -42,13 +42,13 @@ import {
 import { ICategoryListType } from "@/types";
 import { formatDate } from "@/utils";
 import ImageCell from "@/components/InstructorDashboard/ImageCell";
-import AllCategoryLoader from "@/components/InstructorDashboard/loaders/AllCategoryLoader";
-import AllCategoryError from "@/components/InstructorDashboard/errors/AllCategoryError";
-import AllCategoryEmpty from "@/components/InstructorDashboard/empties/AllCategoryEmpty";
-import AllCategoryActionCell from "@/components/InstructorDashboard/actionCells/AllCategoryActionCell";
+import CategoryManagementLoader from "@/components/InstructorDashboard/loaders/CategoryManagementLoader";
+import CategoryManagementError from "@/components/InstructorDashboard/errors/CategoryManagementError";
+import CategoryManagementEmpty from "@/components/InstructorDashboard/empties/CategoryManagementEmpty";
+import CategoryManagementActionCell from "@/components/InstructorDashboard/actionCells/CategoryManagementActionCell";
 import CreateCategoryModal from "@/components/InstructorDashboard/modals/CreateCategoryModal";
 
-export default function AllCategoryPage() { 
+export default function CategoryManagementPage() { 
   const { data, isLoading, isError, refetch } = useFetch(
     "/categories/get-categories",
   );
@@ -150,7 +150,7 @@ export default function AllCategoryPage() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <AllCategoryActionCell
+        <CategoryManagementActionCell
           category={row.original}
           categories={categoryList}
         />
@@ -180,19 +180,19 @@ export default function AllCategoryPage() {
 
   // Loading state
   if (isLoading) {
-    return <AllCategoryLoader />;
+    return <CategoryManagementLoader />;
   }
 
   // Error state
   if (isError) {
-    return <AllCategoryError refetch={refetch} />;
+    return <CategoryManagementError refetch={refetch} />;
   } 
 
   // Empty state
   if (categoryList.length === 0) {
     return (
       <>
-        <AllCategoryEmpty refetch={refetch} onOpenChange={setShowCreateModal} />
+        <CategoryManagementEmpty refetch={refetch} onOpenChange={setShowCreateModal} />
         <CreateCategoryModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
@@ -210,7 +210,7 @@ export default function AllCategoryPage() {
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="text-2xl">
-                All Categories
+                Categories Management
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Button

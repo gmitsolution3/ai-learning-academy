@@ -22,6 +22,8 @@ import {
   Settings,
   LogOut,
   UserCircle,
+  LayoutList,
+  BringToFront
 } from "lucide-react";
 import {
   Avatar,
@@ -53,14 +55,14 @@ const mainMenuItems = [
 
 const courseManagement = [
   {
-    title: "All Courses",
-    url: defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    title: "Courses Management",
+    url: defineUrl("/course-management"),
+    icon: LayoutList,
   },
   {
-    title: "All Category",
-    url: defineUrl("/all-category"),
-    icon: Calendar,
+    title: "Category Management",
+    url: defineUrl("/category-management"),
+    icon: BringToFront,
   },
   {
     title: "Create Category",
