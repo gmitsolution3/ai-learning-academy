@@ -8,13 +8,12 @@ import { useFetch } from "@/hooks/swr/useFetch";
 import { ICategoryListType } from "@/types/category.type";
 
 export default function CourseTabs({
-  courses,
   showCTA = true,
 }: {
-  courses: ICourse[];
   showCTA?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState("All");
+  const [category, setCategory] = useState("");
 
   const {
     data: categoriesData,
@@ -25,10 +24,23 @@ export default function CourseTabs({
 
   const categories = categoriesData?.data;
 
-  const filteredCourses = useMemo(() => {
-    if (activeTab === "All") return courses;
-    return courses.filter((c) => c.category === activeTab);
-  }, [activeTab, courses]);
+  const {
+    data: coursesData,
+    isLoading: coursesLoading,
+    isError: coursesError,
+    refetch: coursesRefetch,
+  } = useFetch("/course/get-course-by-category", {
+    params: {
+      id: category,
+    },
+  });
+
+  const courses = coursesData?.data;
+
+  const handleCategoryClick = (category) => {
+    setActiveTab(category.name);
+    setCategory(category._id);
+  }
 
   if (isCategoriesLoading) {
     return (
@@ -66,7 +78,10 @@ export default function CourseTabs({
           key="all"
           role="tab"
           aria-selected={activeTab === "All"}
-          onClick={() => setActiveTab("All")}
+          onClick={() => handleCategoryClick({
+            name: "All",
+            _id: ""
+          })}
           className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
             activeTab === "All"
               ? "bg-gradient-to-r from-secondary to-primary text-white"
@@ -85,7 +100,7 @@ export default function CourseTabs({
               key={category._id}
               role="tab"
               aria-selected={isActive}
-              onClick={() => setActiveTab(category.name)}
+              onClick={() => handleCategoryClick(category)}
               className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-medium transition-all duration-300 ${
                 isActive
                   ? "bg-gradient-to-r from-secondary to-primary text-white"
@@ -100,8 +115,8 @@ export default function CourseTabs({
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-10 sm:mt-12">
-        {filteredCourses.length > 0 ? (
-          filteredCourses.map((course) => (
+        {courses?.length > 0 ? (
+          courses?.map((course) => (
             <CourseCard key={course.slug} course={course} />
           ))
         ) : (

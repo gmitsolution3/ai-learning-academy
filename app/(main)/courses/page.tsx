@@ -4,7 +4,7 @@ import CourseTabs from "@/components/Home/Course/CourseTabs";
 
 import { ICourse } from "@/types";
 
-const courses: ICourse[] = [
+const courses: any[] = [
   {
     title: "Full Stack Web Development Bootcamp",
     slug: "full-stack-web-development-bootcamp",
