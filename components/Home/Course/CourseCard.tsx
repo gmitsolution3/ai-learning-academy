@@ -1,54 +1,50 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Star, ArrowRight } from "lucide-react";
+import { Users, Star, ArrowRight, Clock } from "lucide-react";
+import { ICourse } from "@/types";
 
-type Course = {
-  title: string;
-  slug: string;
-  overview: string;
-  description: string;
-  category: string;
-  difficultyLevel: "Beginner" | "Intermediate" | "Advanced";
-  totalEnrolled: number;
-  rating: number;
-  price: number;
-  discountPercent: number;
-  image: string;
-};
-
-const difficultyColors: Record<Course["difficultyLevel"], string> = {
+const difficultyColors: Record<ICourse["course_level"], string> = {
   Beginner: "bg-green-500/20 text-green-400 border-green-500/30",
-  Intermediate:
-    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  Intermediate: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
   Advanced: "bg-red-500/20 text-red-400 border-red-500/30",
+  intermediated: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", // Added for your data
 };
 
-// move outside (no recreation)
-function getDiscountedPrice(price: number, discount: number) {
-  return price - (price * discount) / 100;
+// Format duration from minutes to hours
+function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${remainingMinutes} min`;
+  if (remainingMinutes === 0) return `${hours} hour${hours > 1 ? 's' : ''}`;
+  return `${hours}h ${remainingMinutes}min`;
 }
 
-export default function CourseCard({ course }: { course: Course }) {
-  const finalPrice =
-    course?.discountPercent > 0
-      ? getDiscountedPrice(course?.price, course?.discountPercent)
-      : course?.price;
+export default function CourseCard({ course }: { course: ICourse }) {
+  const finalPrice = course?.discount_price > 0
+    ? course?.discount_price
+    : course?.regular_price;
 
   return (
     <article className="group relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden hover:border-secondary/50 transition-all duration-300 sm:hover:-translate-y-2">
       
-      {/* Image */}
-      <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
-        <Image
-          src={course?.image}
-          alt={course?.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
-        />
+      {/* Image - Using placeholder since thumbnail is empty */}
+      <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden bg-gradient-to-br from-purple-600 to-blue-600">
+        {course?.thumbnail ? (
+          <Image
+            src={course?.thumbnail}
+            alt={course?.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-white/50 text-sm">
+            No image
+          </div>
+        )}
 
         <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-black/70 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs text-white border border-white/20">
-          {course?.category.name}
+          {course?.category?.name || "Uncategorized"}
         </div>
       </div>
 
@@ -60,7 +56,7 @@ export default function CourseCard({ course }: { course: Course }) {
         </h3>
 
         <p className="text-white text-xs sm:text-sm mb-2 line-clamp-2">
-          {course?.overview}
+          {course?.short_description || course?.full_description?.substring(0, 100)}
         </p>
 
         {/* Stats */}
@@ -68,30 +64,29 @@ export default function CourseCard({ course }: { course: Course }) {
           
           <div
             className={`text-[10px] sm:text-xs px-2 py-1 rounded-full border w-full text-center ${
-              difficultyColors[course?.difficultyLevel]
+              difficultyColors[course?.course_level] || difficultyColors.Intermediate
             }`}
           >
-            {course?.difficultyLevel}
-          </div>
-
-          <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 w-full">
-            <div className="flex items-center justify-center gap-1 text-yellow-400">
-              <Star className="size-3 fill-yellow-400" aria-hidden />
-              {course?.rating}
-            </div>
+            {course?.course_level === "intermediated" ? "Intermediate" : course?.course_level}
           </div>
 
           <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 w-full">
             <div className="flex items-center justify-center gap-1 text-white">
-              <Users className="size-3" aria-hidden />
-              {/* {course?.totalEnrolled.toLocaleString()} + */}
+              <Clock className="size-3" aria-hidden />
+              {formatDuration(course?.total_duration || 0)}
+            </div>
+          </div>
+
+          <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 w-full">
+            <div className="flex items-center justify-center gap-1 text-white capitalize">
+              {course?.language || "English"}
             </div>
           </div>
         </div>
 
         {/* Price */}
         <div className="pt-3 border-t border-white/10">
-          {course?.discountPercent > 0 ? (
+          {course?.discount_price > 0 && course?.discount_price < course?.regular_price ? (
             <div className="flex items-center justify-between">
               
               <div className="flex items-center gap-2">
@@ -99,19 +94,19 @@ export default function CourseCard({ course }: { course: Course }) {
                   ৳{finalPrice.toFixed(0)}
                 </span>
                 <span className="text-xs sm:text-sm text-gray-500 line-through">
-                  ৳{course?.price}
+                  ৳{course?.regular_price}
                 </span>
               </div>
 
               <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10">
                 <span className="text-secondary">
-                  {course?.discountPercent}% ছাড়
+                  {Math.round(((course?.regular_price - course?.discount_price) / course?.regular_price) * 100)}% ছাড়
                 </span>
               </div>
             </div>
           ) : (
             <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-              ৳{course?.price}
+              ৳{course?.regular_price}
             </span>
           )}
         </div>
