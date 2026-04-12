@@ -51,67 +51,11 @@ import CourseManagementLoader from "@/components/InstructorDashboard/loaders/Cou
 import CourseManagementError from "@/components/InstructorDashboard/errors/CourseManagementError";
 import CourseManagementEmpty from "@/components/InstructorDashboard/empties/CourseManagementEmpty";
 import CreateCourseModal from "@/components/InstructorDashboard/modals/CreateCourseModal";
-
-const CourseLevelBadge = ({ level }: { level: string }) => {
-  const variants: Record<string, string> = {
-    beginner:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    intermediate:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    advanced:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-  };
-
-  const labels: Record<string, string> = {
-    beginner: "Beginner",
-    intermediate: "Intermediate",
-    advanced: "Advanced",
-  };
-
-  return (
-    <Badge className={variants[level] || variants.beginner}>
-      {labels[level] || level}
-    </Badge>
-  );
-};
-
-const CourseStatusBadge = ({ status }: { status: string }) => {
-  const variants: Record<string, string> = {
-    draft:
-      "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-    published:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    archived:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  };
-
-  const labels: Record<string, string> = {
-    draft: "Draft",
-    published: "Published",
-    archived: "Archived",
-  };
-
-  return (
-    <Badge className={variants[status] || variants.draft}>
-      {labels[status] || status}
-    </Badge>
-  );
-};
-
-const LanguageBadge = ({ language }: { language: string }) => {
-  const languages: Record<string, string> = {
-    bangla: "বাংলা",
-    english: "English",
-    hindi: "हिन्दी",
-  };
-
-  return (
-    <Badge variant="outline">
-      <Globe className="mr-1 h-3 w-3" />
-      {languages[language] || language}
-    </Badge>
-  );
-};
+import {
+  CourseLevelBadge,
+  CourseStatusBadge,
+  LanguageBadge,
+} from "@/utils/course.utils";
 
 export default function CourseManagementPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -330,7 +274,18 @@ export default function CourseManagementPage() {
 
   // Empty state
   if (courseList.length === 0) {
-    return <CourseManagementEmpty refetch={refetch} />;
+    return (
+      <>
+        <CourseManagementEmpty refetch={refetch} onOpenChange={setShowCreateModal} />
+        <CreateCourseModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          onSuccess={refetch}
+          categories={categoryList}
+          instructors={userList}
+        />
+      </>
+    );
   }
 
   return (

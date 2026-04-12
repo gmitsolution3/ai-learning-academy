@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Sparkles, RefreshCw } from "lucide-react";
 import CourseCard from "@/components/Home/Course/CourseCard";
-import { ICourse } from "@/types";
 import { useFetch } from "@/hooks/swr/useFetch";
+import { ICourse } from "@/types";
 import { ICategoryListType } from "@/types/category.type";
+import { RefreshCw, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 export default function CourseTabs({
   showCTA = true,

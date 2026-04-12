@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { ImageUploader } from "@/components/ImageUploader";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Field,
@@ -17,15 +18,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   MultiSelect,
   MultiSelectContent,
@@ -33,31 +25,23 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
-  Loader2,
-  // Youtube,
-} from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { usePost } from "@/hooks/swr/usePost";
+import { ICategory, IUser } from "@/types";
+import { generateSlug, getYouTubeEmbedUrl } from "@/utils";
 import { notify } from "@/utils/notify";
-import { generateSlug } from "@/utils";
-import { ImageUploader } from "@/components/ImageUploader";
-
-// Types
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 // Form validation schema - ALL FIELDS REQUIRED
 const courseSchema = z.object({
@@ -87,12 +71,13 @@ const courseSchema = z.object({
     .url("Must be a valid URL"),
   preview_video: z
     .string()
-    .min(1, "Preview video is required")
     .url("Must be a valid YouTube URL")
     .regex(
       /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/,
       "Please enter a valid YouTube URL",
-    ),
+    )
+    .or(z.literal(""))
+    .optional(),
   category_id: z.string().min(1, "Category is required"),
   instructor_id: z
     .array(z.string())
@@ -129,23 +114,9 @@ interface CreateCourseModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
-  categories?: Category[];
-  instructors?: User[];
+  categories?: ICategory[];
+  instructors?: IUser[];
 }
-
-// Function to extract YouTube video ID from URL
-const getYouTubeVideoId = (url: string) => {
-  const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return match && match[2].length === 11 ? match[2] : null;
-};
-
-// Function to get YouTube embed URL
-const getYouTubeEmbedUrl = (url: string) => {
-  const videoId = getYouTubeVideoId(url);
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-};
 
 export default function CreateCourseModal({
   open,
@@ -201,16 +172,6 @@ export default function CreateCourseModal({
     }
   }, [videoUrl]);
 
-  // Auto-generate slug from title
-  const generateSlugFromTitle = (title: string) => {
-    return title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/[\s_-]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  };
-
   const onSubmit = async (values: CourseFormValues) => {
     setIsSubmitting(true);
     try {
@@ -260,7 +221,7 @@ export default function CreateCourseModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full !max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-4xl! max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
             Create New Course
@@ -293,13 +254,9 @@ export default function CreateCourseModal({
                       !currentSlug ||
                       currentSlug === generateSlug(currentSlug)
                     ) {
-                      form.setValue(
-                        "slug",
-                        generateSlugFromTitle(value),
-                        {
-                          shouldValidate: true,
-                        },
-                      );
+                      form.setValue("slug", generateSlug(value), {
+                        shouldValidate: true,
+                      });
                     }
                   }}
                   className="p-5"
@@ -338,7 +295,9 @@ export default function CreateCourseModal({
               <FieldContent>
                 <Select
                   onValueChange={(value) =>
-                    form.setValue("category_id", value, { shouldValidate: true })
+                    form.setValue("category_id", value, {
+                      shouldValidate: true,
+                    })
                   }
                   value={form.getValues("category_id")}
                 >
@@ -372,9 +331,9 @@ export default function CreateCourseModal({
                 <MultiSelect
                   values={form.watch("instructor_id")}
                   onValuesChange={(value: string[]) => {
-                    form.setValue("instructor_id", value, { 
+                    form.setValue("instructor_id", value, {
                       shouldValidate: true,
-                      shouldDirty: true 
+                      shouldDirty: true,
                     });
                   }}
                 >
@@ -464,7 +423,7 @@ export default function CreateCourseModal({
 
             {/* Preview Video URL Input */}
             <Field>
-              <FieldLabel>Preview Video (YouTube URL) *</FieldLabel>
+              <FieldLabel>Preview Video (YouTube URL)</FieldLabel>
               <FieldContent>
                 <div className="space-y-3 w-full">
                   <div className="relative">
@@ -495,7 +454,8 @@ export default function CreateCourseModal({
                 </div>
               </FieldContent>
               <FieldDescription>
-                Enter a YouTube video URL for the course preview/trailer.
+                Enter a YouTube video URL for the course
+                preview/trailer.
               </FieldDescription>
               <FieldError>
                 {form.formState.errors.preview_video?.message}
@@ -551,7 +511,9 @@ export default function CreateCourseModal({
                 <FieldContent>
                   <Select
                     onValueChange={(value: any) =>
-                      form.setValue("course_level", value, { shouldValidate: true })
+                      form.setValue("course_level", value, {
+                        shouldValidate: true,
+                      })
                     }
                     value={form.getValues("course_level")}
                   >
@@ -582,7 +544,9 @@ export default function CreateCourseModal({
                 <FieldContent>
                   <Select
                     onValueChange={(value: any) =>
-                      form.setValue("language", value, { shouldValidate: true })
+                      form.setValue("language", value, {
+                        shouldValidate: true,
+                      })
                     }
                     value={form.getValues("language")}
                   >
@@ -638,7 +602,9 @@ export default function CreateCourseModal({
                 <FieldContent>
                   <Select
                     onValueChange={(value: any) =>
-                      form.setValue("status", value, { shouldValidate: true })
+                      form.setValue("status", value, {
+                        shouldValidate: true,
+                      })
                     }
                     value={form.getValues("status")}
                   >

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { ImageUploader } from "@/components/ImageUploader";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Field,
@@ -17,15 +18,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   MultiSelect,
   MultiSelectContent,
@@ -33,47 +25,23 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { usePatch } from "@/hooks/swr/usePatch";
+import { ICategory, ICourse, IUser } from "@/types";
+import { generateSlug, getYouTubeEmbedUrl } from "@/utils";
 import { notify } from "@/utils/notify";
-import { generateSlug } from "@/utils";
-import { ImageUploader } from "@/components/ImageUploader";
-import { ICourse } from "@/types";
-
-// Types
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
-interface Course {
-  _id: string;
-  title: string;
-  slug: string;
-  short_description: string;
-  full_description: string;
-  thumbnail: string;
-  preview_video: string;
-  category_id: string;
-  instructor_id: string[];
-  regular_price: number;
-  discount_price: number;
-  course_level: string;
-  language: string;
-  total_duration: number;
-  status: string;
-}
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 // Form validation schema
 const courseSchema = z.object({
@@ -103,12 +71,13 @@ const courseSchema = z.object({
     .url("Must be a valid URL"),
   preview_video: z
     .string()
-    .min(1, "Preview video is required")
     .url("Must be a valid YouTube URL")
     .regex(
       /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/,
       "Please enter a valid YouTube URL",
-    ),
+    )
+    .or(z.literal(""))
+    .optional(),
   category_id: z.string().min(1, "Category is required"),
   instructor_id: z
     .array(z.string())
@@ -146,23 +115,9 @@ interface EditCourseModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
-  categories?: Category[];
-  instructors?: User[];
+  categories?: ICategory[];
+  instructors?: IUser[];
 }
-
-// Function to extract YouTube video ID from URL
-const getYouTubeVideoId = (url: string) => {
-  const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return match && match[2].length === 11 ? match[2] : null;
-};
-
-// Function to get YouTube embed URL
-const getYouTubeEmbedUrl = (url: string) => {
-  const videoId = getYouTubeVideoId(url);
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-};
 
 export default function EditCourseModal({
   course,
@@ -250,16 +205,6 @@ export default function EditCourseModal({
     }
   }, [videoUrl]);
 
-  // Auto-generate slug from title
-  const generateSlugFromTitle = (title: string) => {
-    return title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/[\s_-]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  };
-
   const onSubmit = async (values: CourseFormValues) => {
     if (!course) return;
 
@@ -341,13 +286,9 @@ export default function EditCourseModal({
                       !currentSlug ||
                       currentSlug === generateSlug(currentSlug)
                     ) {
-                      form.setValue(
-                        "slug",
-                        generateSlugFromTitle(value),
-                        {
-                          shouldValidate: true,
-                        },
-                      );
+                      form.setValue("slug", generateSlug(value), {
+                        shouldValidate: true,
+                      });
                     }
                   }}
                   className="p-5"
@@ -408,8 +349,8 @@ export default function EditCourseModal({
                   </SelectContent>
                 </Select>
               </FieldContent>
-              <FieldDescription>
-                Select the category this course belongs to.
+              <FieldDescription className="text-yellow-400">
+                Category can't be updated.
               </FieldDescription>
               <FieldError>
                 {form.formState.errors.category_id?.message}
@@ -516,7 +457,7 @@ export default function EditCourseModal({
 
             {/* Preview Video URL Input */}
             <Field>
-              <FieldLabel>Preview Video (YouTube URL) *</FieldLabel>
+              <FieldLabel>Preview Video (YouTube URL)</FieldLabel>
               <FieldContent>
                 <div className="space-y-3 w-full">
                   <div className="relative">

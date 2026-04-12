@@ -1,11 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Plus } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 
 export default function CourseManagementEmpty({
   refetch,
+  onOpenChange,
 }: {
   refetch: () => void;
+  onOpenChange: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div className="container mx-auto py-10 px-4">
@@ -19,10 +22,20 @@ export default function CourseManagementEmpty({
               There are no courses available. Create your first course
               to get started.
             </p>
-            <Button onClick={() => refetch()} variant="outline">
+            <div className="flex gap-2">
+
+            <Button onClick={() => refetch()} variant="outline" className="p-5">
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
+            <Button
+              className="gap-2 p-5"
+              onClick={() => onOpenChange(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Create New Course
+            </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

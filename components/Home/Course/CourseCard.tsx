@@ -1,32 +1,27 @@
+import { ICourse } from "@/types";
+import { formatDuration } from "@/utils";
+import { CourseLevelBadge } from "@/utils/course.utils";
+import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Star, ArrowRight, Clock } from "lucide-react";
-import { ICourse } from "@/types";
 
 const difficultyColors: Record<ICourse["course_level"], string> = {
   Beginner: "bg-green-500/20 text-green-400 border-green-500/30",
-  Intermediate: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  Intermediate:
+    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
   Advanced: "bg-red-500/20 text-red-400 border-red-500/30",
-  intermediated: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", // Added for your data
+  intermediated:
+    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", // Added for your data
 };
 
-// Format duration from minutes to hours
-function formatDuration(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  if (hours === 0) return `${remainingMinutes} min`;
-  if (remainingMinutes === 0) return `${hours} hour${hours > 1 ? 's' : ''}`;
-  return `${hours}h ${remainingMinutes}min`;
-}
-
 export default function CourseCard({ course }: { course: ICourse }) {
-  const finalPrice = course?.discount_price > 0
-    ? course?.discount_price
-    : course?.regular_price;
+  const finalPrice =
+    course?.discount_price > 0
+      ? course?.discount_price
+      : course?.regular_price;
 
   return (
     <article className="group relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden hover:border-secondary/50 transition-all duration-300 sm:hover:-translate-y-2">
-      
       {/* Image - Using placeholder since thumbnail is empty */}
       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden bg-gradient-to-br from-purple-600 to-blue-600">
         {course?.thumbnail ? (
@@ -50,25 +45,18 @@ export default function CourseCard({ course }: { course: ICourse }) {
 
       {/* Content */}
       <div className="p-4 sm:p-5">
-        
         <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-secondary">
           {course?.title}
         </h3>
 
         <p className="text-white text-xs sm:text-sm mb-2 line-clamp-2">
-          {course?.short_description || course?.full_description?.substring(0, 100)}
+          {course?.short_description ||
+            course?.full_description?.substring(0, 100)}
         </p>
 
         {/* Stats */}
         <div className="flex items-center justify-between gap-5 mb-3 sm:mb-4">
-          
-          <div
-            className={`text-[10px] sm:text-xs px-2 py-1 rounded-full border w-full text-center ${
-              difficultyColors[course?.course_level] || difficultyColors.Intermediate
-            }`}
-          >
-            {course?.course_level === "intermediated" ? "Intermediate" : course?.course_level}
-          </div>
+          <CourseLevelBadge level={course.course_level} />
 
           <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 w-full">
             <div className="flex items-center justify-center gap-1 text-white">
@@ -86,9 +74,9 @@ export default function CourseCard({ course }: { course: ICourse }) {
 
         {/* Price */}
         <div className="pt-3 border-t border-white/10">
-          {course?.discount_price > 0 && course?.discount_price < course?.regular_price ? (
+          {course?.discount_price > 0 &&
+          course?.discount_price < course?.regular_price ? (
             <div className="flex items-center justify-between">
-              
               <div className="flex items-center gap-2">
                 <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">
                   ৳{finalPrice.toFixed(0)}
@@ -100,7 +88,13 @@ export default function CourseCard({ course }: { course: ICourse }) {
 
               <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10">
                 <span className="text-secondary">
-                  {Math.round(((course?.regular_price - course?.discount_price) / course?.regular_price) * 100)}% ছাড়
+                  {Math.round(
+                    ((course?.regular_price -
+                      course?.discount_price) /
+                      course?.regular_price) *
+                      100,
+                  )}
+                  % ছাড়
                 </span>
               </div>
             </div>

@@ -1,11 +1,12 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Field,
@@ -14,114 +15,39 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Badge } from "@/components/ui/badge";
+import { ICourse } from "@/types";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+  formatDate,
+  formatDuration,
+  formatPrice,
+  getYouTubeEmbedUrl,
+} from "@/utils";
 import {
+  CourseLevelBadge,
+  CourseStatusBadge,
+  LanguageBadge,
+} from "@/utils/course.utils";
+import {
+  BookOpen,
   Calendar,
   Clock,
   DollarSign,
-  Globe,
-  BookOpen,
-  User,
-  Tag,
   FileText,
-  Video,
-  Eye,
-  Users,
-  Hash,
   FolderTree,
-  TrendingDown,
-  CheckCircle,
-  XCircle,
+  Globe,
+  Hash,
+  LucideIcon,
+  Tag,
+  User,
+  Users,
 } from "lucide-react";
-import { formatDate, formatPrice, formatDuration } from "@/utils";
-import { ICourse } from "@/types";
+import Image from "next/image";
 
 interface ViewCourseModalProps {
   course: ICourse | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-// Course level badge
-const CourseLevelBadge = ({ level }: { level: string }) => {
-  const variants: Record<string, string> = {
-    beginner:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    intermediate:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    intermediated:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    advanced:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-  };
-
-  const labels: Record<string, string> = {
-    beginner: "Beginner",
-    intermediate: "Intermediate",
-    intermediated: "Intermediate",
-    advanced: "Advanced",
-  };
-
-  return (
-    <Badge className={variants[level] || variants.beginner}>
-      {labels[level] || level}
-    </Badge>
-  );
-};
-
-// Course status badge
-const CourseStatusBadge = ({ status }: { status: string }) => {
-  const variants: Record<string, string> = {
-    draft:
-      "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-    published:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    archived:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  };
-
-  const icons: Record<string, React.ReactNode> = {
-    draft: <XCircle className="h-3 w-3 mr-1" />,
-    published: <CheckCircle className="h-3 w-3 mr-1" />,
-    archived: <Archive className="h-3 w-3 mr-1" />,
-  };
-
-  const labels: Record<string, string> = {
-    draft: "Draft",
-    published: "Published",
-    archived: "Archived",
-  };
-
-  return (
-    <Badge className={variants[status] || variants.draft}>
-      {icons[status]}
-      {labels[status] || status}
-    </Badge>
-  );
-};
-
-// Language badge
-const LanguageBadge = ({ language }: { language: string }) => {
-  const languages: Record<string, string> = {
-    bangla: "বাংলা",
-    english: "English",
-    hindi: "हिन्दी",
-    spanish: "Español",
-    french: "Français",
-  };
-
-  return (
-    <Badge variant="outline">
-      <Globe className="mr-1 h-3 w-3" />
-      {languages[language] || language}
-    </Badge>
-  );
-};
 
 const InfoRow = ({
   label,
@@ -130,7 +56,7 @@ const InfoRow = ({
 }: {
   label: string;
   value: React.ReactNode;
-  icon?: any;
+  icon?: LucideIcon;
 }) => (
   <div className="flex items-start justify-between p-4 border-b last:border-0">
     <div className="flex items-center gap-2 text-muted-foreground">
@@ -155,9 +81,11 @@ export default function ViewCourseModal({
     ? course.regular_price - course.discount_price
     : 0;
 
+  const embedUrl = getYouTubeEmbedUrl(course.preview_video);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full !max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-4xl! max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
             Course Details
@@ -172,54 +100,36 @@ export default function ViewCourseModal({
           {/* Thumbnail Section */}
           {course.thumbnail && (
             <div className="rounded-lg overflow-hidden border bg-muted">
-              <img
+              <Image
+                height={300}
+                width={300}
                 src={course.thumbnail}
                 alt={course.title}
                 className="w-full h-64 object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display =
-                    "none";
-                }}
               />
             </div>
           )}
 
           {/* Preview Video Section */}
-          {course.preview_video &&
-            (() => {
-              const getYouTubeEmbedUrl = (url: string) => {
-                const match = url.match(
-                  /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/,
-                );
-                const videoId =
-                  match && match[2].length === 11 ? match[2] : null;
-                return videoId
-                  ? `https://www.youtube.com/embed/${videoId}`
-                  : null;
-              };
-              const embedUrl = getYouTubeEmbedUrl(
-                course.preview_video,
-              );
-              return embedUrl ? (
-                <Field>
-                  <FieldLabel>Preview Video</FieldLabel>
-                  <FieldContent>
-                    <div className="aspect-video rounded-lg overflow-hidden border bg-muted">
-                      <iframe
-                        src={embedUrl}
-                        title="Course preview video"
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  </FieldContent>
-                  <FieldDescription>
-                    Course preview/trailer video
-                  </FieldDescription>
-                </Field>
-              ) : null;
-            })()}
+          {course.preview_video && embedUrl ? (
+            <Field>
+              <FieldLabel>Preview Video</FieldLabel>
+              <FieldContent>
+                <div className="aspect-video rounded-lg overflow-hidden border bg-muted">
+                  <iframe
+                    src={embedUrl}
+                    title="Course preview video"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </FieldContent>
+              <FieldDescription>
+                Course preview/trailer video
+              </FieldDescription>
+            </Field>
+          ) : null}
 
           <FieldGroup>
             {/* Course Title */}
