@@ -200,9 +200,12 @@ export default function CreateCourseModal({
       } else {
         notify.error(res?.message || "Failed to create course");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating course:", error);
-      notify.error("An error occurred while creating the course");
+      notify.error(
+        error.message ||
+          "An error occurred while creating the course",
+      );
     } finally {
       setIsSubmitting(false);
     }

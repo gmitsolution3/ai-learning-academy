@@ -1,18 +1,9 @@
 import { ICourse } from "@/types";
-import { formatDuration } from "@/utils";
+import { formatDuration, formatPrice } from "@/utils";
 import { CourseLevelBadge } from "@/utils/course.utils";
 import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const difficultyColors: Record<ICourse["course_level"], string> = {
-  Beginner: "bg-green-500/20 text-green-400 border-green-500/30",
-  Intermediate:
-    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  Advanced: "bg-red-500/20 text-red-400 border-red-500/30",
-  intermediated:
-    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", // Added for your data
-};
 
 export default function CourseCard({ course }: { course: ICourse }) {
   const finalPrice =
@@ -78,11 +69,11 @@ export default function CourseCard({ course }: { course: ICourse }) {
           course?.discount_price < course?.regular_price ? (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                  ৳{finalPrice.toFixed(0)}
+                <span className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">
+                  {formatPrice(parseInt(finalPrice.toFixed(0)))}
                 </span>
                 <span className="text-xs sm:text-sm text-gray-500 line-through">
-                  ৳{course?.regular_price}
+                  {formatPrice(course.regular_price)}
                 </span>
               </div>
 
@@ -100,7 +91,7 @@ export default function CourseCard({ course }: { course: ICourse }) {
             </div>
           ) : (
             <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-              ৳{course?.regular_price}
+              {formatPrice(course.regular_price)}
             </span>
           )}
         </div>

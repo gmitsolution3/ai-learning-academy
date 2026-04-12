@@ -210,7 +210,7 @@ export default function ViewCourseModal({
               {/* Course Level */}
               <div className="flex items-center gap-3">
                 <BookOpen className="h-5 w-5 text-muted-foreground" />
-                <div>
+                <div className="space-y-2">
                   <p className="text-xs text-muted-foreground">
                     Level
                   </p>
@@ -221,7 +221,7 @@ export default function ViewCourseModal({
               {/* Language */}
               <div className="flex items-center gap-3">
                 <Globe className="h-5 w-5 text-muted-foreground" />
-                <div>
+                <div className="space-y-2">
                   <p className="text-xs text-muted-foreground">
                     Language
                   </p>
