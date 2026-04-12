@@ -98,7 +98,7 @@ const userManagement = [
 ];
 
 const settingsItems = [
-  { title: "Profile", url: "/profile", icon: UserCircle },
+  { title: "Profile", url: defineUrl("/profile"), icon: UserCircle },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 

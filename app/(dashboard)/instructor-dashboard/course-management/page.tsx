@@ -290,7 +290,7 @@ export default function CourseManagementPage() {
 
   return (
     <>
-      <div className="container mx-auto py-10 px-4">
+      <section className="container mx-auto py-10 px-4 lg:px-0">
         <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -427,7 +427,7 @@ export default function CourseManagementPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </section>
 
       <CreateCourseModal
         open={showCreateModal}

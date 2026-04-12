@@ -4,8 +4,19 @@ export interface IUser {
   email: string;
   emailVerified: boolean;
   image: string;
+  imagePublicId?: string;
   createdAt: string;
   phone: string;
   role: "admin" | "user" | "instructor";
   isSuperAdmin?: boolean;
+}
+
+export interface IUserProfile extends IUser {
+  address?: string;
+  gender?: string;
+  age?: number;
+  instituteName?: string;
+  educationLevel?: string;
+  bio?: string;
+  occupation?: string;
 }
