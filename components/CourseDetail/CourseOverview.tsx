@@ -1,3 +1,12 @@
+import {
+  Access,
+  Calander,
+  Lesson,
+  Level,
+  Module,
+  Projects,
+  RecordHours,
+} from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -6,17 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
+import { ICourseDetail } from "@/types";
+import { formatPrice } from "@/utils";
 import { ArrowRight } from "lucide-react";
-import {
-  Module,
-  Lesson,
-  Level,
-  Projects,
-  RecordHours,
-  Access,
-  Calander,
-} from "@/components/icons";
+import Link from "next/link";
 
 const highlights = [
   { icon: Module, label: "14+ মডিউলস" },
@@ -25,7 +27,11 @@ const highlights = [
   { icon: Projects, label: "6+ প্রজেক্ট" },
 ];
 
-export default function CourseOverview() {
+export default function CourseOverview({
+  courseData,
+}: {
+  courseData: ICourseDetail;
+}) {
   return (
     <section
       aria-labelledby="course-overview-heading"
@@ -34,11 +40,11 @@ export default function CourseOverview() {
       <div className="relative z-10">
         <Card
           style={{
-            backgroundImage: "url('/kids-learning-ai.jpg')",
+            backgroundImage: `url('${courseData.thumbnail}')`,
           }}
           className="w-full max-w-7xl mx-auto border-2 border-white/70 shadow-lg bg-[#03050A] p-5 pr-8 bg-opacity-90 bg-cover bg-center bg-no-repeat relative"
         >
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/60" />
 
           <div className="relative z-10">
             <div className="flex flex-col items-center lg:flex-row">
@@ -53,20 +59,11 @@ export default function CourseOverview() {
                     id="course-overview-heading"
                     className="text-2xl sm:text-2xl md:text-4xl font-bold tracking-tight mt-3 bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
                   >
-                    Zero to Hero UI/UX Design – Level 1
+                    {courseData.title}
                   </CardTitle>
 
                   <CardDescription className="mt-3 text-sm sm:text-base text-white leading-relaxed">
-                    Lorem ipsum is simply dummy text of the printing
-                    and typesetting industry. Lorem Ipsum has been the
-                    industry's standard dummy text ever since the
-                    1500s, when an unknown printer took a galley of
-                    type and scrambled it to make a type specimen
-                    book. It has survived not only five centuries, but
-                    also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was
-                    popularised in the 1960s with the release of
-                    Letraset sheets containing Lorem Ipsum passages.
+                    {courseData.full_description}
                   </CardDescription>
                 </CardHeader>
               </div>
@@ -76,24 +73,42 @@ export default function CourseOverview() {
                 {/* Pricing */}
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2 justify-between">
-                    <div className="flex items-center gap-x-3">
-                      <span className="text-2xl sm:text-3xl font-bold">
-                        ৳690
-                      </span>
-                      <span className="text-base sm:text-lg text-gray-500 line-through">
-                        ৳6,000
-                      </span>
-                    </div>
+                    {courseData?.discount_price > 0 &&
+                    courseData?.discount_price <
+                      courseData?.regular_price ? (
+                      <>
+                        <div className="flex items-center gap-x-3">
+                          <span className="text-2xl sm:text-3xl font-bold text-green-500">
+                            {formatPrice(courseData.discount_price)}
+                          </span>
+                          <span className="text-base sm:text-lg text-gray-500 line-through">
+                            {formatPrice(courseData.regular_price)}
+                          </span>
+                        </div>
 
-                    <Badge className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 text-secondary">
-                      91% ছাড়
-                    </Badge>
+                        <Badge className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 text-secondary">
+                          {Math.round(
+                            ((courseData?.regular_price -
+                              courseData?.discount_price) /
+                              courseData?.regular_price) *
+                              100,
+                          )}
+                          % ছাড়
+                        </Badge>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-x-3">
+                        <span className="text-2xl sm:text-3xl font-bold">
+                          {formatPrice(courseData.regular_price)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* CTA */}
                 <Link
-                  href="/"
+                  href={`/purchase-course/${courseData._id}`}
                   aria-label="Purchase course"
                   className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-3 rounded-full text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all w-full justify-center mt-5"
                 >
@@ -125,9 +140,9 @@ export default function CourseOverview() {
                     <Level aria-hidden />
                     <Badge
                       variant="outline"
-                      className="font-normal text-xs sm:text-sm"
+                      className="font-normal text-xs sm:text-sm capitalize"
                     >
-                      Beginner to Hero
+                      {courseData.course_level}
                     </Badge>
                   </div>
                 </div>
@@ -150,7 +165,14 @@ export default function CourseOverview() {
                   <div className="flex items-center gap-2">
                     <Calander aria-hidden />
                     <span className="text-xs sm:text-sm">
-                      সর্বশেষ আপডেত: ডিসেম্বর 2024
+                      সর্বশেষ আপডেট:{" "}
+                      {new Date(
+                        courseData.updated_at,
+                      ).toLocaleDateString("bn-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
                 </div>

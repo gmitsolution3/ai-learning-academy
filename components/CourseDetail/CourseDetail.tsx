@@ -1,15 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import CourseDetailNavigation from "./CourseDetailNavigation";
+import { BookOpen, Laptop, Lightbulb, Speech } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import CourseDetailContent from "./CourseDetailContent";
-import {
-  BookOpen,
-  Lightbulb,
-  Speech,
-  Laptop,
-  ListChecks,
-} from "lucide-react";
+import CourseDetailNavigation from "./CourseDetailNavigation";
+import { ICourseDetail } from "@/types";
 
 const sections = [
   {
@@ -26,7 +21,11 @@ const sections = [
   { id: "qna", title: "প্রশ্ন এবং উত্তর", icon: Laptop },
 ];
 
-export default function CourseDetail() {
+export default function CourseDetail({
+  courseData,
+}: {
+  courseData: ICourseDetail;
+}) {
   const [activeSection, setActiveSection] = useState("course-detail");
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -36,14 +35,14 @@ export default function CourseDetail() {
     if (element) {
       setIsScrolling(true);
       setActiveSection(id);
-      
+
       element.scrollIntoView({ behavior: "smooth" });
-      
+
       // Clear any existing timeout
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
-      
+
       // Set a timeout to re-enable scroll highlighting after animation completes
       scrollTimeoutRef.current = setTimeout(() => {
         setIsScrolling(false);
@@ -55,12 +54,12 @@ export default function CourseDetail() {
     const handleScroll = () => {
       // Don't update active section while programmatically scrolling
       if (isScrolling) return;
-      
+
       const scrollPosition = window.scrollY + 150; // Increased offset for better accuracy
-      
+
       // Find the current section based on scroll position
       let currentSection = sections[0]?.id;
-      
+
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
         const element = document.getElementById(section.id);
@@ -72,7 +71,7 @@ export default function CourseDetail() {
           }
         }
       }
-      
+
       if (currentSection && currentSection !== activeSection) {
         setActiveSection(currentSection);
       }
@@ -99,7 +98,7 @@ export default function CourseDetail() {
           />
 
           {/* Right Scrollable Content */}
-          <CourseDetailContent />
+          <CourseDetailContent courseData={courseData}/>
         </div>
       </div>
     </div>

@@ -5,14 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import {
-  Briefcase,
-  GraduationCap,
-} from "lucide-react";
+import { ICourseDetail } from "@/types";
+import { getUserInitials, getYouTubeEmbedUrl } from "@/utils";
+import { Briefcase, GraduationCap } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseQNA from "./CourseQNA";
 
@@ -68,7 +68,13 @@ const modules = [
   },
 ];
 
-export default function CourseDetailContent() {
+export default function CourseDetailContent({
+  courseData,
+}: {
+  courseData: ICourseDetail;
+}) {
+  const embedUrl = getYouTubeEmbedUrl(courseData.preview_video);
+
   return (
     <div className="flex-1 space-y-12">
       {/* Section 1 - Overview */}
@@ -92,17 +98,7 @@ export default function CourseDetailContent() {
               </Badge>
             </div>
             <p className="text-white/80 leading-relaxed">
-              Lorem ipsum is simply dummy text of the printing and
-              typesetting industry. Lorem Ipsum has been the
-              industry's standard dummy text ever since the 1500s,
-              when an unknown printer took a galley of type and
-              scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged.
-              It was popularised in the 1960s with the release of
-              Letraset sheets containing Lorem Ipsum passages, and
-              more recently with desktop publishing software like
-              Aldus PageMaker including versions of Lorem Ipsum.
+              {courseData.full_description}
             </p>
           </CardContent>
         </Card>
@@ -144,6 +140,22 @@ export default function CourseDetailContent() {
             </Card>
           </div>
         </Card>
+
+        {courseData.preview_video && (
+          <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm p-10 mt-10">
+            <CardContent>
+              <div className="aspect-video rounded-lg overflow-hidden border bg-muted">
+                <iframe
+                  src={embedUrl as string}
+                  title="Course preview video"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </section>
 
       {/* Section 2 - Curriculum */}
@@ -157,59 +169,67 @@ export default function CourseDetailContent() {
               যার কাছ থেকে শিখবেন
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-secondary to-primary flex items-center justify-center">
-                <span className="text-3xl font-bold text-white">
-                  T
-                </span>
+          {courseData?.instructor?.map((instructor) => (
+            <CardContent key={instructor?._id}>
+              <div className="flex items-center gap-6 mb-5">
+                <Avatar className="h-14 w-14 ring-2 ring-secondary/20">
+                  <AvatarImage
+                    src={instructor?.image || ""}
+                    alt={instructor?.name || "User"}
+                  />
+                  <AvatarFallback className="bg-gradient-to-r from-secondary to-primary text-white">
+                    {getUserInitials(instructor?.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">
+                    {instructor?.name}
+                  </h3>
+                  <p className="text-white/60">
+                    Expert in {courseData?.category?.name}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">
-                  Teacher Name
-                </h3>
-                <p className="text-white/60">
-                  Expert in UI/UX Design
-                </p>
-              </div>
-            </div>
 
-            <p className="text-white/80 leading-relaxed mt-4">
-              Lorem ipsum is simply dummy text of the printing and
-              typesetting industry. Lorem Ipsum has been the
-              industry's standard dummy text ever since the 1500s.
-            </p>
+              <p className="text-white/80 leading-relaxed mt-4">
+                Lorem ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s.
+              </p>
 
-            {/* Statistics Section */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/10">
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-secondary">
-                  100k+
-                </p>
-                <p className="text-xs text-white/50">Students</p>
+              {/* Statistics Section */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 p-4 border-b border-white/10">
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-secondary">
+                    100k+
+                  </p>
+                  <p className="text-xs text-white/50">Students</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-secondary">
+                    100k+
+                  </p>
+                  <p className="text-xs text-white/50">
+                    YouTube Fans
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-secondary">
+                    100k+
+                  </p>
+                  <p className="text-xs text-white/50">
+                    Years of Experience
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-secondary">
+                    Live
+                  </p>
+                  <p className="text-xs text-white/50">Course</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-secondary">
-                  100k+
-                </p>
-                <p className="text-xs text-white/50">YouTube Fans</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-secondary">
-                  100k+
-                </p>
-                <p className="text-xs text-white/50">
-                  Years of Experience
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-secondary">
-                  Live
-                </p>
-                <p className="text-xs text-white/50">Course</p>
-              </div>
-            </div>
-          </CardContent>
+            </CardContent>
+          ))}
         </Card>
       </section>
 

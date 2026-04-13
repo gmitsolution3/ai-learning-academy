@@ -98,7 +98,7 @@ export default function CourseCard({ course }: { course: ICourse }) {
 
         {/* CTA */}
         <Link
-          href={`/courses/${course?.slug}`}
+          href={`/courses/${course?._id}`}
           className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-3 rounded-full text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all w-full justify-center mt-5"
           aria-label={`View details of ${course?.title}`}
         >

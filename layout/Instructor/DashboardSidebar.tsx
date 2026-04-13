@@ -35,16 +35,13 @@ import Image from "next/image";
 import { useSession } from "@/lib/auth-context";
 import { getAvatarInitial } from "@/utils";
 import useLogout from "@/hooks/useLogout";
+import { SidebarUrl } from "@/utils/sidebarUrl";
 
 const baseDashboardUrl = "/instructor-dashboard";
-function defineUrl(url: string) {
-  return url === "/"
-    ? baseDashboardUrl
-    : baseDashboardUrl.concat(url);
-}
+const sidebarUrl = new SidebarUrl(baseDashboardUrl);
 
 const mainMenuItems = [
-  { title: "Dashboard", url: defineUrl("/"), icon: LayoutDashboard },
+  { title: "Dashboard", url: sidebarUrl.define("/"), icon: LayoutDashboard },
   {
     title: "Recent Activities",
     url: "/appointments",
@@ -56,17 +53,17 @@ const mainMenuItems = [
 const courseManagement = [
   {
     title: "Courses Management",
-    url: defineUrl("/course-management"),
+    url: sidebarUrl.define("/course-management"),
     icon: LayoutList,
   },
   {
     title: "Category Management",
-    url: defineUrl("/category-management"),
+    url: sidebarUrl.define("/category-management"),
     icon: BringToFront,
   },
   {
     title: "Create Category",
-    url: defineUrl("/course/create-category"),
+    url: sidebarUrl.define("/course/create-category"),
     icon: Calendar,
   },
   { title: "Published Course", url: "/patients", icon: Users },
@@ -77,28 +74,28 @@ const courseManagement = [
 const userManagement = [
   {
     title: "Students",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
   {
     title: "Instructors",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
   {
     title: "Admin",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
   {
     title: "Role Management",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
 ];
 
 const settingsItems = [
-  { title: "Profile", url: defineUrl("/profile"), icon: UserCircle },
+  { title: "Profile", url: sidebarUrl.define("/profile"), icon: UserCircle },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 

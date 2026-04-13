@@ -2,48 +2,48 @@
 
 import { NavLink } from "@/components/NavLink";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  Users,
-  Calendar,
-  FileText,
-  Settings,
-  LogOut,
-  ClipboardList,
-  UserCircle,
-} from "lucide-react";
-import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import Link from "next/link";
-import Image from "next/image";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import useLogout from "@/hooks/useLogout";
 import { useSession } from "@/lib/auth-context";
 import { getAvatarInitial } from "@/utils";
-import useLogout from "@/hooks/useLogout";
+import { SidebarUrl } from "@/utils/sidebarUrl";
+import {
+  Calendar,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  UserCircle,
+  Users,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const baseDashboardUrl = "/admin-dashboard";
-function defineUrl(url: string) {
-  return url === "/"
-    ? baseDashboardUrl
-    : baseDashboardUrl.concat(url);
-}
+const sidebarUrl = new SidebarUrl(baseDashboardUrl);
 
 const mainMenuItems = [
-  { title: "Dashboard", url: defineUrl("/"), icon: LayoutDashboard },
+  {
+    title: "Dashboard",
+    url: sidebarUrl.define("/"),
+    icon: LayoutDashboard,
+  },
   {
     title: "Recent Activities",
     url: "/appointments",
@@ -55,17 +55,17 @@ const mainMenuItems = [
 const courseManagement = [
   {
     title: "All Courses",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
   {
     title: "All Category",
-    url: defineUrl("/all-category"),
+    url: sidebarUrl.define("/all-category"),
     icon: Calendar,
   },
   {
     title: "Create Category",
-    url: defineUrl("/course/create-category"),
+    url: sidebarUrl.define("/course/create-category"),
     icon: Calendar,
   },
   { title: "Published Course", url: "/patients", icon: Users },
@@ -76,28 +76,32 @@ const courseManagement = [
 const userManagement = [
   {
     title: "User Management",
-    url: defineUrl("/user-management"),
+    url: sidebarUrl.define("/user-management"),
     icon: LayoutDashboard,
   },
   {
     title: "Students",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
   {
     title: "Instructors",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
   {
     title: "Admin",
-    url: defineUrl("/all-courses"),
+    url: sidebarUrl.define("/all-courses"),
     icon: LayoutDashboard,
   },
 ];
 
 const settingsItems = [
-  { title: "Profile", url: "/profile", icon: UserCircle },
+  {
+    title: "Profile",
+    url: sidebarUrl.define("/profile"),
+    icon: UserCircle,
+  },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
