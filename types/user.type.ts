@@ -12,6 +12,7 @@ export interface IUser {
 }
 
 export interface IUserProfile extends IUser {
+  id?: string;
   address?: string;
   gender?: string;
   age?: number;

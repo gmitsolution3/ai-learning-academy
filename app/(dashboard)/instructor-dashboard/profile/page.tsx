@@ -19,7 +19,7 @@ import {
   VenusAndMars,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -70,6 +70,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useFetchById } from "@/hooks/swr/useFetchById";
 import { IUserProfile } from "@/types";
 import { formatDate, getUserInitials } from "@/utils";
 
@@ -104,40 +105,58 @@ export default function ProfilePage() {
 
   const user = session?.user as IUserProfile;
 
+  const {
+    data,
+    isLoading: userIsLoading,
+    isError,
+    refetch,
+  } = useFetchById("/users/get-user-details", user.id);
+
+  console.log(data);
+
+  const userData = data?.data;
+
+  console.log(userData);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user?.name || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-      address: user?.address || "",
-      gender: user?.gender || "",
-      age: user?.age || undefined,
-      instituteName: user?.instituteName || "",
-      educationLevel: user?.educationLevel || "",
-      bio: user?.bio || "",
-      occupation: user?.occupation || "",
-      image: user?.image || "",
-      imagePublicId: user?.imagePublicId || "",
+      name: userData?.name || "",
+      email: userData?.email || "",
+      phone: userData?.phone || "",
+      address: userData?.address || "",
+      gender: userData?.gender || "",
+      age: userData?.age || undefined,
+      instituteName: userData?.instituteName || "",
+      educationLevel: userData?.educationLevel || "",
+      bio: userData?.bio || "",
+      occupation: userData?.occupation || "",
+      image: userData?.image || "",
+      imagePublicId: userData?.imagePublicId || "",
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      name: userData?.name || "",
+      email: userData?.email || "",
+      phone: userData?.phone || "",
+      address: userData?.address || "",
+      gender: userData?.gender || "",
+      age: userData?.age || undefined,
+      instituteName: userData?.instituteName || "",
+      educationLevel: userData?.educationLevel || "",
+      bio: userData?.bio || "",
+      occupation: userData?.occupation || "",
+      image: userData?.image || "",
+      imagePublicId: userData?.imagePublicId || "",
+    });
+  }, [form, userData, userIsLoading]);
 
   // Handle image upload from ImageUploader
   const handleImageChange = (url: string, public_id: string) => {
     form.setValue("image", url);
     form.setValue("imagePublicId", public_id);
-
-    // If in view mode, update session immediately
-    if (!isEditing) {
-      updateSession({
-        user: {
-          ...user,
-          image: url,
-          imagePublicId: public_id,
-        },
-      });
-      notify.success("Profile picture updated successfully!");
-    }
 
     setIsImageDialogOpen(false);
   };
@@ -155,7 +174,7 @@ export default function ProfilePage() {
       });
 
       if (response.ok) {
-        console.log(await response.json())
+        console.log(await response.json());
         // const updatedUser = await response.json();
         // await updateSession({ user: updatedUser });
         // notify.success("Profile updated successfully!");
