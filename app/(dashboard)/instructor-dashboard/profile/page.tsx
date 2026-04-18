@@ -98,6 +98,51 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+// Right Column Skeleton Loader Component
+function ProfileInfoSkeleton() {
+  return (
+    <Card className="border-white/10 bg-black/40 backdrop-blur-xl shadow-xl animate-pulse">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div className="space-y-2">
+          <div className="h-6 w-32 bg-white/10 rounded"></div>
+          <div className="h-4 w-48 bg-white/10 rounded"></div>
+        </div>
+        <div className="h-10 w-32 bg-white/10 rounded-full"></div>
+      </CardHeader>
+      <Separator className="bg-white/10" />
+      <CardContent className="pt-6">
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 bg-white/10 rounded"></div>
+                  <div className="h-3 w-20 bg-white/10 rounded"></div>
+                </div>
+                <div className="h-4 w-full bg-white/10 rounded ml-6"></div>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 bg-white/10 rounded"></div>
+              <div className="h-3 w-20 bg-white/10 rounded"></div>
+            </div>
+            <div className="h-4 w-full bg-white/10 rounded ml-6"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 bg-white/10 rounded"></div>
+              <div className="h-3 w-20 bg-white/10 rounded"></div>
+            </div>
+            <div className="h-20 w-full bg-white/10 rounded ml-6"></div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function ProfilePage() {
   const { session, setSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
@@ -114,9 +159,6 @@ export default function ProfilePage() {
   } = useFetchById("/users/get-user-details", user?.id);
 
   const userData = data?.data;
-
-  console.log({ user });
-  // console.log({userData});
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -358,286 +400,261 @@ export default function ProfilePage() {
             </Card>
           </div>
 
-          {/* Right Column - Profile Details Form/Display */}
+          {/* Right Column - Profile Details Form/Display with Skeleton Loader */}
           <div className="lg:col-span-2">
-            <Card className="border-white/10 bg-black/40 backdrop-blur-xl shadow-xl">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">
-                    {isEditing
-                      ? "Edit Profile"
-                      : "Profile Information"}
-                  </CardTitle>
-                  <CardDescription className="text-white/50">
-                    {isEditing
-                      ? "Update your personal information"
-                      : "View your personal information"}
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={() => {
-                    if (isEditing) {
-                      form.reset();
+            {userIsLoading ? (
+              <ProfileInfoSkeleton />
+            ) : (
+              <Card className="border-white/10 bg-black/40 backdrop-blur-xl shadow-xl">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">
+                      {isEditing
+                        ? "Edit Profile"
+                        : "Profile Information"}
+                    </CardTitle>
+                    <CardDescription className="text-white/50">
+                      {isEditing
+                        ? "Update your personal information"
+                        : "View your personal information"}
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      if (isEditing) {
+                        form.reset();
+                      }
+                      setIsEditing(!isEditing);
+                    }}
+                    variant={isEditing ? "outline" : "default"}
+                    className={
+                      isEditing
+                        ? "border-white/20 bg-white/5 text-white hover:bg-white/10 rounded-full"
+                        : "bg-gradient-to-r from-secondary to-primary text-white rounded-full"
                     }
-                    setIsEditing(!isEditing);
-                  }}
-                  variant={isEditing ? "outline" : "default"}
-                  className={
-                    isEditing
-                      ? "border-white/20 bg-white/5 text-white hover:bg-white/10 rounded-full"
-                      : "bg-gradient-to-r from-secondary to-primary text-white rounded-full"
-                  }
-                >
-                  {isEditing ? (
-                    <>
-                      <X className="mr-2 h-4 w-4" />
-                      Cancel
-                    </>
-                  ) : (
-                    <>
-                      <Edit2 className="mr-2 h-4 w-4" />
-                      Update Profile
-                    </>
-                  )}
-                </Button>
-              </CardHeader>
-              <Separator className="bg-white/10" />
-              <CardContent className="pt-6">
-                {isEditing ? (
-                  <form
-                    id="profile-form"
-                    onSubmit={form.handleSubmit(onSubmit)}
                   >
-                    {/* Hidden image fields */}
-                    <input
-                      type="hidden"
-                      {...form.register("image")}
-                    />
-                    <input
-                      type="hidden"
-                      {...form.register("imagePublicId")}
-                    />
+                    {isEditing ? (
+                      <>
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel
+                      </>
+                    ) : (
+                      <>
+                        <Edit2 className="mr-2 h-4 w-4" />
+                        Update Profile
+                      </>
+                    )}
+                  </Button>
+                </CardHeader>
+                <Separator className="bg-white/10" />
+                <CardContent className="pt-6">
+                  {isEditing ? (
+                    <form
+                      id="profile-form"
+                      onSubmit={form.handleSubmit(onSubmit)}
+                    >
+                      {/* Hidden image fields */}
+                      <input
+                        type="hidden"
+                        {...form.register("image")}
+                      />
+                      <input
+                        type="hidden"
+                        {...form.register("imagePublicId")}
+                      />
 
-                    <FieldGroup className="space-y-5">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Name Field */}
-                        <Controller
-                          name="name"
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="profile-name">
-                                Full Name
-                              </FieldLabel>
-                              <Input
-                                {...field}
-                                id="profile-name"
-                                aria-invalid={fieldState.invalid}
-                                placeholder="Your full name"
-                                className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError
-                                  errors={[fieldState.error]}
+                      <FieldGroup className="space-y-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Name Field */}
+                          <Controller
+                            name="name"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="profile-name">
+                                  Full Name
+                                </FieldLabel>
+                                <Input
+                                  {...field}
+                                  id="profile-name"
+                                  aria-invalid={fieldState.invalid}
+                                  placeholder="Your full name"
+                                  className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
                                 />
-                              )}
-                            </Field>
-                          )}
-                        />
+                                {fieldState.invalid && (
+                                  <FieldError
+                                    errors={[fieldState.error]}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                          />
 
-                        {/* Email Field (Disabled) */}
-                        <Controller
-                          name="email"
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="profile-email">
-                                Email
-                              </FieldLabel>
-                              <Input
-                                {...field}
-                                id="profile-email"
-                                disabled
-                                className="border-white/10 bg-black/40 text-white/50 cursor-not-allowed"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError
-                                  errors={[fieldState.error]}
+                          {/* Email Field (Disabled) */}
+                          <Controller
+                            name="email"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="profile-email">
+                                  Email
+                                </FieldLabel>
+                                <Input
+                                  {...field}
+                                  id="profile-email"
+                                  disabled
+                                  className="border-white/10 bg-black/40 text-white/50 cursor-not-allowed"
                                 />
-                              )}
-                            </Field>
-                          )}
-                        />
+                                {fieldState.invalid && (
+                                  <FieldError
+                                    errors={[fieldState.error]}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                          />
 
-                        {/* Phone Field */}
-                        <Controller
-                          name="phone"
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="profile-phone">
-                                Phone Number
-                              </FieldLabel>
-                              <Input
-                                {...field}
-                                id="profile-phone"
-                                aria-invalid={fieldState.invalid}
-                                placeholder="Your phone number"
-                                className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError
-                                  errors={[fieldState.error]}
+                          {/* Phone Field */}
+                          <Controller
+                            name="phone"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="profile-phone">
+                                  Phone Number
+                                </FieldLabel>
+                                <Input
+                                  {...field}
+                                  id="profile-phone"
+                                  aria-invalid={fieldState.invalid}
+                                  placeholder="Your phone number"
+                                  className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
                                 />
-                              )}
-                            </Field>
-                          )}
-                        />
+                                {fieldState.invalid && (
+                                  <FieldError
+                                    errors={[fieldState.error]}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                          />
 
-                        {/* Gender Field */}
-                        <Controller
-                          name="gender"
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="profile-gender">
-                                Gender
-                              </FieldLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                value={field.value}
-                              >
-                                <SelectTrigger
-                                  id="profile-gender"
-                                  className="border-white/10 bg-black/40 text-white focus:border-secondary"
+                          {/* Gender Field */}
+                          <Controller
+                            name="gender"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="profile-gender">
+                                  Gender
+                                </FieldLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  value={field.value}
                                 >
-                                  <SelectValue placeholder="Select gender" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-black/95 border-white/10 text-white">
-                                  <SelectItem value="male">
-                                    Male
-                                  </SelectItem>
-                                  <SelectItem value="female">
-                                    Female
-                                  </SelectItem>
-                                  <SelectItem value="other">
-                                    Other
-                                  </SelectItem>
-                                  <SelectItem value="prefer-not-to-say">
-                                    Prefer not to say
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {fieldState.invalid && (
-                                <FieldError
-                                  errors={[fieldState.error]}
-                                />
-                              )}
-                            </Field>
-                          )}
-                        />
+                                  <SelectTrigger
+                                    id="profile-gender"
+                                    className="border-white/10 bg-black/40 text-white focus:border-secondary"
+                                  >
+                                    <SelectValue placeholder="Select gender" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-black/95 border-white/10 text-white">
+                                    <SelectItem value="male">
+                                      Male
+                                    </SelectItem>
+                                    <SelectItem value="female">
+                                      Female
+                                    </SelectItem>
+                                    <SelectItem value="other">
+                                      Other
+                                    </SelectItem>
+                                    <SelectItem value="prefer-not-to-say">
+                                      Prefer not to say
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                {fieldState.invalid && (
+                                  <FieldError
+                                    errors={[fieldState.error]}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                          />
 
-                        {/* Age Field */}
-                        <Controller
-                          name="age"
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="profile-age">
-                                Age
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                {...field}
-                                id="profile-age"
-                                aria-invalid={fieldState.invalid}
-                                placeholder="Your age"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.valueAsNumber,
-                                  )
-                                }
-                                className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError
-                                  errors={[fieldState.error]}
+                          {/* Age Field */}
+                          <Controller
+                            name="age"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="profile-age">
+                                  Age
+                                </FieldLabel>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  id="profile-age"
+                                  aria-invalid={fieldState.invalid}
+                                  placeholder="Your age"
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.valueAsNumber,
+                                    )
+                                  }
+                                  className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
                                 />
-                              )}
-                            </Field>
-                          )}
-                        />
+                                {fieldState.invalid && (
+                                  <FieldError
+                                    errors={[fieldState.error]}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                          />
 
-                        {/* Education Level Field */}
-                        <Controller
-                          name="educationLevel"
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="profile-education">
-                                Education Level
-                              </FieldLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                value={field.value}
-                              >
-                                <SelectTrigger
-                                  id="profile-education"
-                                  className="border-white/10 bg-black/40 text-white focus:border-secondary"
+                          {/* Education Level Field */}
+                          <Controller
+                            name="educationLevel"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="profile-education">
+                                  Education Level
+                                </FieldLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  value={field.value}
                                 >
-                                  <SelectValue placeholder="Select education level" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-black/95 border-white/10 text-white">
-                                  <SelectItem value="high-school">
-                                    High School
-                                  </SelectItem>
-                                  <SelectItem value="bachelor">
-                                    Bachelor's Degree
-                                  </SelectItem>
-                                  <SelectItem value="master">
-                                    Master's Degree
-                                  </SelectItem>
-                                  <SelectItem value="phd">
-                                    PhD
-                                  </SelectItem>
-                                  <SelectItem value="diploma">
-                                    Diploma
-                                  </SelectItem>
-                                  <SelectItem value="other">
-                                    Other
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {fieldState.invalid && (
-                                <FieldError
-                                  errors={[fieldState.error]}
-                                />
-                              )}
-                            </Field>
-                          )}
-                        />
-
-                        {/* Institute Name Field - Full Width */}
-                        <div className="md:col-span-2">
-                          <Controller
-                            name="instituteName"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field
-                                data-invalid={fieldState.invalid}
-                              >
-                                <FieldLabel htmlFor="profile-institute">
-                                  Institute Name
-                                </FieldLabel>
-                                <Input
-                                  {...field}
-                                  id="profile-institute"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Your educational institute"
-                                  className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
-                                />
+                                  <SelectTrigger
+                                    id="profile-education"
+                                    className="border-white/10 bg-black/40 text-white focus:border-secondary"
+                                  >
+                                    <SelectValue placeholder="Select education level" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-black/95 border-white/10 text-white">
+                                    <SelectItem value="high-school">
+                                      High School
+                                    </SelectItem>
+                                    <SelectItem value="bachelor">
+                                      Bachelor's Degree
+                                    </SelectItem>
+                                    <SelectItem value="master">
+                                      Master's Degree
+                                    </SelectItem>
+                                    <SelectItem value="phd">
+                                      PhD
+                                    </SelectItem>
+                                    <SelectItem value="diploma">
+                                      Diploma
+                                    </SelectItem>
+                                    <SelectItem value="other">
+                                      Other
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
                                 {fieldState.invalid && (
                                   <FieldError
                                     errors={[fieldState.error]}
@@ -646,207 +663,236 @@ export default function ProfilePage() {
                               </Field>
                             )}
                           />
-                        </div>
 
-                        {/* Occupation Field */}
-                        <div className="md:col-span-2">
-                          <Controller
-                            name="occupation"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field
-                                data-invalid={fieldState.invalid}
-                              >
-                                <FieldLabel htmlFor="profile-occupation">
-                                  Occupation
-                                </FieldLabel>
-                                <Input
-                                  {...field}
-                                  id="profile-occupation"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Your current occupation"
-                                  className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError
-                                    errors={[fieldState.error]}
-                                  />
-                                )}
-                              </Field>
-                            )}
-                          />
-                        </div>
-
-                        {/* Address Field - Full Width */}
-                        <div className="md:col-span-2">
-                          <Controller
-                            name="address"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field
-                                data-invalid={fieldState.invalid}
-                              >
-                                <FieldLabel htmlFor="profile-address">
-                                  Address
-                                </FieldLabel>
-                                <Input
-                                  {...field}
-                                  id="profile-address"
-                                  aria-invalid={fieldState.invalid}
-                                  placeholder="Your address"
-                                  className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError
-                                    errors={[fieldState.error]}
-                                  />
-                                )}
-                              </Field>
-                            )}
-                          />
-                        </div>
-
-                        {/* Bio Field with Character Counter */}
-                        <div className="md:col-span-2">
-                          <Controller
-                            name="bio"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field
-                                data-invalid={fieldState.invalid}
-                              >
-                                <FieldLabel htmlFor="profile-bio">
-                                  Bio
-                                </FieldLabel>
-                                <InputGroup>
-                                  <InputGroupTextarea
+                          {/* Institute Name Field - Full Width */}
+                          <div className="md:col-span-2">
+                            <Controller
+                              name="instituteName"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field
+                                  data-invalid={fieldState.invalid}
+                                >
+                                  <FieldLabel htmlFor="profile-institute">
+                                    Institute Name
+                                  </FieldLabel>
+                                  <Input
                                     {...field}
-                                    id="profile-bio"
-                                    placeholder="Tell us a little about yourself..."
-                                    rows={4}
-                                    className="min-h-24 resize-none border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
+                                    id="profile-institute"
                                     aria-invalid={fieldState.invalid}
+                                    placeholder="Your educational institute"
+                                    className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
                                   />
-                                  <InputGroupAddon align="block-end">
-                                    <InputGroupText className="tabular-nums bg-black/60 border-white/10 text-white/60">
-                                      {field.value?.length || 0}/500
-                                      characters
-                                    </InputGroupText>
-                                  </InputGroupAddon>
-                                </InputGroup>
-                                <FieldDescription className="text-white/40">
-                                  Share your background, expertise, or
-                                  interests
-                                </FieldDescription>
-                                {fieldState.invalid && (
-                                  <FieldError
-                                    errors={[fieldState.error]}
+                                  {fieldState.invalid && (
+                                    <FieldError
+                                      errors={[fieldState.error]}
+                                    />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                          </div>
+
+                          {/* Occupation Field */}
+                          <div className="md:col-span-2">
+                            <Controller
+                              name="occupation"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field
+                                  data-invalid={fieldState.invalid}
+                                >
+                                  <FieldLabel htmlFor="profile-occupation">
+                                    Occupation
+                                  </FieldLabel>
+                                  <Input
+                                    {...field}
+                                    id="profile-occupation"
+                                    aria-invalid={fieldState.invalid}
+                                    placeholder="Your current occupation"
+                                    className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
                                   />
-                                )}
-                              </Field>
-                            )}
-                          />
+                                  {fieldState.invalid && (
+                                    <FieldError
+                                      errors={[fieldState.error]}
+                                    />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                          </div>
+
+                          {/* Address Field - Full Width */}
+                          <div className="md:col-span-2">
+                            <Controller
+                              name="address"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field
+                                  data-invalid={fieldState.invalid}
+                                >
+                                  <FieldLabel htmlFor="profile-address">
+                                    Address
+                                  </FieldLabel>
+                                  <Input
+                                    {...field}
+                                    id="profile-address"
+                                    aria-invalid={fieldState.invalid}
+                                    placeholder="Your address"
+                                    className="border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
+                                  />
+                                  {fieldState.invalid && (
+                                    <FieldError
+                                      errors={[fieldState.error]}
+                                    />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                          </div>
+
+                          {/* Bio Field with Character Counter */}
+                          <div className="md:col-span-2">
+                            <Controller
+                              name="bio"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field
+                                  data-invalid={fieldState.invalid}
+                                >
+                                  <FieldLabel htmlFor="profile-bio">
+                                    Bio
+                                  </FieldLabel>
+                                  <InputGroup>
+                                    <InputGroupTextarea
+                                      {...field}
+                                      id="profile-bio"
+                                      placeholder="Tell us a little about yourself..."
+                                      rows={4}
+                                      className="min-h-24 resize-none border-white/10 bg-black/40 text-white placeholder:text-white/30 focus:border-secondary"
+                                      aria-invalid={fieldState.invalid}
+                                    />
+                                    <InputGroupAddon align="block-end">
+                                      <InputGroupText className="tabular-nums bg-black/60 border-white/10 text-white/60">
+                                        {field.value?.length || 0}/500
+                                        characters
+                                      </InputGroupText>
+                                    </InputGroupAddon>
+                                  </InputGroup>
+                                  <FieldDescription className="text-white/40">
+                                    Share your background, expertise, or
+                                    interests
+                                  </FieldDescription>
+                                  {fieldState.invalid && (
+                                    <FieldError
+                                      errors={[fieldState.error]}
+                                    />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                          </div>
                         </div>
+                      </FieldGroup>
+                    </form>
+                  ) : (
+                    <div className="space-y-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <InfoItem
+                          icon={User}
+                          label="Full Name"
+                          value={userData?.name}
+                        />
+                        <InfoItem
+                          icon={Mail}
+                          label="Email"
+                          value={userData?.email}
+                        />
+                        <InfoItem
+                          icon={Phone}
+                          label="Phone"
+                          value={userData?.phone || "Not provided"}
+                        />
+                        <InfoItem
+                          icon={VenusAndMars}
+                          label="Gender"
+                          value={userData?.gender || "Not provided"}
+                        />
+                        <InfoItem
+                          icon={Calendar}
+                          label="Age"
+                          value={
+                            userData?.age
+                              ? `${userData?.age} years`
+                              : "Not provided"
+                          }
+                        />
+                        <InfoItem
+                          icon={GraduationCap}
+                          label="Education Level"
+                          value={
+                            userData?.educationLevel || "Not provided"
+                          }
+                        />
+                        <InfoItem
+                          icon={School}
+                          label="Institute"
+                          value={
+                            userData?.instituteName || "Not provided"
+                          }
+                        />
+                        <InfoItem
+                          icon={Briefcase}
+                          label="Occupation"
+                          value={userData?.occupation || "Not provided"}
+                        />
                       </div>
-                    </FieldGroup>
-                  </form>
-                ) : (
-                  <div className="space-y-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <InfoItem
+                        icon={MapPin}
+                        label="Address"
+                        value={userData?.address || "Not provided"}
+                        fullWidth
+                      />
                       <InfoItem
                         icon={User}
-                        label="Full Name"
-                        value={userData?.name}
-                      />
-                      <InfoItem
-                        icon={Mail}
-                        label="Email"
-                        value={userData?.email}
-                      />
-                      <InfoItem
-                        icon={Phone}
-                        label="Phone"
-                        value={userData?.phone || "Not provided"}
-                      />
-                      <InfoItem
-                        icon={VenusAndMars}
-                        label="Gender"
-                        value={userData?.gender || "Not provided"}
-                      />
-                      <InfoItem
-                        icon={Calendar}
-                        label="Age"
-                        value={
-                          userData?.age
-                            ? `${userData?.age} years`
-                            : "Not provided"
-                        }
-                      />
-                      <InfoItem
-                        icon={GraduationCap}
-                        label="Education Level"
-                        value={
-                          userData?.educationLevel || "Not provided"
-                        }
-                      />
-                      <InfoItem
-                        icon={School}
-                        label="Institute"
-                        value={
-                          userData?.instituteName || "Not provided"
-                        }
-                      />
-                      <InfoItem
-                        icon={Briefcase}
-                        label="Occupation"
-                        value={userData?.occupation || "Not provided"}
+                        label="Bio"
+                        value={userData?.bio || "Not provided"}
+                        fullWidth
                       />
                     </div>
-                    <InfoItem
-                      icon={MapPin}
-                      label="Address"
-                      value={userData?.address || "Not provided"}
-                      fullWidth
-                    />
-                    <InfoItem
-                      icon={User}
-                      label="Bio"
-                      value={userData?.bio || "Not provided"}
-                      fullWidth
-                    />
-                  </div>
+                  )}
+                </CardContent>
+                {isEditing && (
+                  <CardFooter>
+                    <Field orientation="horizontal" className="gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => form.reset()}
+                        className="border-white/20 bg-white/5 text-white hover:bg-white/10 rounded-full"
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        type="submit"
+                        form="profile-form"
+                        disabled={isLoading}
+                        className="bg-gradient-to-r from-secondary to-primary text-white rounded-full"
+                      >
+                        {isLoading ? (
+                          "Saving..."
+                        ) : (
+                          <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Changes
+                          </>
+                        )}
+                      </Button>
+                    </Field>
+                  </CardFooter>
                 )}
-              </CardContent>
-              {isEditing && (
-                <CardFooter>
-                  <Field orientation="horizontal" className="gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => form.reset()}
-                      className="border-white/20 bg-white/5 text-white hover:bg-white/10 rounded-full"
-                    >
-                      Reset
-                    </Button>
-                    <Button
-                      type="submit"
-                      form="profile-form"
-                      disabled={isLoading}
-                      className="bg-gradient-to-r from-secondary to-primary text-white rounded-full"
-                    >
-                      {isLoading ? (
-                        "Saving..."
-                      ) : (
-                        <>
-                          <Save className="mr-2 h-4 w-4" />
-                          Save Changes
-                        </>
-                      )}
-                    </Button>
-                  </Field>
-                </CardFooter>
-              )}
-            </Card>
+              </Card>
+            )}
           </div>
         </div>
       </div>
