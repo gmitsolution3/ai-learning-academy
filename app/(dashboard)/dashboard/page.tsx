@@ -1,11 +1,11 @@
 // app/user-dashboard/page.tsx
 "use client";
-import { useState } from "react";
-import CourseCard from "@/components/StudentDashboard/CourseCard";
-import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CourseCard from "@/components/UserDashboard/CourseCard";
+import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // Mock course data type
 interface Course {
@@ -115,7 +115,7 @@ export default function UserDashboard() {
 
   // Handle continue course action
   const handleContinueCourse = (courseId: number) => {
-    console.log("hello")
+    console.log("hello");
     router.push("/dashboard/course/react");
   };
 

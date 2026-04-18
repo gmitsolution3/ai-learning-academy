@@ -21,3 +21,10 @@ export interface IUserProfile extends IUser {
   bio?: string;
   occupation?: string;
 }
+
+export interface IUserStudentProfile extends IUserProfile {
+  enrolledCourses?: string[];
+  completedCourses?: string[];
+  totalLearningHours?: number;
+  certificates?: string[];
+}
