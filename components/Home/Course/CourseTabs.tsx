@@ -7,7 +7,7 @@ import { ICategoryListType } from "@/types/category.type";
 import { RefreshCw, Sparkles } from "lucide-react";
 import { useState } from "react";
 import CategoryLoader from "./CategoryLoader";
-
+import CourseCardLoader from "./CourseCardLoader";
 
 export default function CourseTabs({
   showCTA = true,
@@ -124,14 +124,7 @@ export default function CourseTabs({
       {/* Courses Grid with Loading and Error States */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mt-10 sm:mt-12">
         {/* Show loading state for courses */}
-        {isCoursesLoading && (
-          <div className="col-span-full flex justify-center items-center py-12">
-            <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-              <p className="text-gray-400 mt-2">Loading courses...</p>
-            </div>
-          </div>
-        )}
+        {isCoursesLoading && <CourseCardLoader />}
 
         {/* Show error state for courses */}
         {isCoursesError && !isCoursesLoading && (
