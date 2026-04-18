@@ -73,6 +73,7 @@ import { Separator } from "@/components/ui/separator";
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import { IUserProfile } from "@/types";
 import { formatDate, getUserInitials } from "@/utils";
+import { mutate } from "swr";
 
 // Form validation schema
 const profileFormSchema = z.object({
@@ -98,7 +99,7 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function ProfilePage() {
-  const { session, updateSession } = useSession();
+  const { session, setSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
@@ -110,13 +111,12 @@ export default function ProfilePage() {
     isLoading: userIsLoading,
     isError,
     refetch,
-  } = useFetchById("/users/get-user-details", user.id);
-
-  console.log(data);
+  } = useFetchById("/users/get-user-details", user?.id);
 
   const userData = data?.data;
 
-  console.log(userData);
+  console.log({ user });
+  // console.log({userData});
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -174,10 +174,22 @@ export default function ProfilePage() {
       });
 
       if (response.ok) {
-        console.log(await response.json());
-        // const updatedUser = await response.json();
-        // await updateSession({ user: updatedUser });
-        // notify.success("Profile updated successfully!");
+        const result = await response.json();
+
+        const updatedUser = result?.user;
+        mutate(`/users/get-user-details/${user.id}`);
+
+        setSession({
+          ...session,
+          user: {
+            ...user,
+            name: updatedUser?.name,
+            image: updatedUser?.image,
+            phone: updatedUser?.phone,
+          },
+        });
+        notify.success("Profile updated successfully!");
+
         setIsEditing(false);
       } else {
         throw new Error("Failed to update profile");
@@ -744,58 +756,62 @@ export default function ProfilePage() {
                       <InfoItem
                         icon={User}
                         label="Full Name"
-                        value={user.name}
+                        value={userData?.name}
                       />
                       <InfoItem
                         icon={Mail}
                         label="Email"
-                        value={user.email}
+                        value={userData?.email}
                       />
                       <InfoItem
                         icon={Phone}
                         label="Phone"
-                        value={user.phone || "Not provided"}
+                        value={userData?.phone || "Not provided"}
                       />
                       <InfoItem
                         icon={VenusAndMars}
                         label="Gender"
-                        value={user.gender || "Not provided"}
+                        value={userData?.gender || "Not provided"}
                       />
                       <InfoItem
                         icon={Calendar}
                         label="Age"
                         value={
-                          user.age
-                            ? `${user.age} years`
+                          userData?.age
+                            ? `${userData?.age} years`
                             : "Not provided"
                         }
                       />
                       <InfoItem
                         icon={GraduationCap}
                         label="Education Level"
-                        value={user.educationLevel || "Not provided"}
+                        value={
+                          userData?.educationLevel || "Not provided"
+                        }
                       />
                       <InfoItem
                         icon={School}
                         label="Institute"
-                        value={user.instituteName || "Not provided"}
+                        value={
+                          userData?.instituteName || "Not provided"
+                        }
                       />
                       <InfoItem
                         icon={Briefcase}
                         label="Occupation"
-                        value={user.occupation || "Not provided"}
+                        value={userData?.occupation || "Not provided"}
                       />
                     </div>
                     <InfoItem
                       icon={MapPin}
                       label="Address"
-                      value={user.address || "Not provided"}
+                      value={userData?.address || "Not provided"}
                       fullWidth
                     />
                     <InfoItem
                       icon={User}
                       label="Bio"
-                      value={user.bio || "Not provided"}
+                      value={userData?.bio || "Not provided"}
                       fullWidth
                     />
                   </div>
