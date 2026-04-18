@@ -1,30 +1,31 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
-import {
-  CircleUser,
-  Menu,
-  X,
-  LayoutDashboard,
-  LogOut,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { usePathname } from "next/navigation";
-import { INavItem } from "@/types";
-import { renderNavItem } from "./renderNavItem";
-import { navItems } from "./navItems";
-import { useSession } from "@/lib/auth-context";
-import { getAvatarInitial } from "@/utils";
+import { Button } from "@/components/ui/button";
+import { USER } from "@/constants/role.constant";
 import useLogout from "@/hooks/useLogout";
-import { useRouter } from "next/navigation";
-import { ROLE_ROUTE, ROLE } from "@/utils/roleRoute";
+import { useSession } from "@/lib/auth-context";
+import { INavItem } from "@/types";
+import { getAvatarInitial } from "@/utils";
+import { ROLE, ROLE_ROUTE } from "@/utils/roleRoute";
+import {
+  CircleUser,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  User,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { navItems } from "./navItems";
+import { renderNavItem } from "./renderNavItem";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -181,6 +182,18 @@ export default function Header() {
                     <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                   </button>
+                  {session?.user?.role === USER && (
+                    <button
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        router.push("/dashboard/profile")
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-colors hover:bg-white/10 w-full"
+                    >
+                      <User className="h-4 w-4" />
+                      Profile
+                    </button>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="flex w-full items-center gap-2 px-4 py-2 text-sm text-white transition-colors hover:bg-white/10"
