@@ -6,6 +6,8 @@ import { ICourse } from "@/types";
 import { ICategoryListType } from "@/types/category.type";
 import { RefreshCw, Sparkles } from "lucide-react";
 import { useState } from "react";
+import CategoryLoader from "./CategoryLoader";
+
 
 export default function CourseTabs({
   showCTA = true,
@@ -48,9 +50,8 @@ export default function CourseTabs({
   // Handle categories loading state
   if (isCategoriesLoading) {
     return (
-      <div className="text-center py-8">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-        <p className="text-gray-400 mt-2">Loading categories...</p>
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-10 sm:mt-12 md:mt-16">
+        <CategoryLoader />
       </div>
     );
   }
