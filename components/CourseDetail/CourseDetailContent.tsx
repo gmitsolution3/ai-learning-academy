@@ -171,7 +171,7 @@ export default function CourseDetailContent({
           </CardHeader>
           {courseData?.instructor?.map((instructor) => (
             <CardContent key={instructor?._id}>
-              <div className="flex items-center gap-6 mb-5">
+              <div className="flex items-center gap-6 mb-5 py-8">
                 <Avatar className="h-14 w-14 ring-2 ring-secondary/20">
                   <AvatarImage
                     src={instructor?.image || ""}
@@ -192,9 +192,7 @@ export default function CourseDetailContent({
               </div>
 
               <p className="text-white/80 leading-relaxed mt-4">
-                Lorem ipsum is simply dummy text of the printing and
-                typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s.
+                {instructor?.bio || "এই কোর্সটি পরিচালনা করছেন একজন অভিজ্ঞ ডিজাইনার, যিনি ১০ বছরেরও বেশি সময় ধরে UI/UX ডিজাইন নিয়ে কাজ করছেন। তার কাজের মধ্যে রয়েছে বিভিন্ন আন্তর্জাতিক ব্র্যান্ডের জন্য ডিজাইন করা প্রজেক্ট, এবং তিনি ইউটিউবে হাজার হাজার শিক্ষার্থীকে ডিজাইন শেখাচ্ছেন। তার শিক্ষাদানের পদ্ধতি সহজবোধ্য এবং প্র্যাকটিক্যাল, যা শিক্ষার্থীদের হাতে-কলমে শিখতে সাহায্য করে।"}
               </p>
 
               {/* Statistics Section */}

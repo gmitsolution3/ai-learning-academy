@@ -1,4 +1,4 @@
-import { ICategoryListType, IUser } from "@/types";
+import { ICategoryListType, IUserProfile } from "@/types";
 export interface ICourse {
   _id: string;
   created_at: string;
@@ -28,5 +28,5 @@ export interface ICourse {
 }
 
 export interface ICourseDetail extends ICourse {
-  instructor: IUser[];
+  instructor: IUserProfile[];
 }
