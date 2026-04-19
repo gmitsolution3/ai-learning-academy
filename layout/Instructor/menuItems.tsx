@@ -75,16 +75,6 @@ export const userManagement = [
     url: dashboardMenu.defineUrl("/all-courses"),
     icon: LayoutDashboard,
   },
-  {
-    title: "Admin",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Role Management",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
-  },
 ];
 
 export const settingsItems = [

@@ -7,11 +7,11 @@ export const useFetchById = <T = any>(
 ) => {
   const key = id ? `${url}/${id}` : null;
 
-  const { data, error, isLoading, mutate } = useSWR<T>(key, fetcher);
+  const { data, error, isLoading, mutate, isValidating } = useSWR<T>(key, fetcher);
 
   return {
     data,
-    isLoading,
+    isLoading: isLoading || isValidating,
     isError: error,
     refetch: mutate,
   };
