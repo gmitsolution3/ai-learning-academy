@@ -1,46 +1,11 @@
 "use client";
 
-import { use } from "react";
-import { useFetchById } from "@/hooks/swr/useFetchById";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  useReactTable,
-  ColumnDef,
-  SortingState,
-} from "@tanstack/react-table";
+import ModuleManagementEmpty from "@/components/InstructorDashboard/empties/ModuleManagementEmpty";
+import ModuleManagementError from "@/components/InstructorDashboard/errors/ModuleManagementError";
+import ModuleManagementLoader from "@/components/InstructorDashboard/loaders/ModuleManagementLoader";
+import CreateModuleModal from "@/components/InstructorDashboard/modals/CreateModuleModal";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  RefreshCw,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Plus,
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-  GripVertical,
-  Clock,
-  FolderOpen,
-} from "lucide-react";
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -55,62 +20,55 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useFetchById } from "@/hooks/swr/useFetchById";
+import { IModule } from "@/types";
 import { formatDate } from "@/utils";
-import {IModule} from "@/types";
-import ModuleManagementLoader from "@/components/InstructorDashboard/loaders/ModuleManagementLoader";
-import ModuleManagementError from "@/components/InstructorDashboard/errors/ModuleManagementError";
-import ModuleManagementEmpty from "@/components/InstructorDashboard/empties/ModuleManagementEmpty";
-import CreateModuleModal from "@/components/InstructorDashboard/modals/CreateModuleModal";
-
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Clock,
+  Edit,
+  Eye,
+  GripVertical,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Trash2,
+} from "lucide-react";
+import { use, useState } from "react";
+import ModuleManagementActionCell from "@/components/InstructorDashboard/actionCells/ModuleManagementActionCell";
 
 // Format order index with suffix
 const formatOrderIndex = (index: number) => {
   const suffixes = ["th", "st", "nd", "rd"];
   const v = index % 100;
-  const suffix = suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
+  const suffix =
+    suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
   return `${index}${suffix}`;
-};
-
-// Actions cell component
-const ModuleActionsCell = ({ module, onModuleDeleted }: { module: IModule; onModuleDeleted?: () => void }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-
-  return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => setShowViewModal(true)}>
-            <Eye className="mr-2 h-4 w-4" />
-            View Details
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShowEditModal(true)}>
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="text-red-600 focus:text-red-600"
-            onClick={() => setShowDeleteDialog(true)}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Modals would go here */}
-    </>
-  );
 };
 
 // Table columns definition
@@ -133,7 +91,9 @@ const columns: ColumnDef<IModule>[] = [
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() =>
+            column.toggleSorting(column.getIsSorted() === "asc")
+          }
           className="p-0 hover:bg-transparent"
         >
           Module Title
@@ -163,7 +123,9 @@ const columns: ColumnDef<IModule>[] = [
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() =>
+            column.toggleSorting(column.getIsSorted() === "asc")
+          }
           className="p-0 hover:bg-transparent"
         >
           Created
@@ -192,7 +154,12 @@ const columns: ColumnDef<IModule>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <ModuleActionsCell module={row.original} />,
+    cell: ({ row }) => (
+      <ModuleManagementActionCell
+        module={row.original}
+        courseId={row.original.course_id}
+      />
+    ),
   },
 ];
 
@@ -208,7 +175,7 @@ export default function ModuleManagementPage({
 
   const { data, isLoading, isError, refetch } = useFetchById(
     "/modules/get-modules-by-course-id",
-    courseId
+    courseId,
   );
 
   const moduleList: IModule[] = data?.data || [];
@@ -247,8 +214,8 @@ export default function ModuleManagementPage({
   if (moduleList.length === 0) {
     return (
       <>
-        <ModuleManagementEmpty 
-          refetch={refetch} 
+        <ModuleManagementEmpty
+          refetch={refetch}
           onOpenChange={setShowCreateModal}
           courseId={courseId}
         />
@@ -273,7 +240,8 @@ export default function ModuleManagementPage({
                   Module Management
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Course ID: <code className="text-xs">{courseId}</code>
+                  Course ID:{" "}
+                  <code className="text-xs">{courseId}</code>
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -324,7 +292,7 @@ export default function ModuleManagementPage({
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
-                                header.getContext()
+                                header.getContext(),
                               )}
                         </TableHead>
                       ))}
@@ -338,7 +306,7 @@ export default function ModuleManagementPage({
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}
@@ -359,7 +327,7 @@ export default function ModuleManagementPage({
                 {Math.min(
                   (table.getState().pagination.pageIndex + 1) *
                     table.getState().pagination.pageSize,
-                  table.getFilteredRowModel().rows.length
+                  table.getFilteredRowModel().rows.length,
                 )}{" "}
                 of {table.getFilteredRowModel().rows.length} modules
               </div>

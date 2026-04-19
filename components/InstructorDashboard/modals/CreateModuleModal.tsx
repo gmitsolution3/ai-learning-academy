@@ -96,16 +96,6 @@ export default function CreateModuleModal({
     }
   }, [open, form, nextOrderIndex]);
 
-  // Auto-generate slug from title
-  const generateSlugFromTitle = (title: string) => {
-    return title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/[\s_-]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  };
-
   const onSubmit = async (values: ModuleFormValues) => {
     setIsSubmitting(true);
     try {
@@ -172,7 +162,7 @@ export default function CreateModuleModal({
                     ) {
                       form.setValue(
                         "slug",
-                        generateSlugFromTitle(value),
+                        generateSlug(value),
                         {
                           shouldValidate: true,
                         },
