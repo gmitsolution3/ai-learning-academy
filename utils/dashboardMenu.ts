@@ -1,11 +1,11 @@
-export class SidebarUrl {
+export class DashboardMenu {
   baseUrl: string;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
-  define(url: string) {
+  defineUrl(url: string) {
     return url === "/" ? this.baseUrl : this.baseUrl.concat(url);
   }
 }

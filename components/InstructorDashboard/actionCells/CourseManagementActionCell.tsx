@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { ICourse } from "@/types";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +9,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
+import { ICourse } from "@/types";
+import {
+  Edit,
+  Eye,
+  MoreHorizontal,
+  Trash2,
+  VectorSquare,
+} from "lucide-react";
+import { useState } from "react";
 
-import ViewCourseModal from "../modals/ViewCourseModal";
 import DeleteCourseModal from "../modals/DeleteCourseModal";
-import EditCourseModal from './../modals/EditCourseModal';
+import ViewCourseModal from "../modals/ViewCourseModal";
+import EditCourseModal from "./../modals/EditCourseModal";
+import { useRouter } from "next/navigation";
 
 export default function CourseManagementActionCell({
   course,
@@ -30,6 +37,8 @@ export default function CourseManagementActionCell({
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  const router = useRouter();
+
   return (
     <>
       <DropdownMenu>
@@ -41,6 +50,16 @@ export default function CourseManagementActionCell({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() =>
+              router.push(
+                `/instructor-dashboard/modules-management/${course?._id}`,
+              )
+            }
+          >
+            <VectorSquare className="mr-2 h-4 w-4" />
+            Modules
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowViewModal(true)}>
             <Eye className="mr-2 h-4 w-4" />
             View Details

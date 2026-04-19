@@ -22,88 +22,15 @@ import {
 import useLogout from "@/hooks/useLogout";
 import { useSession } from "@/lib/auth-context";
 import { getAvatarInitial } from "@/utils";
-import { SidebarUrl } from "@/utils/sidebarUrl";
-import {
-  Calendar,
-  FileText,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  UserCircle,
-  Users,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const baseDashboardUrl = "/admin-dashboard";
-const sidebarUrl = new SidebarUrl(baseDashboardUrl);
-
-const mainMenuItems = [
-  {
-    title: "Dashboard",
-    url: sidebarUrl.define("/"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Recent Activities",
-    url: "/appointments",
-    icon: Calendar,
-  },
-  { title: "Notifications", url: "/patients", icon: Users },
-];
-
-const courseManagement = [
-  {
-    title: "All Courses",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "All Category",
-    url: sidebarUrl.define("/all-category"),
-    icon: Calendar,
-  },
-  {
-    title: "Create Category",
-    url: sidebarUrl.define("/course/create-category"),
-    icon: Calendar,
-  },
-  { title: "Published Course", url: "/patients", icon: Users },
-  { title: "Draft Course Records", url: "/records", icon: FileText },
-  { title: "Course Curriculmn", url: "/records", icon: FileText },
-];
-
-const userManagement = [
-  {
-    title: "User Management",
-    url: sidebarUrl.define("/user-management"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Students",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Instructors",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Admin",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-];
-
-const settingsItems = [
-  {
-    title: "Profile",
-    url: sidebarUrl.define("/profile"),
-    icon: UserCircle,
-  },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
+import {
+  courseManagement,
+  mainMenuItems,
+  settingsItems,
+  userManagement,
+} from "./menuItems";
 
 export function DashboardSidebar() {
   const { state } = useSidebar();

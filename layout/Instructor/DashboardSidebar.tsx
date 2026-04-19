@@ -2,102 +2,35 @@
 
 import { NavLink } from "@/components/NavLink";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  Users,
-  Calendar,
-  FileText,
-  Settings,
-  LogOut,
-  UserCircle,
-  LayoutList,
-  BringToFront
-} from "lucide-react";
-import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import Link from "next/link";
-import Image from "next/image";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import useLogout from "@/hooks/useLogout";
 import { useSession } from "@/lib/auth-context";
 import { getAvatarInitial } from "@/utils";
-import useLogout from "@/hooks/useLogout";
-import { SidebarUrl } from "@/utils/sidebarUrl";
-
-const baseDashboardUrl = "/instructor-dashboard";
-const sidebarUrl = new SidebarUrl(baseDashboardUrl);
-
-const mainMenuItems = [
-  { title: "Dashboard", url: sidebarUrl.define("/"), icon: LayoutDashboard },
-  {
-    title: "Recent Activities",
-    url: "/appointments",
-    icon: Calendar,
-  },
-  { title: "Notifications", url: "/patients", icon: Users },
-];
-
-const courseManagement = [
-  {
-    title: "Courses Management",
-    url: sidebarUrl.define("/course-management"),
-    icon: LayoutList,
-  },
-  {
-    title: "Category Management",
-    url: sidebarUrl.define("/category-management"),
-    icon: BringToFront,
-  },
-  {
-    title: "Create Category",
-    url: sidebarUrl.define("/course/create-category"),
-    icon: Calendar,
-  },
-  { title: "Published Course", url: "/patients", icon: Users },
-  { title: "Draft Course Records", url: "/records", icon: FileText },
-  { title: "Course Curriculmn", url: "/records", icon: FileText },
-];
-
-const userManagement = [
-  {
-    title: "Students",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Instructors",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Admin",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Role Management",
-    url: sidebarUrl.define("/all-courses"),
-    icon: LayoutDashboard,
-  },
-];
-
-const settingsItems = [
-  { title: "Profile", url: sidebarUrl.define("/profile"), icon: UserCircle },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
+import { LogOut } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  courseManagement,
+  mainMenuItems,
+  settingsItems,
+  userManagement,
+} from "./menuItems";
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
