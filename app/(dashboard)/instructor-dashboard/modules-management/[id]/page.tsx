@@ -61,7 +61,7 @@ import {IModule} from "@/types";
 import ModuleManagementLoader from "@/components/InstructorDashboard/loaders/ModuleManagementLoader";
 import ModuleManagementError from "@/components/InstructorDashboard/errors/ModuleManagementError";
 import ModuleManagementEmpty from "@/components/InstructorDashboard/empties/ModuleManagementEmpty";
-// import CreateModuleModal from "@/components/InstructorDashboard/modals/CreateModuleModal";
+import CreateModuleModal from "@/components/InstructorDashboard/modals/CreateModuleModal";
 
 
 // Format order index with suffix
@@ -252,12 +252,12 @@ export default function ModuleManagementPage({
           onOpenChange={setShowCreateModal}
           courseId={courseId}
         />
-        {/* <CreateModuleModal
+        <CreateModuleModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
           onSuccess={refetch}
           courseId={courseId}
-        /> */}
+        />
       </>
     );
   }
@@ -408,12 +408,12 @@ export default function ModuleManagementPage({
         </Card>
       </section>
 
-      {/* <CreateModuleModal
+      <CreateModuleModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
         onSuccess={refetch}
         courseId={courseId}
-      /> */}
+      />
     </>
   );
 }
