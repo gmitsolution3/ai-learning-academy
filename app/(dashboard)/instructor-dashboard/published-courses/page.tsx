@@ -4,7 +4,6 @@ import CourseManagementActionCell from "@/components/InstructorDashboard/actionC
 import CourseManagementEmpty from "@/components/InstructorDashboard/empties/CourseManagementEmpty";
 import CourseManagementError from "@/components/InstructorDashboard/errors/CourseManagementError";
 import CourseManagementLoader from "@/components/InstructorDashboard/loaders/CourseManagementLoader";
-import CreateCourseModal from "@/components/InstructorDashboard/modals/CreateCourseModal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -49,15 +48,13 @@ import {
   ChevronsRight,
   Clock,
   FolderOpen,
-  Plus,
   RefreshCw,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-export default function CourseManagementPage() {
+export default function PublishedCoursesPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const { data, isLoading, isError, refetch } = useFetch(
     "/course/get-all-courses",
@@ -67,7 +64,13 @@ export default function CourseManagementPage() {
   );
   const { data: usersData } = useFetch("/users/get-all-users");
 
-  const courseList: ICourse[] = data?.data || [];
+  const courseList = useMemo<ICourse[]>(() => {
+    return (
+      data?.data.filter(
+        (course: ICourse) => course.status === "published",
+      ) ?? []
+    );
+  }, [data, isLoading]);
   const categoryList = categoriesData?.data || [];
   const userList = usersData?.data || [];
 
@@ -273,17 +276,7 @@ export default function CourseManagementPage() {
   if (courseList.length === 0) {
     return (
       <>
-        <CourseManagementEmpty
-          refetch={refetch}
-          onOpenChange={setShowCreateModal}
-        />
-        <CreateCourseModal
-          open={showCreateModal}
-          onOpenChange={setShowCreateModal}
-          onSuccess={refetch}
-          categories={categoryList}
-          instructors={userList}
-        />
+        <CourseManagementEmpty refetch={refetch} />
       </>
     );
   }
@@ -295,7 +288,7 @@ export default function CourseManagementPage() {
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="text-2xl">
-                Course Management
+                Published Courses
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Button
@@ -323,14 +316,6 @@ export default function CourseManagementPage() {
                   className="w-full p-5"
                 />
               </div>
-
-              <Button
-                className="gap-2 p-5"
-                onClick={() => setShowCreateModal(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Create New Course
-              </Button>
             </div>
 
             {/* Table */}
@@ -428,14 +413,6 @@ export default function CourseManagementPage() {
           </CardContent>
         </Card>
       </section>
-
-      <CreateCourseModal
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-        onSuccess={refetch}
-        categories={categoryList}
-        instructors={userList}
-      />
     </>
   );
 }

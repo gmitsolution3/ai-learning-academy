@@ -8,6 +8,7 @@ import {
   Settings,
   UserCircle,
   Users,
+  PackageOpen
 } from "lucide-react";
 
 const baseDashboardUrl = "/instructor-dashboard";
@@ -43,19 +44,14 @@ export const courseManagement = [
     icon: BringToFront,
   },
   {
-    title: "Create Category",
-    url: dashboardMenu.defineUrl("/course/create-category"),
-    icon: Calendar,
-  },
-  {
     title: "Published Course",
-    url: dashboardMenu.defineUrl("/patients"),
-    icon: Users,
+    url: dashboardMenu.defineUrl("/published-courses"),
+    icon: FileText,
   },
   {
-    title: "Draft Course Records",
-    url: dashboardMenu.defineUrl("/records"),
-    icon: FileText,
+    title: "Draft Course",
+    url: dashboardMenu.defineUrl("/draft-courses"),
+    icon: PackageOpen,
   },
   {
     title: "Course Curriculmn",
