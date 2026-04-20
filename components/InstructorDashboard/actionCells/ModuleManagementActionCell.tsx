@@ -1,3 +1,5 @@
+import DeleteModuleModal from "@/components/InstructorDashboard/modals/DeleteModuleModal";
+import EditModuleModal from "@/components/InstructorDashboard/modals/EditModuleModal";
 import ViewModuleModal from "@/components/InstructorDashboard/modals/ViewModuleModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,10 +10,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { IModule } from "@/types/module.type";
-import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  BookCheck,
+  Edit,
+  Eye,
+  MoreHorizontal,
+  Trash2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import EditModuleModal from "@/components/InstructorDashboard/modals/EditModuleModal";
-import DeleteModuleModal from "@/components/InstructorDashboard/modals/DeleteModuleModal";
 
 export default function ModuleManagementActionCell({
   module,
@@ -24,6 +31,8 @@ export default function ModuleManagementActionCell({
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  const router = useRouter();
+
   return (
     <>
       <DropdownMenu>
@@ -35,6 +44,16 @@ export default function ModuleManagementActionCell({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() =>
+              router.push(
+                `/instructor-dashboard/lesson-management/${module._id}`,
+              )
+            }
+          >
+            <BookCheck className="mr-2 h-4 w-4" />
+            Lessons
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowViewModal(true)}>
             <Eye className="mr-2 h-4 w-4" />
             View Details

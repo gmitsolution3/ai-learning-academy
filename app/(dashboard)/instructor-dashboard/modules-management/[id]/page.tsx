@@ -180,6 +180,10 @@ export default function ModuleManagementPage({
 
   const moduleList: IModule[] = data?.data || [];
 
+  const nextOrderIndex = moduleList.sort((a, b) => b.order_index - a.order_index)[0]?.order_index || 0;
+
+  console.log(nextOrderIndex)
+
   const table = useReactTable({
     data: moduleList,
     columns,
@@ -224,6 +228,7 @@ export default function ModuleManagementPage({
           onOpenChange={setShowCreateModal}
           onSuccess={refetch}
           courseId={courseId}
+          nextOrderIndex={nextOrderIndex}
         />
       </>
     );
@@ -381,6 +386,7 @@ export default function ModuleManagementPage({
         onOpenChange={setShowCreateModal}
         onSuccess={refetch}
         courseId={courseId}
+        nextOrderIndex={nextOrderIndex}
       />
     </>
   );
