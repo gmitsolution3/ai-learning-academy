@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { IModule } from "@/types/module.type";
+import ViewModuleModal from "@/components/InstructorDashboard/modals/ViewModuleModal";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,10 +7,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import ViewModuleModal from "@/components/InstructorDashboard/modals/ViewModuleModal";
-// import EditModuleModal from "@/components/InstructorDashboard/modals/EditModuleModal";
+import { IModule } from "@/types/module.type";
+import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { useState } from "react";
+import EditModuleModal from "@/components/InstructorDashboard/modals/EditModuleModal";
 import DeleteModuleModal from "@/components/InstructorDashboard/modals/DeleteModuleModal";
 
 export default function ModuleManagementActionCell({
@@ -65,7 +65,7 @@ export default function ModuleManagementActionCell({
         onOpenChange={setShowDeleteDialog}
       />
 
-      {/* <EditModuleModal
+      <EditModuleModal
         module={module}
         open={showEditModal}
         onOpenChange={setShowEditModal}
@@ -74,8 +74,6 @@ export default function ModuleManagementActionCell({
         }}
         courseId={courseId}
       />
-
-       */}
     </>
   );
 }
