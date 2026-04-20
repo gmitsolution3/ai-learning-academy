@@ -8,7 +8,8 @@ import {
   Settings,
   UserCircle,
   Users,
-  PackageOpen
+  PackageOpen,
+  Bell
 } from "lucide-react";
 
 const baseDashboardUrl = "/instructor-dashboard";
@@ -28,7 +29,7 @@ export const mainMenuItems = [
   {
     title: "Notifications",
     url: "/patients",
-    icon: Users,
+    icon: Bell,
   },
 ];
 
@@ -63,13 +64,13 @@ export const courseManagement = [
 export const userManagement = [
   {
     title: "Students",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    url: dashboardMenu.defineUrl("/students"),
+    icon: Users,
   },
   {
     title: "Instructors",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    url: dashboardMenu.defineUrl("/instructors"),
+    icon: Users,
   },
 ];
 
