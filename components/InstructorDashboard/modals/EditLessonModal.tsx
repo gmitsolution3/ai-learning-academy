@@ -34,6 +34,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { mutate } from "swr";
 
 // Form validation schema
 const lessonSchema = z.object({
@@ -149,6 +150,11 @@ export default function EditLessonModal({
       const res = await updateLesson(lesson.slug, moduleId, payload);
 
       if (res?.success) {
+        mutate(
+          (key) =>
+            typeof key === "string" && key.startsWith("/lessons"),
+        );
+
         notify.success("Lesson updated successfully");
         onOpenChange(false);
 
@@ -391,8 +397,8 @@ export default function EditLessonModal({
                 <code className="text-xs">{moduleId}</code>
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                <span className="font-medium">Lesson ID:</span>{" "}
-                <code className="text-xs">{lesson._id}</code>
+                <span className="font-medium">Lesson Name:</span>{" "}
+                <code className="text-xs">{lesson.title}</code>
               </p>
             </div>
 

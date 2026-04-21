@@ -209,22 +209,6 @@ export default function ViewLessonModal({
               </Field>
             )}
 
-            {/* Lesson ID */}
-            <Field>
-              <FieldLabel>Lesson ID</FieldLabel>
-              <FieldContent>
-                <div className="flex items-center gap-2">
-                  <Hash className="h-4 w-4 text-muted-foreground" />
-                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">
-                    {lesson._id}
-                  </code>
-                </div>
-              </FieldContent>
-              <FieldDescription>
-                Unique identifier for the lesson
-              </FieldDescription>
-            </Field>
-
             {/* Timestamps */}
             {(lesson.created_at || lesson.updated_at) && (
               <div className="space-y-2">

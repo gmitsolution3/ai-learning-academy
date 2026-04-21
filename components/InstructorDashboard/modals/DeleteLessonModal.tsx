@@ -7,17 +7,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useDelete } from "@/hooks/swr/useDelete";
+import { axiosInstance } from "@/lib/axios";
 import { ILesson } from "@/types";
 import { formatDuration } from "@/utils";
 import { formatOrderIndex } from "@/utils/module.utils";
 import { notify } from "@/utils/notify";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { mutate } from "swr";
 
 interface DeleteLessonModalProps {
   lesson: ILesson | null;
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
+  moduleId: string;
 }
 
 // Content type label
@@ -30,23 +32,31 @@ const getContentTypeLabel = (type: string) => {
   return labels[type] || type;
 };
 
+async function deleteLesson(lessonSlug: string, moduleId: string) {
+  const res = await axiosInstance.delete(
+    `/lessons/delete-single-lesson/${lessonSlug}?module_id=${moduleId}`,
+  );
+  return res.data;
+}
+
 export default function DeleteLessonModal({
   lesson,
   open,
   onOpenChange,
+  moduleId,
 }: DeleteLessonModalProps) {
-  const { mutate: deleteLesson, isLoading } = useDelete(
-    `/lessons/delete-lesson/${lesson?._id}`,
-    {
-      revalidateKey: `/lessons/get-lesson-by-module-id?moduleId=${lesson?._id}`,
-    },
-  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async (lesson: ILesson) => {
+    setIsLoading(true);
     try {
-      const res = await deleteLesson(lesson._id);
+      const res = await deleteLesson(lesson.slug, moduleId);
 
       if (res?.success) {
+        mutate(
+          (key) => typeof key === "string" && key.startsWith("/lessons")
+        );
+
         notify.success("Lesson deleted successfully");
         onOpenChange(false);
       } else {
@@ -55,6 +65,8 @@ export default function DeleteLessonModal({
     } catch (error) {
       console.error("Error deleting lesson:", error);
       notify.error("An error occurred while deleting the lesson");
+    } finally {
+      setIsLoading(false);
     }
   };
 

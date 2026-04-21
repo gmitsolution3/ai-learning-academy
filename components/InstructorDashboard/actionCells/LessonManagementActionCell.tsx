@@ -73,6 +73,7 @@ export default function LessonManagementActionCell({
         lesson={lesson}
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
+        moduleId={moduleId}
       />
     </>
   );
