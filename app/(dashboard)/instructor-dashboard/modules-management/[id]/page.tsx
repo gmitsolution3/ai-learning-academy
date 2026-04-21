@@ -1,5 +1,6 @@
 "use client";
 
+import ModuleManagementActionCell from "@/components/InstructorDashboard/actionCells/ModuleManagementActionCell";
 import ModuleManagementEmpty from "@/components/InstructorDashboard/empties/ModuleManagementEmpty";
 import ModuleManagementError from "@/components/InstructorDashboard/errors/ModuleManagementError";
 import ModuleManagementLoader from "@/components/InstructorDashboard/loaders/ModuleManagementLoader";
@@ -12,14 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -32,6 +25,7 @@ import {
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import { IModule } from "@/types";
 import { formatDate } from "@/utils";
+import { formatOrderIndex } from "@/utils/module.utils";
 import {
   ColumnDef,
   flexRender,
@@ -51,25 +45,11 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Clock,
-  Edit,
-  Eye,
   GripVertical,
-  MoreHorizontal,
   Plus,
   RefreshCw,
-  Trash2,
 } from "lucide-react";
 import { use, useState } from "react";
-import ModuleManagementActionCell from "@/components/InstructorDashboard/actionCells/ModuleManagementActionCell";
-
-// Format order index with suffix
-const formatOrderIndex = (index: number) => {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const v = index % 100;
-  const suffix =
-    suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
-  return `${index}${suffix}`;
-};
 
 // Table columns definition
 const columns: ColumnDef<IModule>[] = [
@@ -180,9 +160,11 @@ export default function ModuleManagementPage({
 
   const moduleList: IModule[] = data?.data || [];
 
-  const nextOrderIndex = moduleList.sort((a, b) => b.order_index - a.order_index)[0]?.order_index || 0;
+  const nextOrderIndex =
+    moduleList.sort((a, b) => b.order_index - a.order_index)[0]
+      ?.order_index || 0;
 
-  console.log(nextOrderIndex)
+  console.log(nextOrderIndex);
 
   const table = useReactTable({
     data: moduleList,

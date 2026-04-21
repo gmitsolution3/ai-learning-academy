@@ -1,16 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Plus } from "lucide-react";
+import Link from "next/link";
 
 interface LessonManagementEmptyProps {
   refetch: () => void;
-  onOpenChange: (open: boolean) => void;
   moduleId: string;
 }
 
 export default function LessonManagementEmpty({
   refetch,
-  onOpenChange,
   moduleId,
 }: LessonManagementEmptyProps) {
   return (
@@ -29,12 +28,16 @@ export default function LessonManagementEmpty({
               Module ID: <code className="text-xs">{moduleId}</code>
             </p>
             <div className="flex gap-3">
-              <Button onClick={() => refetch()} variant="outline">
+              <Button onClick={() => refetch()} variant="outline" className="p-5">
                 Refresh
               </Button>
-              <Button onClick={() => onOpenChange(true)} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Create First Lesson
+              <Button asChild className="gap-2 p-5">
+                <Link
+                  href={`/instructor-dashboard/lesson-management/${moduleId}/create-lesson`}
+                >
+                  <Plus className="h-4 w-4" />
+                  Create New Lesson
+                </Link>
               </Button>
             </div>
           </div>

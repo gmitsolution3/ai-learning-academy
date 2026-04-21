@@ -8,36 +8,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useDelete } from "@/hooks/swr/useDelete";
+import { ILesson } from "@/types";
 import { formatDuration } from "@/utils";
+import { formatOrderIndex } from "@/utils/module.utils";
 import { notify } from "@/utils/notify";
 import { Dispatch, SetStateAction } from "react";
 
-interface Lesson {
-  _id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content_type: "text" | "video" | "link";
-  content_url: string;
-  duration: number;
-  order_index: number;
-  is_completed: boolean;
-}
-
 interface DeleteLessonModalProps {
-  lesson: Lesson | null;
+  lesson: ILesson | null;
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
 }
-
-// Format order index with suffix
-const formatOrderIndex = (index: number) => {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const v = index % 100;
-  const suffix =
-    suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
-  return `${index}${suffix}`;
-};
 
 // Content type label
 const getContentTypeLabel = (type: string) => {
@@ -61,7 +42,7 @@ export default function DeleteLessonModal({
     },
   );
 
-  const handleDelete = async (lesson: Lesson) => {
+  const handleDelete = async (lesson: ILesson) => {
     try {
       const res = await deleteLesson(lesson._id);
 

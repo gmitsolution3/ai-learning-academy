@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useDelete } from "@/hooks/swr/useDelete";
 import { IModule } from "@/types";
+import { formatOrderIndex } from "@/utils/module.utils";
 import { notify } from "@/utils/notify";
 import { Dispatch, SetStateAction } from "react";
 
@@ -17,15 +18,6 @@ interface DeleteModuleModalProps {
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
 }
-
-// Format order index with suffix
-const formatOrderIndex = (index: number) => {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const v = index % 100;
-  const suffix =
-    suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
-  return `${index}${suffix}`;
-};
 
 export default function DeleteModuleModal({
   module,

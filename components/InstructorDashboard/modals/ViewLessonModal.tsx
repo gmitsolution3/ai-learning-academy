@@ -16,91 +16,24 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { formatDate, formatDuration } from "@/utils";
+import { ILesson } from "@/types";
+import { formatDate, formatDuration, getYouTubeEmbedUrl } from "@/utils";
+import { formatOrderIndex } from "@/utils/module.utils";
 import {
   Calendar,
-  CheckCircle,
   Clock,
   ExternalLink,
   FileText,
   Hash,
   Link as LinkIcon,
-  Video,
-  XCircle,
 } from "lucide-react";
-
-interface Lesson {
-  _id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content_type: "text" | "video" | "link";
-  content_url: string;
-  duration: number;
-  order_index: number;
-  is_completed: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
+import { ContentTypeBadge, CompletionBadge } from "@/utils/lesson.utils";
 
 interface ViewLessonModalProps {
-  lesson: Lesson | null;
+  lesson: ILesson | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-// Format order index with suffix
-const formatOrderIndex = (index: number) => {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const v = index % 100;
-  const suffix =
-    suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
-  return `${index}${suffix}`;
-};
-
-// Content type badge component
-const ContentTypeBadge = ({ type }: { type: string }) => {
-  const variants: Record<string, string> = {
-    text: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    video:
-      "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-    link: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  };
-
-  const icons: Record<string, React.ReactNode> = {
-    text: <FileText className="mr-1 h-3 w-3" />,
-    video: <Video className="mr-1 h-3 w-3" />,
-    link: <LinkIcon className="mr-1 h-3 w-3" />,
-  };
-
-  const labels: Record<string, string> = {
-    text: "Text",
-    video: "Video",
-    link: "Link",
-  };
-
-  return (
-    <Badge className={variants[type] || variants.text}>
-      {icons[type]}
-      {labels[type] || type}
-    </Badge>
-  );
-};
-
-// Completion status badge
-const CompletionBadge = ({ completed }: { completed: boolean }) => {
-  return completed ? (
-    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-      <CheckCircle className="mr-1 h-3 w-3" />
-      Completed
-    </Badge>
-  ) : (
-    <Badge variant="outline" className="text-muted-foreground">
-      <XCircle className="mr-1 h-3 w-3" />
-      Not Started
-    </Badge>
-  );
-};
 
 export default function ViewLessonModal({
   lesson,
@@ -108,17 +41,6 @@ export default function ViewLessonModal({
   onOpenChange,
 }: ViewLessonModalProps) {
   if (!lesson) return null;
-
-  // Helper to get YouTube embed URL if it's a YouTube video
-  const getYouTubeEmbedUrl = (url: string): string | undefined => {
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = match && match[2].length === 11 ? match[2] : null;
-    return videoId
-      ? `https://www.youtube.com/embed/${videoId}`
-      : undefined;
-  };
 
   const isYouTubeVideo =
     lesson.content_type === "video" &&
@@ -255,8 +177,8 @@ export default function ViewLessonModal({
                         <div className="aspect-video rounded-lg overflow-hidden border bg-muted">
                           <iframe
                             src={getYouTubeEmbedUrl(
-                              lesson.content_url
-                            )}
+                              lesson.content_url,
+                            ) as string}
                             title="YouTube video player"
                             className="w-full h-full"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

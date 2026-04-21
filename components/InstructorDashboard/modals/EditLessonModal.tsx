@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { usePatch } from "@/hooks/swr/usePatch";
 import { axiosInstance } from "@/lib/axios";
 import { ILesson } from "@/types";
 import { generateSlug } from "@/utils";
@@ -147,11 +146,7 @@ export default function EditLessonModal({
         module_id: moduleId,
       };
 
-      const res = await updateLesson(
-        lesson.slug,
-        moduleId,
-        payload,
-      );
+      const res = await updateLesson(lesson.slug, moduleId, payload);
 
       if (res?.success) {
         notify.success("Lesson updated successfully");

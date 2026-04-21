@@ -470,13 +470,14 @@ export default function CreateLessonPage({
                     type="button"
                     variant="outline"
                     onClick={() => router.back()}
+                    className="p-5"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={isLoading || fields.length === 0}
-                    className="gap-2"
+                    className="gap-2 p-5"
                   >
                     {isLoading && (
                       <Loader2 className="h-4 w-4 animate-spin" />
