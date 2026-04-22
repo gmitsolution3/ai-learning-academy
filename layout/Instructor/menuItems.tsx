@@ -9,7 +9,8 @@ import {
   UserCircle,
   Users,
   PackageOpen,
-  Bell
+  Bell,
+  GraduationCap
 } from "lucide-react";
 
 const baseDashboardUrl = "/instructor-dashboard";
@@ -35,14 +36,19 @@ export const mainMenuItems = [
 
 export const courseManagement = [
   {
-    title: "Courses Management",
-    url: dashboardMenu.defineUrl("/course-management"),
-    icon: LayoutList,
-  },
-  {
     title: "Category Management",
     url: dashboardMenu.defineUrl("/category-management"),
     icon: BringToFront,
+  },
+  {
+    title: "Courses Management",
+    url: dashboardMenu.defineUrl("/course-management"),
+    icon: GraduationCap,
+  },
+  {
+    title: "Batch Management",
+    url: dashboardMenu.defineUrl("/batch-management"),
+    icon: LayoutList,
   },
   {
     title: "Published Course",

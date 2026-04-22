@@ -7,3 +7,4 @@ export * from "./category.type";
 export * from "./user.type";
 export * from "./module.type";
 export * from "./lesson.type";
+export * from "./batch.type";
