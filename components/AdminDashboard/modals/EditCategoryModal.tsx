@@ -84,10 +84,9 @@ export default function EditCategoryModal({
   category,
   categories = [],
 }: EditCategoryModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePublicId, setImagePublicId] = useState("");
 
-  const { mutate: updateCategory } = usePatch(
+  const { mutate: updateCategory, isLoading } = usePatch(
     `/categories/updated-category`,
     {
       revalidateKey: "/categories/get-categories",
@@ -123,7 +122,6 @@ export default function EditCategoryModal({
   const onSubmit = async (values: CategoryFormValues) => {
     if (!category) return;
 
-    setIsSubmitting(true);
     try {
       // Prepare payload - send parent_id as string if exists
       const payload = {
@@ -154,8 +152,6 @@ export default function EditCategoryModal({
     } catch (error) {
       console.error("Error updating category:", error);
       notify.error("An error occurred while updating the category");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -354,10 +350,10 @@ export default function EditCategoryModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Update Category

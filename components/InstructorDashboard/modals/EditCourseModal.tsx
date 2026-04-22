@@ -127,12 +127,11 @@ export default function EditCourseModal({
   categories = [],
   instructors = [],
 }: EditCourseModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [thumbnailPublicId, setThumbnailPublicId] = useState("");
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [videoPreviewUrl, setVideoPreviewUrl] = useState("");
 
-  const { mutate: updateCourse } = usePatch(`/course/update-course`, {
+  const { mutate: updateCourse, isLoading } = usePatch(`/course/update-course`, {
     revalidateKey: "/course/get-all-courses",
   });
 
@@ -208,7 +207,6 @@ export default function EditCourseModal({
   const onSubmit = async (values: CourseFormValues) => {
     if (!course) return;
 
-    setIsSubmitting(true);
     try {
       const payload = {
         ...values,
@@ -237,8 +235,6 @@ export default function EditCourseModal({
     } catch (error) {
       console.error("Error updating course:", error);
       notify.error("An error occurred while updating the course");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -689,10 +685,10 @@ export default function EditCourseModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Update Course

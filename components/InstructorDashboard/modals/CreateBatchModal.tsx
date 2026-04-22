@@ -141,9 +141,8 @@ export default function CreateBatchModal({
   onSuccess,
   courses = [],
 }: CreateBatchModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate: createBatch } = usePost("/batch/insert-batch", {
+  const { mutate: createBatch, isLoading } = usePost("/batch/insert-batch", {
     revalidateKey: "/batch/get-all-batches",
   });
 
@@ -197,7 +196,6 @@ export default function CreateBatchModal({
   }, [open, form]);
 
   const onSubmit = async (values: BatchFormValues) => {
-    setIsSubmitting(true);
     try {
       const payload = {
         ...values,
@@ -223,8 +221,6 @@ export default function CreateBatchModal({
     } catch (error) {
       console.error("Error creating batch:", error);
       notify.error("An error occurred while creating the batch");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -696,10 +692,10 @@ export default function CreateBatchModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Create Batch

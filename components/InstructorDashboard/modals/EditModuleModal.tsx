@@ -19,14 +19,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { usePatch } from "@/hooks/swr/usePatch";
+import { IModule } from "@/types";
 import { generateSlug } from "@/utils";
 import { notify } from "@/utils/notify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { IModule } from "@/types";
 
 // Form validation schema
 const moduleSchema = z.object({
@@ -69,9 +69,8 @@ export default function EditModuleModal({
   onSuccess,
   courseId,
 }: EditModuleModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate: updateModule } = usePatch(
+  const { mutate: updateModule, isLoading } = usePatch(
     `/modules/update-modules`,
     {
       revalidateKey: `/modules/get-modules-by-course-id/${courseId}`,
@@ -103,7 +102,6 @@ export default function EditModuleModal({
   const onSubmit = async (values: ModuleFormValues) => {
     if (!module) return;
 
-    setIsSubmitting(true);
     try {
       const payload = {
         ...values,
@@ -128,8 +126,6 @@ export default function EditModuleModal({
     } catch (error) {
       console.error("Error updating module:", error);
       notify.error("An error occurred while updating the module");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -287,10 +283,10 @@ export default function EditModuleModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Update Module

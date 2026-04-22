@@ -101,7 +101,7 @@ export default function EditLessonModal({
   onSuccess,
   moduleId,
 }: EditLessonModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<
     z.input<typeof lessonSchema>,
@@ -140,7 +140,7 @@ export default function EditLessonModal({
   const onSubmit = async (values: LessonFormValues) => {
     if (!lesson) return;
 
-    setIsSubmitting(true);
+    setIsLoading(true);
     try {
       const payload = {
         ...values,
@@ -168,7 +168,7 @@ export default function EditLessonModal({
       console.error("Error updating lesson:", error);
       notify.error("An error occurred while updating the lesson");
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
@@ -423,10 +423,10 @@ export default function EditLessonModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Update Lesson

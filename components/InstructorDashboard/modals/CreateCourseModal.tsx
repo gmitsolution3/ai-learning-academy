@@ -125,12 +125,11 @@ export default function CreateCourseModal({
   categories = [],
   instructors = [],
 }: CreateCourseModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [thumbnailPublicId, setThumbnailPublicId] = useState("");
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [videoPreviewUrl, setVideoPreviewUrl] = useState("");
 
-  const { mutate: createCourse } = usePost("/course/create-course", {
+  const { mutate: createCourse, isLoading } = usePost("/course/create-course", {
     revalidateKey: "/course/get-all-courses",
   });
 
@@ -173,7 +172,7 @@ export default function CreateCourseModal({
   }, [videoUrl]);
 
   const onSubmit = async (values: CourseFormValues) => {
-    setIsSubmitting(true);
+
     try {
       const payload = {
         ...values,
@@ -206,9 +205,7 @@ export default function CreateCourseModal({
         error.message ||
           "An error occurred while creating the course",
       );
-    } finally {
-      setIsSubmitting(false);
-    }
+    } 
   };
 
   const handleThumbnailChange = (url: string, public_id: string) => {
@@ -658,10 +655,10 @@ export default function CreateCourseModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Create Course

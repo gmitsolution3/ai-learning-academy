@@ -143,9 +143,8 @@ export default function EditBatchModal({
   onSuccess,
   courses = [],
 }: EditBatchModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate: updateBatch } = usePatch(`/batch/updated-batch`, {
+  const { mutate: updateBatch, isLoading } = usePatch(`/batch/updated-batch`, {
     revalidateKey: "/batch/get-all-batches",
   });
 
@@ -195,7 +194,6 @@ export default function EditBatchModal({
   const onSubmit = async (values: BatchFormValues) => {
     if (!batch) return;
 
-    setIsSubmitting(true);
     try {
       const payload = {
         ...values,
@@ -223,8 +221,6 @@ export default function EditBatchModal({
     } catch (error) {
       console.error("Error updating batch:", error);
       notify.error("An error occurred while updating the batch");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -707,10 +703,10 @@ export default function EditBatchModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Update Batch

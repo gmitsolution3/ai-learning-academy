@@ -77,10 +77,9 @@ export default function CreateCategoryModal({
   onSuccess,
   categories = [],
 }: CreateCategoryModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePublicId, setImagePublicId] = useState("");
 
-  const { mutate } = usePost("/categories/create-categories", {
+  const { mutate, isLoading } = usePost("/categories/create-categories", {
     revalidateKey: "/categories/get-categories",
   });
 
@@ -106,7 +105,6 @@ export default function CreateCategoryModal({
   }, [open, form]);
 
   const onSubmit = async (values: CategoryFormValues) => {
-    setIsSubmitting(true);
     try {
       const payload = {
         ...values,
@@ -129,8 +127,6 @@ export default function CreateCategoryModal({
       notify.error(error.message);
       console.error("Error creating category:", error);
       // Handle error (show toast notification, etc.)
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -308,10 +304,10 @@ export default function CreateCategoryModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Create Category

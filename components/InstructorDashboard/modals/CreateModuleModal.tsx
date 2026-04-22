@@ -68,9 +68,8 @@ export default function CreateModuleModal({
   courseId,
   nextOrderIndex = 0,
 }: CreateModuleModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate: createModule } = usePost("/modules/create-modules", {
+  const { mutate: createModule, isLoading } = usePost("/modules/create-modules", {
     revalidateKey: `/modules/get-modules-by-course-id/${courseId}`,
   });
 
@@ -97,7 +96,7 @@ export default function CreateModuleModal({
   }, [open, form, nextOrderIndex]);
 
   const onSubmit = async (values: ModuleFormValues) => {
-    setIsSubmitting(true);
+
     try {
       const payload = {
         ...values,
@@ -120,8 +119,6 @@ export default function CreateModuleModal({
     } catch (error) {
       console.error("Error creating module:", error);
       notify.error("An error occurred while creating the module");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -269,10 +266,10 @@ export default function CreateModuleModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="p-5"
             >
-              {isSubmitting && (
+              {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Create Module
