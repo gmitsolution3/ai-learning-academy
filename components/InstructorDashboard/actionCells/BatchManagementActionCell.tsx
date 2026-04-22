@@ -11,7 +11,7 @@ import { Eye, Edit, MoreHorizontal, Trash2, Users, Calendar } from "lucide-react
 import { Button } from "@/components/ui/button";
 import ViewBatchModal from "@/components/InstructorDashboard/modals/ViewBatchModal";
 import EditBatchModal from "@/components/InstructorDashboard/modals/EditBatchModal";
-// import DeleteBatchModal from "@/components/InstructorDashboard/modals/DeleteBatchModal";
+import DeleteBatchModal from "@/components/InstructorDashboard/modals/DeleteBatchModal";
 
 export default function BatchManagementActionCell({
   batch,
@@ -69,11 +69,11 @@ export default function BatchManagementActionCell({
         courses={courses}
       />
 
-      {/* <DeleteBatchModal
+      <DeleteBatchModal
         batch={batch}
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-      /> */}
+      />
     </>
   );
 }
