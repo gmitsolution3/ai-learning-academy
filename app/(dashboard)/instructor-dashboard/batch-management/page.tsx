@@ -52,7 +52,20 @@ import {
 import { useState } from "react";
 import CreateBatchModal from "@/components/InstructorDashboard/modals/CreateBatchModal";
 
-// Table columns definition
+export default function BatchManagementPage() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const { data, isLoading, isError, refetch } = useFetch(
+    "/batch/get-all-batches",
+  );
+  const { data: coursesData } = useFetch("/course/get-all-courses");
+
+  const batchList: IBatch[] = data?.data || [];
+  const courseList = coursesData?.data || [];
+
+  // Table columns definition
 const columns: ColumnDef<IBatch>[] = [
   {
     accessorKey: "batch_name",
@@ -161,23 +174,10 @@ const columns: ColumnDef<IBatch>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => (
-      <BatchManagementActionCell batch={row.original} />
+      <BatchManagementActionCell batch={row.original} courses={courseList} />
     ),
   },
 ];
-
-export default function BatchManagementPage() {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [showCreateModal, setShowCreateModal] = useState(false);
-
-  const { data, isLoading, isError, refetch } = useFetch(
-    "/batch/get-all-batches",
-  );
-  const { data: coursesData } = useFetch("/course/get-all-courses");
-
-  const batchList: IBatch[] = data?.data || [];
-  const courseList = coursesData?.data || [];
 
   const table = useReactTable({
     data: batchList,

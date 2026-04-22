@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePost } from "@/hooks/swr/usePost";
+import { usePatch } from "@/hooks/swr/usePatch";
 import { cn } from "@/lib/utils";
 import { generateSlug } from "@/utils";
 import { notify } from "@/utils/notify";
@@ -46,7 +46,7 @@ import {
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
-import { ICourse } from "@/types";
+import { ICourse, IBatch } from "@/types";
 
 // Enrolled type schema with custom refinement for duplicate types
 const enrolledTypeSchema = z.object({
@@ -128,22 +128,24 @@ const batchSchema = z
 
 type BatchFormValues = z.infer<typeof batchSchema>;
 
-interface CreateBatchModalProps {
+interface EditBatchModalProps {
+  batch: IBatch | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
   courses?: ICourse[];
 }
 
-export default function CreateBatchModal({
+export default function EditBatchModal({
+  batch,
   open,
   onOpenChange,
   onSuccess,
   courses = [],
-}: CreateBatchModalProps) {
+}: EditBatchModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate: createBatch } = usePost("/batch/insert-batch", {
+  const { mutate: updateBatch } = usePatch(`/batch/updated-batch`, {
     revalidateKey: "/batch/get-all-batches",
   });
 
@@ -173,30 +175,26 @@ export default function CreateBatchModal({
     name: "enrolled_type",
   });
 
-  // Reset form when modal opens
+  // Populate form when batch data is available
   useEffect(() => {
-    if (open) {
+    if (batch && open) {
       form.reset({
-        batch_name: "",
-        batch_slug: "",
-        course_id: "",
-        total_module: 0,
-        completed_module: 0,
-        batch_starting_date: undefined,
-        batch_ending_date: undefined,
-        batch_status: "upcoming",
-        enrolled_type: [
-          {
-            type: "Online",
-            max_student: 0,
-            enrolled: 0,
-          },
-        ],
+        batch_name: batch.batch_name,
+        batch_slug: batch.batch_slug,
+        course_id: batch.course._id,
+        total_module: batch.total_module,
+        completed_module: batch.completed_module,
+        batch_starting_date: new Date(batch.batch_starting_date),
+        batch_ending_date: new Date(batch.batch_ending_date),
+        batch_status: batch.batch_status as any,
+        enrolled_type: batch.enrolled_type,
       });
     }
-  }, [open, form]);
+  }, [batch, open, form]);
 
   const onSubmit = async (values: BatchFormValues) => {
+    if (!batch) return;
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -207,22 +205,24 @@ export default function CreateBatchModal({
         batch_ending_date: values.batch_ending_date.toISOString(),
       };
 
-      const res = await createBatch(payload);
+      const res = await updateBatch({
+        id: batch._id,
+        data: payload,
+      });
 
       if (res?.success) {
-        notify.success("Batch created successfully");
-        form.reset();
+        notify.success("Batch updated successfully");
         onOpenChange(false);
 
         if (onSuccess) {
           onSuccess();
         }
       } else {
-        notify.error(res?.message || "Failed to create batch");
+        notify.error(res?.message || "Failed to update batch");
       }
     } catch (error) {
-      console.error("Error creating batch:", error);
-      notify.error("An error occurred while creating the batch");
+      console.error("Error updating batch:", error);
+      notify.error("An error occurred while updating the batch");
     } finally {
       setIsSubmitting(false);
     }
@@ -233,7 +233,7 @@ export default function CreateBatchModal({
     const existingTypes = form
       .getValues("enrolled_type")
       .map((t) => t.type);
-    const availableTypes = ["Online", "Offline", "Hybrid"].filter(
+    const availableTypes = ["Online", "Offline"].filter(
       (type) => !existingTypes.includes(type as any),
     );
 
@@ -255,15 +255,15 @@ export default function CreateBatchModal({
     return allTypes.filter((type) => !selectedTypes.includes(type));
   };
 
+  if (!batch) return null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full !max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
-            Create New Batch
-          </DialogTitle>
+          <DialogTitle className="text-2xl">Edit Batch</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new course batch.
+            Update the details of "{batch.batch_name}" batch.
           </DialogDescription>
         </DialogHeader>
 
@@ -284,7 +284,7 @@ export default function CreateBatchModal({
                     form.setValue("batch_name", value, {
                       shouldValidate: true,
                     });
-                    // Auto-generate slug if slug field is empty
+                    // Auto-generate slug if slug field hasn't been manually edited
                     const currentSlug = form.getValues("batch_slug");
                     if (
                       !currentSlug ||
@@ -497,6 +497,9 @@ export default function CreateBatchModal({
                     className="p-5"
                   />
                 </FieldContent>
+                <FieldDescription>
+                  Current position: {batch.completed_module}/{batch.total_module} completed
+                </FieldDescription>
                 <FieldError>
                   {form.formState.errors.completed_module?.message}
                 </FieldError>
@@ -675,6 +678,14 @@ export default function CreateBatchModal({
               ))}
             </div>
 
+            {/* Batch Info */}
+            <div className="p-3 rounded-md bg-muted/50">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium">Batch ID:</span>{" "}
+                <code className="text-xs">{batch._id}</code>
+              </p>
+            </div>
+
             {/* Required fields indicator */}
             <div className="text-sm text-muted-foreground mt-2">
               * Required fields
@@ -702,7 +713,7 @@ export default function CreateBatchModal({
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Create Batch
+              Update Batch
             </Button>
           </div>
         </form>
