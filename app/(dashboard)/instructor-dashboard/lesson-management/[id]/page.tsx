@@ -53,7 +53,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
-import { use, useState } from "react";
+import { use, useState, useMemo } from "react";
 
 export default function LessonManagementPage({
   params,
@@ -70,6 +70,10 @@ export default function LessonManagementPage({
   );
 
   const lessonList: ILesson[] = data?.data?.lessons || [];
+
+  const nextLessonOrder = useMemo(() => {
+    return lessonList.sort((a, b) => b.order_index - a.order_index)[0]?.order_index + 1 || 0;
+  }, [lessonList])
 
   const columns: ColumnDef<ILesson>[] = [
     {
@@ -260,7 +264,7 @@ export default function LessonManagementPage({
 
               <Button asChild className="gap-2 p-5">
                 <Link
-                  href={`/instructor-dashboard/lesson-management/${moduleId}/create-lesson`}
+                  href={`/instructor-dashboard/lesson-management/${moduleId}/create-lesson?nextLessonOrder=${nextLessonOrder}`}
                 >
                   <Plus className="h-4 w-4" />
                   Create New Lesson

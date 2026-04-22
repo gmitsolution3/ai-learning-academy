@@ -36,7 +36,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { use } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -90,6 +90,9 @@ export default function CreateLessonPage({
 }) {
   const { id: moduleId } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const nextLessonOrder = parseInt(searchParams.get("nextLessonOrder") as string) || 0;
 
   const { mutate: createLessons, isLoading } = usePost(
     "/lessons/create-module-lessons",
@@ -113,7 +116,7 @@ export default function CreateLessonPage({
           content_type: "text",
           content_url: "",
           duration: 0,
-          order_index: 1,
+          order_index: nextLessonOrder,
           is_completed: false,
         },
       ],
@@ -209,7 +212,7 @@ export default function CreateLessonPage({
               type="button"
               onClick={addLesson}
               variant="outline"
-              className="gap-2"
+              className="gap-2 p-5"
             >
               <Plus className="h-4 w-4" />
               Add Another Lesson

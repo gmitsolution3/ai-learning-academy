@@ -162,9 +162,7 @@ export default function ModuleManagementPage({
 
   const nextOrderIndex =
     moduleList.sort((a, b) => b.order_index - a.order_index)[0]
-      ?.order_index || 0;
-
-  console.log(nextOrderIndex);
+      ?.order_index + 1 || 0;
 
   const table = useReactTable({
     data: moduleList,
