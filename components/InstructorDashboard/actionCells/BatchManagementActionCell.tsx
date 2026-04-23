@@ -11,7 +11,7 @@ import { Eye, Edit, MoreHorizontal, Trash2, Users, Calendar } from "lucide-react
 import { Button } from "@/components/ui/button";
 import ViewBatchModal from "@/components/InstructorDashboard/modals/ViewBatchModal";
 import EditBatchModal from "@/components/InstructorDashboard/modals/EditBatchModal";
-import DeleteBatchModal from "@/components/InstructorDashboard/modals/DeleteBatchModal";
+// import DeleteBatchModal from "@/components/InstructorDashboard/modals/DeleteBatchModal";
 
 export default function BatchManagementActionCell({
   batch,
@@ -22,7 +22,7 @@ export default function BatchManagementActionCell({
 }) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  // const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   return (
     <>
@@ -43,13 +43,13 @@ export default function BatchManagementActionCell({
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -69,11 +69,11 @@ export default function BatchManagementActionCell({
         courses={courses}
       />
 
-      <DeleteBatchModal
+      {/* <DeleteBatchModal
         batch={batch}
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-      />
+      /> */}
     </>
   );
 }

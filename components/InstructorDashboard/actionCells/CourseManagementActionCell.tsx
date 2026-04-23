@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import DeleteCourseModal from "../modals/DeleteCourseModal";
+// import DeleteCourseModal from "../modals/DeleteCourseModal";
 import ViewCourseModal from "../modals/ViewCourseModal";
 import EditCourseModal from "./../modals/EditCourseModal";
 import { useRouter } from "next/navigation";
@@ -33,9 +33,9 @@ export default function CourseManagementActionCell({
   categories?: any[];
   instructors?: any[];
 }) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  // const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const router = useRouter();
 
@@ -69,13 +69,13 @@ export default function CourseManagementActionCell({
             Edit
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -97,11 +97,11 @@ export default function CourseManagementActionCell({
         instructors={instructors}
       />
 
-      <DeleteCourseModal
+      {/* <DeleteCourseModal
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
         course={course}
-      />
+      /> */}
     </>
   );
 }

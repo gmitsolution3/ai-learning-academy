@@ -1,6 +1,3 @@
-import DeleteModuleModal from "@/components/InstructorDashboard/modals/DeleteModuleModal";
-import EditModuleModal from "@/components/InstructorDashboard/modals/EditModuleModal";
-import ViewModuleModal from "@/components/InstructorDashboard/modals/ViewModuleModal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +16,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import DeleteModuleModal from "@/components/InstructorDashboard/modals/DeleteModuleModal";
+import EditModuleModal from "@/components/InstructorDashboard/modals/EditModuleModal";
+import ViewModuleModal from "@/components/InstructorDashboard/modals/ViewModuleModal";
 
 export default function ModuleManagementActionCell({
   module,

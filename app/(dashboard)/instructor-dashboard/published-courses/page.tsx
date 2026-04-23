@@ -20,8 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { INSTRUCTOR } from "@/constants/role.constant";
 import { useFetch } from "@/hooks/swr/useFetch";
-import { ICourse } from "@/types";
+import { ICourse, IUser } from "@/types";
 import { formatDate, formatDuration, formatPrice } from "@/utils";
 import {
   CourseLevelBadge,
@@ -72,7 +73,7 @@ export default function PublishedCoursesPage() {
     );
   }, [data, isLoading]);
   const categoryList = categoriesData?.data || [];
-  const userList = usersData?.data || [];
+  const userList = usersData?.data.filter((user: IUser) => user.role === INSTRUCTOR) || [];
 
   // Table columns definition
   const columns: ColumnDef<ICourse>[] = [

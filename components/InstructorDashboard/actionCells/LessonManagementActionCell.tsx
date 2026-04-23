@@ -1,5 +1,3 @@
-import EditLessonModal from "@/components/InstructorDashboard/modals/EditLessonModal";
-import ViewLessonModal from "@/components/InstructorDashboard/modals/ViewLessonModal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +9,8 @@ import {
 import { ILesson } from "@/types";
 import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
+import EditLessonModal from "@/components/InstructorDashboard/modals/EditLessonModal";
+import ViewLessonModal from "@/components/InstructorDashboard/modals/ViewLessonModal";
 import DeleteLessonModal from "@/components/InstructorDashboard/modals/DeleteLessonModal";
 
 export default function LessonManagementActionCell({
