@@ -1,58 +1,55 @@
 // components/UserDashboard/CourseCard.tsx
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import {
   BookOpen,
-  User,
-  Play,
-  FileText,
   ChevronRight,
+  FileText,
+  Play,
+  User,
 } from "lucide-react";
+import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
-interface CourseCardProps {
-  id?: number;
-  image?: string;
+// Course type definition
+interface Course {
+  id: string;
   title: string;
   instructor: string;
   category: string;
-  batch?: string;
+  batch: string;
   progress: number;
-  totalModules?: number;
-  completedModules?: number;
+  totalModules: number;
+  completedModules: number;
+  image?: string;
+  thumbnail?: string;
+  lastAccessed?: string;
+  slug: string;
+}
+
+interface CourseCardProps {
+  course: Course;
   onContinue?: () => void;
   onOutline?: () => void;
-  href?: string;
 }
 
 export default function CourseCard({
-  id,
-  image = "/course-thumbnail.jpg",
-  title = "Complete Web Development Course With Programming Hero",
-  instructor = "Jhankar Mahbub",
-  category = "Web Development",
-  batch = "BATCH 11",
-  progress = 100,
-  totalModules = 42,
-  completedModules = 42,
+  course,
   onContinue,
   onOutline,
-  href = `/courses/${id}`,
 }: CourseCardProps) {
   return (
-    <div className="group relative w-full overflow-hidden rounded-2xl border border-white/10 bg-transparant backdrop-blur-sm transition-all duration-300 hover:border-secondary/30 hover:shadow-2xl hover:shadow-secondary/10">
+    <div className="group relative w-full overflow-hidden rounded-2xl border border-white/10 bg-transparent backdrop-blur-sm transition-all duration-300 hover:border-secondary/30 hover:shadow-2xl hover:shadow-secondary/10">
       <div className="relative flex flex-col md:flex-row gap-4 p-4 sm:p-5">
         {/* Left Side - Image */}
         <div className="relative w-full md:w-48 lg:w-56 flex-shrink-0">
           <div className="relative aspect-video md:aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-secondary/20 to-primary/20">
             <Image
-              src={image}
-              alt={title}
+              src={course?.image as string}
+              alt={course?.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 224px"
@@ -68,29 +65,29 @@ export default function CourseCard({
               variant="outline"
               className="border-secondary/50 text-secondary text-xs"
             >
-              {category}
+              {course?.category}
             </Badge>
-            {batch && (
+            {course?.batch && (
               <Badge className="hidden md:inline-flex bg-black/50 text-white border-white/20 text-xs">
-                {batch}
+                {course?.batch}
               </Badge>
             )}
           </div>
 
           {/* Course Title */}
           <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight line-clamp-2">
-            {title}
+            {course?.title}
           </h3>
 
           {/* Instructor Info */}
           <div className="flex items-center gap-3 text-sm text-white/60">
             <div className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5 text-secondary" />
-              <span>{instructor}</span>
+              <span>{course?.instructor}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <BookOpen className="h-3.5 w-3.5 text-secondary" />
-              <span>{category}</span>
+              <span>{course?.category}</span>
             </div>
           </div>
 
@@ -99,20 +96,21 @@ export default function CourseCard({
             <div className="flex justify-between items-center text-xs sm:text-sm">
               <span className="text-white/50">Course Progress</span>
               <span className="text-secondary font-semibold">
-                {progress}% Complete
+                {course?.progress}% Complete
               </span>
             </div>
 
             <Progress
-              value={progress}
+              value={course?.progress}
               className="h-2 bg-white/10 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-primary"
             />
 
-            {totalModules && completedModules && (
+            {
               <p className="text-xs text-white/40">
-                {completedModules} of {totalModules} modules completed
+                {course?.completedModules} of {course?.totalModules}{" "}
+                modules completed
               </p>
-            )}
+            }
           </div>
 
           {/* Action Buttons */}

@@ -3,13 +3,51 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseCard from "@/components/UserDashboard/CourseCard";
+import { useFetchById } from "@/hooks/swr/useFetchById";
+import { useSession } from "@/lib/auth-context";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-// Mock course data type
-interface Course {
-  id: number;
+// Type for enrolled course data from API
+interface EnrolledCourse {
+  _id: string;
+  created_at: string;
+  enroll_date: string;
+  user_email: string;
+  progress: number;
+  last_accessed: string;
+  course_type: string;
+  course: {
+    _id: string;
+    title: string;
+    slug: string;
+    thumbnail: string;
+    category: {
+      _id: string;
+      name: string;
+      parent_id: string | null;
+      image: string;
+    };
+    instructors: Array<{
+      _id?: string;
+      name?: string;
+      email?: string;
+    }>;
+  };
+  batch: Array<{
+    _id: string;
+    batch_name: string;
+    total_module: number;
+    batch_starting_date: string;
+    batch_ending_date: string;
+    enrolled_type: Array<{ type: string }>;
+  }>;
+}
+
+// Transformed course type for CourseCard component
+interface TransformedCourse {
+  id: string;
   title: string;
   instructor: string;
   category: string;
@@ -20,110 +58,131 @@ interface Course {
   image?: string;
   thumbnail?: string;
   lastAccessed?: string;
+  slug: string;
 }
 
-// Mock courses array
-const mockCourses: Course[] = [
-  {
-    id: 1,
-    title: "Digital Marketing Excellence",
-    instructor: "Mhankar Jahbub",
-    category: "Web Development",
-    batch: "BATCH 11",
-    progress: 100,
-    totalModules: 42,
-    completedModules: 42,
-    lastAccessed: "2024-01-15",
-  },
-  {
-    id: 2,
-    title: "Advanced UI/UX Design Masterclass",
-    instructor: "Tarín Jahan",
-    category: "UI/UX Design",
-    batch: "BATCH 8",
-    progress: 65,
-    totalModules: 36,
-    completedModules: 23,
-    lastAccessed: "2024-01-14",
-  },
-  {
-    id: 3,
-    title: "Digital Marketing Excellence",
-    instructor: "Shahriar Kabir",
-    category: "Marketing",
-    batch: "BATCH 5",
-    progress: 45,
-    totalModules: 28,
-    completedModules: 12,
-    lastAccessed: "2024-01-13",
-  },
-  {
-    id: 4,
-    title: "Data Science Fundamentals with Python",
-    instructor: "Nusrat Jahan",
-    category: "Data Science",
-    batch: "BATCH 3",
-    progress: 30,
-    totalModules: 40,
-    completedModules: 12,
-    lastAccessed: "2024-01-12",
-  },
-  {
-    id: 5,
-    title: "Mobile App Development with React Native",
-    instructor: "Hasan Mia",
-    category: "Mobile Development",
-    batch: "BATCH 6",
-    progress: 78,
-    totalModules: 32,
-    completedModules: 25,
-    lastAccessed: "2024-01-15",
-  },
-  {
-    id: 6,
-    title: "Cloud Computing & AWS Basics",
-    instructor: "Rafiqul Islam",
-    category: "Cloud Computing",
-    batch: "BATCH 4",
-    progress: 15,
-    totalModules: 35,
-    completedModules: 5,
-    lastAccessed: "2024-01-10",
-  },
-];
-
 export default function UserDashboard() {
-  const [courses, setCourses] = useState<Course[]>(mockCourses);
   const [filterStatus, setFilterStatus] = useState<string>("all");
-
+  const { session } = useSession();
   const router = useRouter();
 
-  // Filter courses based on search and filters
-  const filteredCourses = courses.filter((course) => {
-    // Status filter
-    let matchesStatus = true;
-    if (filterStatus === "completed") {
-      matchesStatus = course.progress === 100;
-    } else if (filterStatus === "in-progress") {
-      matchesStatus = course.progress > 0 && course.progress < 100;
-    } else if (filterStatus === "not-started") {
-      matchesStatus = course.progress === 0;
-    }
+  const user = session?.user;
 
-    return matchesStatus;
-  });
+  const { data, isLoading, isError } = useFetchById(
+    "/tracking/get-user-track-data",
+    user?.email,
+  );
+
+  const enrolledCourseData: EnrolledCourse[] = data?.data || [];
+
+  // Transform API data to match CourseCard props
+  const transformedCourses: TransformedCourse[] = useMemo(() => {
+    return enrolledCourseData.map((enrolled) => {
+      // Get instructor name (first instructor or default)
+      const instructorName =
+        enrolled.course.instructors?.[0]?.name || "TBA";
+
+      // Get batch name (first batch or default)
+      const batchName = enrolled.batch?.[0]?.batch_name || "No Batch";
+
+      // Calculate total modules and completed modules
+      const totalModules = enrolled.batch?.[0]?.total_module || 0;
+      const completedModules =
+        Math.floor((enrolled.progress / 100) * totalModules) || 0;
+
+      return {
+        id: enrolled._id,
+        title: enrolled.course.title,
+        instructor: instructorName,
+        category: enrolled.course.category?.name || "Uncategorized",
+        batch: batchName,
+        progress: enrolled.progress,
+        totalModules: totalModules,
+        completedModules: completedModules,
+        image: enrolled.course.thumbnail,
+        thumbnail: enrolled.course.thumbnail,
+        lastAccessed: enrolled.last_accessed,
+        slug: enrolled.course.slug,
+      };
+    });
+  }, [enrolledCourseData]);
+
+  // Filter courses based on status
+  const filteredCourses = useMemo(() => {
+    return transformedCourses.filter((course) => {
+      if (filterStatus === "completed") {
+        return course.progress === 100;
+      } else if (filterStatus === "in-progress") {
+        return course.progress > 0 && course.progress < 100;
+      } else if (filterStatus === "not-started") {
+        return course.progress === 0;
+      }
+      return true; // "all" case
+    });
+  }, [transformedCourses, filterStatus]);
+
+  // Get user's name from session or email
+  const userName =
+    user?.name || user?.email?.split("@")[0] || "Learner";
 
   // Handle continue course action
-  const handleContinueCourse = (courseId: number) => {
-    console.log("hello");
-    router.push("/dashboard/course/react");
+  const handleContinueCourse = (courseId: string, slug: string) => {
+    // Navigate to course learning page
+    router.push(`/dashboard/course/${slug}`);
   };
 
   // Handle view outline action
-  const handleViewOutline = (courseId: number) => {
-    console.log(`View outline for course: ${courseId}`);
-    // Navigate to course outline page
+  const handleViewOutline = (courseId: string, slug: string) => {
+    router.push(`/courses/${slug}/outline`);
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <section className="min-h-screen py-20 md:py-28 lg:py-32 bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-secondary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <p className="mt-4 text-white/60">
+                Loading your courses...
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <section className="min-h-screen py-20 md:py-28 lg:py-32 bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+            <div className="relative mb-6">
+              <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 backdrop-blur-sm border border-red-500/30">
+                <BookOpen className="h-10 w-10 text-red-500" />
+              </div>
+            </div>
+            <h4 className="text-xl font-semibold text-white mb-2">
+              Failed to load courses
+            </h4>
+            <p className="text-white/50 text-sm mb-6">
+              There was an error loading your enrolled courses. Please
+              try again later.
+            </p>
+            <Button
+              onClick={() => window.location.reload()}
+              className="rounded-full bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-secondary/25 p-5 border-0"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-h-screen py-20 md:py-28 lg:py-32 bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720]">
@@ -140,7 +199,7 @@ export default function UserDashboard() {
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold bg-gradient-to-r from-[#D1D5DB] to-[#707275] bg-clip-text text-transparent">
             Welcome back{" "}
             <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              Moin Khan
+              {userName}
             </span>
             , ready for your next lesson?
           </h3>
@@ -164,25 +223,41 @@ export default function UserDashboard() {
                 value="all"
                 className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-white p-4"
               >
-                All Courses
+                All Courses ({transformedCourses.length})
               </TabsTrigger>
               <TabsTrigger
                 value="in-progress"
                 className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-white p-4"
               >
-                In Progress
+                In Progress (
+                {
+                  transformedCourses.filter(
+                    (c) => c.progress > 0 && c.progress < 100,
+                  ).length
+                }
+                )
               </TabsTrigger>
               <TabsTrigger
                 value="completed"
                 className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-white p-4"
               >
-                Completed
+                Completed (
+                {
+                  transformedCourses.filter((c) => c.progress === 100)
+                    .length
+                }
+                )
               </TabsTrigger>
               <TabsTrigger
                 value="not-started"
                 className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-white p-4"
               >
-                Not Started
+                Not Started (
+                {
+                  transformedCourses.filter((c) => c.progress === 0)
+                    .length
+                }
+                )
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -194,16 +269,13 @@ export default function UserDashboard() {
             {filteredCourses.map((course) => (
               <CourseCard
                 key={course.id}
-                id={course.id}
-                title={course.title}
-                instructor={course.instructor}
-                category={course.category}
-                batch={course.batch}
-                progress={course.progress}
-                totalModules={course.totalModules}
-                completedModules={course.completedModules}
-                onContinue={() => handleContinueCourse(course.id)}
-                onOutline={() => handleViewOutline(course.id)}
+                course={course}
+                onContinue={() =>
+                  handleContinueCourse(course.id, course.slug)
+                }
+                onOutline={() =>
+                  handleViewOutline(course.id, course.slug)
+                }
               />
             ))}
           </div>
@@ -218,12 +290,15 @@ export default function UserDashboard() {
             </div>
 
             <h4 className="text-xl font-semibold text-white mb-2">
-              No courses found
+              {filterStatus !== "all"
+                ? `No ${filterStatus.replace("-", " ")} courses found`
+                : "No courses found"}
             </h4>
 
             <p className="text-white/50 text-sm mb-6">
-              You haven't enrolled in any courses yet. Start your
-              learning journey today!
+              {filterStatus !== "all"
+                ? `You don't have any ${filterStatus.replace("-", " ")} courses.`
+                : "You haven't enrolled in any courses yet. Start your learning journey today!"}
             </p>
 
             <Button
@@ -238,8 +313,8 @@ export default function UserDashboard() {
         {/* Course Count Info */}
         {filteredCourses.length > 0 && (
           <div className="text-center mt-8 text-sm text-white/40">
-            Showing {filteredCourses.length} of {courses.length}{" "}
-            courses
+            Showing {filteredCourses.length} of{" "}
+            {transformedCourses.length} courses
           </div>
         )}
       </div>
