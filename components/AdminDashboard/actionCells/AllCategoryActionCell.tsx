@@ -1,7 +1,5 @@
-import DeleteCategoryModal from "@/components/AdminDashboard/modals/DeleteCategoryModal";
-import EditCategoryModal from "@/components/AdminDashboard/modals/EditCategoryModal";
-import ViewCategoryModal from "@/components/AdminDashboard/modals/ViewCategoryModal";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { ICategoryListType } from "@/types/category.type";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,11 +7,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ICategoryListType } from "@/types/category.type";
-import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Eye, Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ViewCategoryModal from "@/components/AdminDashboard/modals/ViewCategoryModal";
+import EditCategoryModal from "@/components/AdminDashboard/modals/EditCategoryModal";
+import DeleteCategoryModal from "@/components/AdminDashboard/modals/DeleteCategoryModal";
 
-export default function CategoryManagementActionCell({
+export default function AllCategoryActionCell({
   category,
   categories,
 }: {
@@ -53,6 +53,13 @@ export default function CategoryManagementActionCell({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <DeleteCategoryModal
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        category={category}
+        categories={categories as ICategoryListType[]}
+      />
+
       <ViewCategoryModal
         category={category}
         open={showViewModal}
@@ -67,13 +74,6 @@ export default function CategoryManagementActionCell({
           setShowEditModal(false);
         }}
         categories={categories}
-      />
-
-      <DeleteCategoryModal
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        category={category}
-        categories={categories as ICategoryListType[]}
       />
     </>
   );

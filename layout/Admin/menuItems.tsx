@@ -66,22 +66,22 @@ export const userManagement = [
   {
     title: "User Management",
     url: dashboardMenu.defineUrl("/user-management"),
-    icon: LayoutDashboard,
+    icon: Users,
   },
   {
     title: "Students",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    url: dashboardMenu.defineUrl("/students"),
+    icon: Users,
   },
   {
     title: "Instructors",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    url: dashboardMenu.defineUrl("/instructors"),
+    icon: Users,
   },
   {
     title: "Admin",
     url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    icon: Users,
   },
 ];
 
