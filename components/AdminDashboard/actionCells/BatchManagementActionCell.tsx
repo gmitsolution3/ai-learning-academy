@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { IBatch, ICourse } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,33 +7,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IModule } from "@/types/module.type";
-import {
-  BookCheck,
-  Edit,
-  Eye,
-  MoreHorizontal,
-  Trash2,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Eye, Edit, MoreHorizontal, Trash2, Users, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ViewBatchModal from "@/components/AdminDashboard/modals/ViewBatchModal";
+import EditBatchModal from "@/components/AdminDashboard/modals/EditBatchModal";
+import DeleteBatchModal from "@/components/AdminDashboard/modals/DeleteBatchModal";
 
-import DeleteModuleModal from "@/components/AdminDashboard/modals/DeleteModuleModal";
-import EditModuleModal from "@/components/AdminDashboard/modals/EditModuleModal";
-import ViewModuleModal from "@/components/AdminDashboard/modals/ViewModuleModal";
-
-export default function ModuleManagementActionCell({
-  module,
-  courseId,
+export default function BatchManagementActionCell({
+  batch,
+  courses,
 }: {
-  module: IModule;
-  courseId: string;
+  batch: IBatch;
+  courses?: ICourse[];
 }) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  const router = useRouter();
 
   return (
     <>
@@ -45,16 +35,6 @@ export default function ModuleManagementActionCell({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() =>
-              router.push(
-                `/admin-dashboard/lesson-management/${module._id}`,
-              )
-            }
-          >
-            <BookCheck className="mr-2 h-4 w-4" />
-            Lessons
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowViewModal(true)}>
             <Eye className="mr-2 h-4 w-4" />
             View Details
@@ -73,26 +53,26 @@ export default function ModuleManagementActionCell({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ViewModuleModal
-        module={module}
+      <ViewBatchModal
+        batch={batch}
         open={showViewModal}
         onOpenChange={setShowViewModal}
       />
 
-      <DeleteModuleModal
-        module={module}
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-      />
-
-      <EditModuleModal
-        module={module}
+      <EditBatchModal
+        batch={batch}
         open={showEditModal}
         onOpenChange={setShowEditModal}
         onSuccess={() => {
           setShowEditModal(false);
         }}
-        courseId={courseId}
+        courses={courses}
+      />
+
+      <DeleteBatchModal
+        batch={batch}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
       />
     </>
   );

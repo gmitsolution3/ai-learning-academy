@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { ICategoryListType } from "@/types/category.type";
+import EditLessonModal from "@/components/AdminDashboard/modals/EditLessonModal";
+import ViewLessonModal from "@/components/AdminDashboard/modals/ViewLessonModal";
+import DeleteLessonModal from "@/components/AdminDashboard/modals/DeleteLessonModal";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,18 +9,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Eye, Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import ViewCategoryModal from "@/components/AdminDashboard/modals/ViewCategoryModal";
-import EditCategoryModal from "@/components/AdminDashboard/modals/EditCategoryModal";
-import DeleteCategoryModal from "@/components/AdminDashboard/modals/DeleteCategoryModal";
+import { ILesson } from "@/types";
+import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { useState } from "react";
 
-export default function AllCategoryActionCell({
-  category,
-  categories,
+
+export default function LessonManagementActionCell({
+  lesson,
+  moduleId,
 }: {
-  category: ICategoryListType;
-  categories?: ICategoryListType[];
+  lesson: ILesson;
+  moduleId: string;
 }) {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -53,27 +54,27 @@ export default function AllCategoryActionCell({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DeleteCategoryModal
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        category={category}
-        categories={categories as ICategoryListType[]}
-      />
-
-      <ViewCategoryModal
-        category={category}
-        open={showViewModal}
-        onOpenChange={setShowViewModal}
-      />
-
-      <EditCategoryModal
-        category={category}
+      <EditLessonModal
+        lesson={lesson}
         open={showEditModal}
         onOpenChange={setShowEditModal}
         onSuccess={() => {
           setShowEditModal(false);
         }}
-        categories={categories}
+        moduleId={moduleId}
+      />
+
+      <ViewLessonModal
+        lesson={lesson}
+        open={showViewModal}
+        onOpenChange={setShowViewModal}
+      />
+
+      <DeleteLessonModal
+        lesson={lesson}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        moduleId={moduleId}
       />
     </>
   );

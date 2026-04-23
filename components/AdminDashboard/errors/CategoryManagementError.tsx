@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/alert";
 import { RefreshCw, AlertCircle } from "lucide-react";
 
-export default function AllCategoryError({
+export default function CategoryManagementError({
   refetch,
 }: {
   refetch: () => void;

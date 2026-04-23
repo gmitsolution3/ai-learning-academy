@@ -1,6 +1,18 @@
 "use client";
 
-import { useFetch } from "@/hooks/swr/useFetch";
+import LessonManagementActionCell from "@/components/AdminDashboard/actionCells/LessonManagementActionCell";
+import LessonManagementEmpty from "@/components/AdminDashboard/empties/LessonManagementEmpty";
+import LessonManagementError from "@/components/AdminDashboard/errors/LessonManagementError";
+import LessonManagementLoader from "@/components/AdminDashboard/loaders/LessonManagementLoader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -9,120 +21,75 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useFetchById } from "@/hooks/swr/useFetchById";
+import { ILesson } from "@/types";
+import { formatDuration } from "@/utils";
 import {
+  CompletionBadge,
+  ContentTypeBadge,
+} from "@/utils/lesson.utils";
+import { formatOrderIndex } from "@/utils/module.utils";
+import {
+  ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
-  useReactTable,
-  ColumnDef,
   SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  RefreshCw,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
+  Clock,
+  GripVertical,
   Plus,
+  RefreshCw,
 } from "lucide-react";
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ICategoryListType } from "@/types";
-import { formatDate } from "@/utils";
-import ImageCell from "@/components/AdminDashboard/ImageCell";
-import AllCategoryLoader from "@/components/AdminDashboard/loaders/CategoryManagementLoader";
-import AllCategoryError from "@/components/AdminDashboard/errors/CategoryManagementError";
-import AllCategoryEmpty from "@/components/AdminDashboard/empties/CategoryManagementEmpty";
-import AllCategoryActionCell from "@/components/AdminDashboard/actionCells/CategoryManagementActionCell";
-import CreateCategoryModal from "@/components/AdminDashboard/modals/CreateCategoryModal";
+import Link from "next/link";
+import { use, useState, useMemo } from "react";
 
-export default function CategoryManagementPage() {
-  const { data, isLoading, isError, refetch } = useFetch(
-    "/categories/get-categories",
-  );
+export default function LessonManagementPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: moduleId } = use(params);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const categoryList: ICategoryListType[] = data?.data || [];
+  const { data, isLoading, isError, refetch } = useFetchById(
+    "/lessons/get-lesson-by-module-id",
+    moduleId,
+  );
 
-  const columns: ColumnDef<ICategoryListType>[] = [
+  const lessonList: ILesson[] = data?.data?.lessons || [];
+
+  const nextLessonOrder = useMemo(() => {
+    return lessonList.sort((a, b) => b.order_index - a.order_index)[0]?.order_index + 1 || 0;
+  }, [lessonList])
+
+  const columns: ColumnDef<ILesson>[] = [
     {
-      id: "image",
-      header: "Image",
+      id: "order",
+      header: "Order",
       cell: ({ row }) => (
-        <ImageCell
-          imageUrl={row.original.image}
-          name={row.original.name}
-        />
-      ),
-    },
-    {
-      accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === "asc")
-            }
-            className="p-0 hover:bg-transparent"
-          >
-            Name
-            {column.getIsSorted() === "asc" ? (
-              <ArrowUp className="ml-2 h-4 w-4" />
-            ) : column.getIsSorted() === "desc" ? (
-              <ArrowDown className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            )}
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "slug",
-      header: "Slug",
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {row.original.slug}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => (
-        <div className="max-w-md truncate">
-          {row.original.description || "—"}
+        <div className="flex items-center gap-2">
+          <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+          <Badge variant="secondary" className="w-12 justify-center">
+            {formatOrderIndex(row.original.order_index)}
+          </Badge>
         </div>
       ),
     },
     {
-      accessorKey: "parent_id",
-      header: "Parent Category",
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {row.original.parent_id === null || !row.original.parent_id
-            ? "None"
-            : row.original.parent_id.name}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "created_at",
+      accessorKey: "title",
       header: ({ column }) => {
         return (
           <Button
@@ -132,7 +99,7 @@ export default function CategoryManagementPage() {
             }
             className="p-0 hover:bg-transparent"
           >
-            Created At
+            Lesson Title
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "desc" ? (
@@ -143,22 +110,76 @@ export default function CategoryManagementPage() {
           </Button>
         );
       },
-      cell: ({ row }) => formatDate(row.original.created_at),
+      cell: ({ row }) => (
+        <div>
+          <p className="font-medium line-clamp-2">
+            {row.original.title}
+          </p>
+          {row.original.description && (
+            <p className="text-sm text-muted-foreground line-clamp-1">
+              {row.original.description}
+            </p>
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "content_type",
+      header: "Content Type",
+      cell: ({ row }) => (
+        <ContentTypeBadge type={row.original.content_type} />
+      ),
+    },
+    {
+      accessorKey: "duration",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc")
+            }
+            className="p-0 hover:bg-transparent"
+          >
+            Duration
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <span>{formatDuration(row.original.duration)}</span>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "is_completed",
+      header: "Status",
+      cell: ({ row }) => (
+        <CompletionBadge completed={row.original.is_completed} />
+      ),
     },
     {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <AllCategoryActionCell
-          category={row.original}
-          categories={categoryList}
+        <LessonManagementActionCell
+          lesson={row.original}
+          moduleId={moduleId}
         />
       ),
     },
   ];
 
   const table = useReactTable({
-    data: categoryList,
+    data: lessonList,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -179,27 +200,21 @@ export default function CategoryManagementPage() {
 
   // Loading state
   if (isLoading) {
-    return <AllCategoryLoader />;
+    return <LessonManagementLoader />;
   }
 
   // Error state
   if (isError) {
-    return <AllCategoryError refetch={refetch} />;
+    return <LessonManagementError refetch={refetch} />;
   }
 
   // Empty state
-  if (categoryList.length === 0) {
+  if (lessonList.length === 0) {
     return (
       <>
-        <AllCategoryEmpty
+        <LessonManagementEmpty
           refetch={refetch}
-          onOpenChange={setShowCreateModal}
-        />
-        <CreateCategoryModal
-          open={showCreateModal}
-          onOpenChange={setShowCreateModal}
-          onSuccess={refetch}
-          categories={categoryList}
+          moduleId={moduleId}
         />
       </>
     );
@@ -207,13 +222,19 @@ export default function CategoryManagementPage() {
 
   return (
     <>
-      <div className="container mx-auto py-10 px-4">
+      <section className="container mx-auto py-10 px-4 lg:px-0">
         <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="text-2xl">
-                Categories Management
-              </CardTitle>
+              <div>
+                <CardTitle className="text-2xl">
+                  Lesson Management
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Module ID:{" "}
+                  <code className="text-xs">{moduleId}</code>
+                </p>
+              </div>
               <div className="flex items-center gap-2">
                 <Button
                   onClick={() => refetch()}
@@ -221,7 +242,9 @@ export default function CategoryManagementPage() {
                   size="sm"
                   className="gap-2"
                 >
-                  <RefreshCw className="h-4 w-4" />
+                  <RefreshCw
+                    className={`h-4 w-4 ${isLoading && "animate-spin duration-300"}`}
+                  />
                   Refresh
                 </Button>
               </div>
@@ -232,18 +255,20 @@ export default function CategoryManagementPage() {
             <div className="flex flex-col sm:flex-row gap-4 mb-4">
               <div className="flex-1">
                 <Input
-                  placeholder="Search categories..."
+                  placeholder="Search lessons by title, description, or content type..."
                   value={globalFilter ?? ""}
                   onChange={(e) => setGlobalFilter(e.target.value)}
                   className="w-full p-5"
                 />
               </div>
-              <Button
-                className="gap-2 p-5"
-                onClick={() => setShowCreateModal(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Create New Category
+
+              <Button asChild className="gap-2 p-5">
+                <Link
+                  href={`/admin-dashboard/lesson-management/${moduleId}/create-lesson?nextLessonOrder=${nextLessonOrder}`}
+                >
+                  <Plus className="h-4 w-4" />
+                  Create New Lesson
+                </Link>
               </Button>
             </div>
 
@@ -296,8 +321,7 @@ export default function CategoryManagementPage() {
                     table.getState().pagination.pageSize,
                   table.getFilteredRowModel().rows.length,
                 )}{" "}
-                of {table.getFilteredRowModel().rows.length}{" "}
-                categories
+                of {table.getFilteredRowModel().rows.length} lessons
               </div>
               <div className="flex items-center space-x-2">
                 <Button
@@ -342,14 +366,7 @@ export default function CategoryManagementPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      <CreateCategoryModal
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-        onSuccess={refetch}
-        categories={categoryList}
-      />
+      </section>
     </>
   );
 }

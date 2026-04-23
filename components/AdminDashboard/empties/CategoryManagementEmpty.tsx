@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Package, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function AllCategoryEmpty({
+export default function CategoryManagementEmpty({
   refetch,
   onOpenChange,
 }: {

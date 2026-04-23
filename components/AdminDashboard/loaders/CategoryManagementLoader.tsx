@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function AllCaregoryLoader() {
+export default function CategoryManagementLoader() {
   return (
     <div className="container mx-auto py-10 px-4">
       <Card>
