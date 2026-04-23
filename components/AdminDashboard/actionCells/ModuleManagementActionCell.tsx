@@ -1,41 +1,36 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ICourse } from "@/types";
+import { IModule } from "@/types/module.type";
 import {
+  BookCheck,
   Edit,
   Eye,
   MoreHorizontal,
   Trash2,
-  VectorSquare,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import DeleteCourseModal from "../modals/DeleteCourseModal";
-import ViewCourseModal from "../modals/ViewCourseModal";
-import EditCourseModal from "./../modals/EditCourseModal";
-import { useRouter } from "next/navigation";
+import DeleteModuleModal from "@/components/AdminDashboard/modals/DeleteModuleModal";
+import EditModuleModal from "@/components/AdminDashboard/modals/EditModuleModal";
+import ViewModuleModal from "@/components/AdminDashboard/modals/ViewModuleModal";
 
-export default function CourseManagementActionCell({
-  course,
-  categories,
-  instructors,
+export default function ModuleManagementActionCell({
+  module,
+  courseId,
 }: {
-  course: ICourse;
-  categories?: any[];
-  instructors?: any[];
+  module: IModule;
+  courseId: string;
 }) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const router = useRouter();
 
@@ -53,12 +48,12 @@ export default function CourseManagementActionCell({
           <DropdownMenuItem
             onClick={() =>
               router.push(
-                `/admin-dashboard/modules-management/${course?._id}`,
+                `/instructor-dashboard/lesson-management/${module._id}`,
               )
             }
           >
-            <VectorSquare className="mr-2 h-4 w-4" />
-            Modules
+            <BookCheck className="mr-2 h-4 w-4" />
+            Lessons
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowViewModal(true)}>
             <Eye className="mr-2 h-4 w-4" />
@@ -68,7 +63,6 @@ export default function CourseManagementActionCell({
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => setShowDeleteDialog(true)}
@@ -79,28 +73,26 @@ export default function CourseManagementActionCell({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Modals would go here - you can create similar modal components for courses */}
-      <ViewCourseModal
-        course={course}
+      <ViewModuleModal
+        module={module}
         open={showViewModal}
         onOpenChange={setShowViewModal}
       />
 
-      <EditCourseModal
-        course={course}
+      <DeleteModuleModal
+        module={module}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+      />
+
+      <EditModuleModal
+        module={module}
         open={showEditModal}
         onOpenChange={setShowEditModal}
         onSuccess={() => {
           setShowEditModal(false);
         }}
-        categories={categories}
-        instructors={instructors}
-      />
-
-      <DeleteCourseModal
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        course={course}
+        courseId={courseId}
       />
     </>
   );
