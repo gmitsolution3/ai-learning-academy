@@ -48,7 +48,7 @@ import AllCategoryEmpty from "@/components/AdminDashboard/empties/AllCategoryEmp
 import AllCategoryActionCell from "@/components/AdminDashboard/actionCells/AllCategoryActionCell";
 import CreateCategoryModal from "@/components/AdminDashboard/modals/CreateCategoryModal";
 
-export default function AllCategoryPage() {
+export default function CategoryManagementPage() {
   const { data, isLoading, isError, refetch } = useFetch(
     "/categories/get-categories",
   );
@@ -212,7 +212,7 @@ export default function AllCategoryPage() {
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="text-2xl">
-                All Categories
+                Categories Management
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Button

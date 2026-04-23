@@ -1,11 +1,15 @@
 import { DashboardMenu } from "@/utils/dashboardMenu";
 import {
-  LayoutDashboard,
+  BringToFront,
   Calendar,
-  Users,
   FileText,
-  UserCircle,
+  GraduationCap,
+  LayoutDashboard,
+  LayoutList,
+  PackageOpen,
   Settings,
+  UserCircle,
+  Users,
 } from "lucide-react";
 
 const baseDashboardUrl = "/admin-dashboard";
@@ -27,23 +31,35 @@ export const mainMenuItems = [
 
 export const courseManagement = [
   {
-    title: "All Courses",
-    url: dashboardMenu.defineUrl("/all-courses"),
-    icon: LayoutDashboard,
+    title: "Category Management",
+    url: dashboardMenu.defineUrl("/category-management"),
+    icon: BringToFront,
   },
   {
-    title: "All Category",
-    url: dashboardMenu.defineUrl("/all-category"),
-    icon: Calendar,
+    title: "Courses Management",
+    url: dashboardMenu.defineUrl("/course-management"),
+    icon: GraduationCap,
   },
   {
-    title: "Create Category",
-    url: dashboardMenu.defineUrl("/course/create-category"),
-    icon: Calendar,
+    title: "Batch Management",
+    url: dashboardMenu.defineUrl("/batch-management"),
+    icon: LayoutList,
   },
-  { title: "Published Course", url: "/patients", icon: Users },
-  { title: "Draft Course Records", url: "/records", icon: FileText },
-  { title: "Course Curriculmn", url: "/records", icon: FileText },
+  {
+    title: "Published Course",
+    url: dashboardMenu.defineUrl("/published-courses"),
+    icon: FileText,
+  },
+  {
+    title: "Draft Course",
+    url: dashboardMenu.defineUrl("/draft-courses"),
+    icon: PackageOpen,
+  },
+  {
+    title: "Course Curriculmn",
+    url: dashboardMenu.defineUrl("/records"),
+    icon: FileText,
+  },
 ];
 
 export const userManagement = [
