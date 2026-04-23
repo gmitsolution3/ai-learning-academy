@@ -2,7 +2,7 @@ export default function CourseCardLoader() {
   return (
     <>
       {Array.from({ length: 4 }).map((_, index) => (
-        <article className="group relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden animate-pulse">
+        <article key={index} className="group relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden animate-pulse">
           {/* Image Skeleton */}
           <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800">
             <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-black/50 px-2 sm:px-3 py-1 rounded-full w-20 h-5"></div>
