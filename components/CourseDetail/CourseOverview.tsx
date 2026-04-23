@@ -8,6 +8,7 @@ import {
   RecordHours,
 } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -16,22 +17,64 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ICourseDetail } from "@/types";
-import { formatPrice } from "@/utils";
+import { formatDuration, formatPrice } from "@/utils";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const highlights = [
-  { icon: Module, label: "14+ মডিউলস" },
-  { icon: Lesson, label: "80+ লেসন" },
-  { icon: RecordHours, label: "25+ ঘন্টা" },
-  { icon: Projects, label: "6+ প্রজেক্ট" },
-];
+// Dynamic highlights based on batch data
+const getHighlights = (courseData: ICourseDetail) => {
+  const highlights = [];
+
+  if (courseData.batch?.total_module) {
+    highlights.push({
+      icon: Module,
+      label: `${courseData.batch.total_module}+ মডিউলস`,
+    });
+  }
+
+  if (courseData.total_duration) {
+    highlights.push({
+      icon: RecordHours,
+      label: `${formatDuration(courseData.total_duration)}`,
+    });
+  }
+
+  // You can add more dynamic highlights here based on your data structure
+  highlights.push({ icon: Lesson, label: "80+ লেসন" });
+  highlights.push({ icon: Projects, label: "6+ প্রজেক্ট" });
+
+  return highlights;
+};
 
 export default function CourseOverview({
   courseData,
 }: {
   courseData: ICourseDetail;
 }) {
+  // Get batch enrollment info
+  const onlineBatch = courseData?.batch?.enrolled_type?.find(
+    (type) => type.type === "Online",
+  );
+  const offlineBatch = courseData?.batch?.enrolled_type?.find(
+    (type) => type.type === "Offline",
+  );
+
+  const totalEnrolled =
+    (onlineBatch?.enrolled || 0) + (offlineBatch?.enrolled || 0);
+  const totalCapacity =
+    (onlineBatch?.max_student || 0) +
+    (offlineBatch?.max_student || 0);
+
+  // Calculate available seats
+  const availableSeats = totalCapacity - totalEnrolled;
+
+  const highlights = getHighlights(courseData);
+
+  const disablePurchase =
+    availableSeats === 0 ||
+    new Date(courseData?.batch?.batch_ending_date) < new Date() ||
+    courseData?.batch?.batch_status !== "ongoing";
+
   return (
     <section
       aria-labelledby="course-overview-heading"
@@ -62,6 +105,15 @@ export default function CourseOverview({
                     {courseData.title}
                   </CardTitle>
 
+                  {/* Batch Name */}
+                  {courseData?.batch?.batch_name && (
+                    <div className="mt-2">
+                      <Badge className="bg-secondary/20 text-secondary border-secondary/30 text-xs sm:text-sm">
+                        {courseData.batch.batch_name}
+                      </Badge>
+                    </div>
+                  )}
+
                   <CardDescription className="mt-3 text-sm sm:text-base text-white leading-relaxed">
                     {courseData.full_description}
                   </CardDescription>
@@ -70,6 +122,28 @@ export default function CourseOverview({
 
               {/* Right */}
               <div className="w-full lg:max-w-xs p-6 md:p-8 bg-[#191B22] rounded-xl">
+                {/* Batch Status */}
+                {courseData?.batch?.batch_status && (
+                  <div className="mb-4">
+                    <Badge
+                      className={`w-full justify-center text-xs sm:text-sm py-2 ${
+                        courseData.batch.batch_status === "ongoing"
+                          ? "bg-green-500/20 text-green-400 border-green-500/30"
+                          : courseData.batch.batch_status ===
+                              "upcoming"
+                            ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                            : "bg-red-500/20 text-red-400 border-red-500/30"
+                      }`}
+                    >
+                      {courseData.batch.batch_status === "ongoing"
+                        ? "চলমান"
+                        : courseData.batch.batch_status === "upcoming"
+                          ? "আসন্ন"
+                          : "সমাপ্ত"}
+                    </Badge>
+                  </div>
+                )}
+
                 {/* Pricing */}
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2 justify-between">
@@ -106,18 +180,34 @@ export default function CourseOverview({
                   </div>
                 </div>
 
+                {/* Available Seats Alert */}
+                {availableSeats > 0 && availableSeats <= 10 && (
+                  <div className="mt-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <p className="text-red-400 text-xs text-center">
+                      ⚠️ শুধুমাত্র {availableSeats} টি আসন বাকি!
+                    </p>
+                  </div>
+                )}
+
                 {/* CTA */}
-                <Link
-                  href={`/purchase-course/${courseData._id}`}
-                  aria-label="Purchase course"
-                  className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-3 rounded-full text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all w-full justify-center mt-5"
-                >
-                  কোর্সটি কিনুন
-                  <ArrowRight
-                    className="size-3 sm:size-4"
-                    aria-hidden
-                  />
-                </Link>
+                {disablePurchase ? (
+                  <Button disabled aria-label="Purchase course"
+                    className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-3 rounded-full text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all w-full justify-center mt-5">
+                      ক্রয় করা সম্ভব নয়
+                    </Button>
+                ) : (
+                  <Link
+                    href={`/purchase-course/${courseData._id}`}
+                    aria-label="Purchase course"
+                    className="bg-gradient-to-r from-secondary to-primary text-white px-3 sm:px-4 py-3 rounded-full text-[11px] sm:text-sm font-semibold flex items-center gap-1 sm:gap-2 hover:shadow-lg hover:shadow-secondary/25 transition-all w-full justify-center mt-5"
+                  >
+                    কোর্সটি কিনুন
+                    <ArrowRight
+                      className="size-3 sm:size-4"
+                      aria-hidden
+                    />
+                  </Link>
+                )}
 
                 <Separator className="my-4" />
 
@@ -130,7 +220,7 @@ export default function CourseOverview({
                   {highlights.map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <item.icon aria-hidden />
-                      <span className="font-medium text-sm sm:text-base">
+                      <span className="font-medium text-xs sm:text-sm">
                         {item.label}
                       </span>
                     </div>
@@ -145,6 +235,25 @@ export default function CourseOverview({
                       {courseData.course_level}
                     </Badge>
                   </div>
+
+                  {/* Language */}
+                  {courseData.language && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-medium">
+                        ভাষা:
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="font-normal text-xs sm:text-sm capitalize"
+                      >
+                        {courseData.language === "bangla"
+                          ? "বাংলা"
+                          : courseData.language === "english"
+                            ? "ইংরেজি"
+                            : courseData.language}
+                      </Badge>
+                    </div>
+                  )}
                 </div>
 
                 <Separator className="my-4" />
@@ -173,6 +282,14 @@ export default function CourseOverview({
                         month: "long",
                         year: "numeric",
                       })}
+                    </span>
+                  </div>
+
+                  {/* Certificate Info */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-xs sm:text-sm">🎓</span>
+                    <span className="text-xs sm:text-sm">
+                      সমাপনীতে সার্টিফিকেট প্রদান করা হবে
                     </span>
                   </div>
                 </div>

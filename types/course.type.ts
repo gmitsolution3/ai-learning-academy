@@ -1,4 +1,4 @@
-import { ICategoryListType, IUserProfile } from "@/types";
+import { IBatch, ICategoryListType, IUserProfile } from "@/types";
 export interface ICourse {
   _id: string;
   created_at: string;
@@ -25,6 +25,7 @@ export interface ICourse {
   status: string;
 
   category: ICategoryListType;
+  batch: IBatch;
 }
 
 export interface ICourseDetail extends ICourse {

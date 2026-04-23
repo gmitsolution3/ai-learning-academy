@@ -1,7 +1,7 @@
 import { ICourse } from "@/types";
 import { formatDuration, formatPrice } from "@/utils";
 import { CourseLevelBadge } from "@/utils/course.utils";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Calendar, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,9 +11,20 @@ export default function CourseCard({ course }: { course: ICourse }) {
       ? course?.discount_price
       : course?.regular_price;
 
+  // Format batch start date
+  const formatBatchDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   return (
     <article className="group relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden hover:border-secondary/50 transition-all duration-300 sm:hover:-translate-y-2">
-      {/* Image - Using placeholder since thumbnail is empty */}
+      {/* Image */}
       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden bg-gradient-to-br from-purple-600 to-blue-600">
         {course?.thumbnail ? (
           <Image
@@ -29,6 +40,24 @@ export default function CourseCard({ course }: { course: ICourse }) {
           </div>
         )}
 
+        {/* Batch Status Badge */}
+        {course?.batch?.batch_status && (
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/70 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs text-white border border-white/20">
+            <span
+              className={`${
+                course.batch.batch_status === "ongoing"
+                  ? "text-green-400"
+                  : course.batch.batch_status === "upcoming"
+                    ? "text-yellow-400"
+                    : "text-red-400"
+              }`}
+            >
+              {course.batch.batch_status.charAt(0).toUpperCase() +
+                course.batch.batch_status.slice(1)}
+            </span>
+          </div>
+        )}
+
         <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-black/70 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs text-white border border-white/20">
           {course?.category?.name || "Uncategorized"}
         </div>
@@ -40,7 +69,14 @@ export default function CourseCard({ course }: { course: ICourse }) {
           {course?.title}
         </h3>
 
-        <p className="text-white text-xs sm:text-sm mb-2 line-clamp-2">
+        {/* Batch Name */}
+        {course?.batch?.batch_name && (
+          <div className="text-xs sm:text-sm text-secondary mb-2 font-medium bg-secondary/10 p-1 px-3 rounded-full inline-block">
+            Batch: {course.batch.batch_name}
+          </div>
+        )}
+
+        <p className="text-white text-xs sm:text-sm mb-3 line-clamp-2">
           {course?.short_description ||
             course?.full_description?.substring(0, 100)}
         </p>
@@ -61,6 +97,37 @@ export default function CourseCard({ course }: { course: ICourse }) {
               {course?.language || "English"}
             </div>
           </div>
+        </div>
+
+        {/* Total Enrollment & Batch Date */}
+        <div className="flex items-center justify-between gap-5 mb-3">
+          {new Date(course?.batch?.batch_ending_date) <=
+            new Date() ? (
+            course?.batch.batch_status === "upcoming" ? (
+              <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 w-full">
+                <div className="flex items-center justify-center gap-1 text-white">
+                  <Calendar className="size-3" aria-hidden />
+                  Starts{" "}
+                  {formatBatchDate(course.batch.batch_starting_date)}
+                </div>
+              </div>
+            ) : (
+              <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border bg-white/10 w-full">
+                <div className="flex items-center justify-center gap-1 text-white">
+                  <Calendar className="size-3" aria-hidden />
+                  Ends{" "}
+                  {formatBatchDate(course.batch.batch_ending_date)}
+                </div>
+              </div>
+            )
+          ) : (
+            <div className="text-[10px] sm:text-xs px-2 py-1 rounded-full border w-full">
+              <div className="flex items-center justify-center gap-1 text-white">
+                <Calendar className="size-3" aria-hidden />
+                Registration Closed
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Price */}

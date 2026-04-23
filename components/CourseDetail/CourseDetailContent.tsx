@@ -15,6 +15,7 @@ import { Briefcase, GraduationCap } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseQNA from "./CourseQNA";
+import { Separator } from "../ui/separator";
 
 const modules = [
   {
@@ -86,22 +87,220 @@ export default function CourseDetailContent({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Dynamic Badges based on batch/course data */}
             <div className="flex flex-wrap gap-4 mb-6">
-              <Badge className="bg-secondary/20 text-secondary">
-                ৩০০+ শিক্ষার্থী নথিভুক্ত
-              </Badge>
+              {/* Total Enrolled Badge */}
+              {(() => {
+                const onlineBatch =
+                  courseData?.batch?.enrolled_type?.find(
+                    (type) => type.type === "Online",
+                  );
+                const offlineBatch =
+                  courseData?.batch?.enrolled_type?.find(
+                    (type) => type.type === "Offline",
+                  );
+                const totalEnrolled =
+                  (onlineBatch?.enrolled || 0) +
+                  (offlineBatch?.enrolled || 0);
+
+                return totalEnrolled > 0 ? (
+                  <Badge className="bg-secondary/20 text-secondary">
+                    {totalEnrolled}+ শিক্ষার্থী নথিভুক্ত
+                  </Badge>
+                ) : (
+                  <Badge className="bg-secondary/20 text-secondary">
+                    ৩০০+ শিক্ষার্থী নথিভুক্ত
+                  </Badge>
+                );
+              })()}
+
               <Badge className="bg-primary/20 text-primary">
                 ফিল্টারযুক্ত কন্টেন্ট
               </Badge>
               <Badge className="bg-green-500/20 text-green-400">
                 ২৪/৭ লাইভ সাপোর্ট
               </Badge>
+
+              {/* Batch Status Badge */}
+              {courseData?.batch?.batch_status && (
+                <Badge
+                  className={`${
+                    courseData.batch.batch_status === "ongoing"
+                      ? "bg-green-500/20 text-green-400"
+                      : courseData.batch.batch_status === "upcoming"
+                        ? "bg-yellow-500/20 text-yellow-400"
+                        : "bg-red-500/20 text-red-400"
+                  }`}
+                >
+                  {courseData.batch.batch_status === "ongoing"
+                    ? "ব্যাচ চলমান"
+                    : courseData.batch.batch_status === "upcoming"
+                      ? "ব্যাচ আসন্ন"
+                      : "ব্যাচ সমাপ্ত"}
+                </Badge>
+              )}
             </div>
+
             <p className="text-white/80 leading-relaxed">
               {courseData.full_description}
             </p>
           </CardContent>
         </Card>
+
+        {/* Batch Details Section */}
+        {courseData?.batch && (
+          <Card className="border border-white/20 bg-[#03050A]/50 backdrop-blur-sm p-6 mt-5">
+            <CardHeader>
+              <CardTitle className="text-xl md:text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                ব্যাচের তথ্যাবলী
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Batch Name */}
+                {courseData.batch.batch_name && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-white/60">
+                      ব্যাচের নাম
+                    </h4>
+                    <p className="text-white font-medium">
+                      {courseData.batch.batch_name}
+                    </p>
+                  </div>
+                )}
+
+                {/* Batch Status */}
+                {courseData.batch.batch_status && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-white/60">
+                      স্ট্যাটাস
+                    </h4>
+                    <p
+                      className={`font-medium ${
+                        courseData.batch.batch_status === "ongoing"
+                          ? "text-green-400"
+                          : courseData.batch.batch_status ===
+                              "upcoming"
+                            ? "text-yellow-400"
+                            : "text-red-400"
+                      }`}
+                    >
+                      {courseData.batch.batch_status === "ongoing"
+                        ? "চলমান"
+                        : courseData.batch.batch_status === "upcoming"
+                          ? "আসন্ন"
+                          : "সমাপ্ত"}
+                    </p>
+                  </div>
+                )}
+
+                {/* Total Modules */}
+                {courseData.batch.total_module && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-white/60">
+                      মোট মডিউল
+                    </h4>
+                    <p className="text-white font-medium">
+                      {courseData.batch.total_module} টি
+                    </p>
+                  </div>
+                )}
+
+                {/* Completed Modules */}
+                {courseData.batch.completed_module && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-white/60">
+                      সম্পন্ন মডিউল
+                    </h4>
+                    <p className="text-white font-medium">
+                      {courseData.batch.completed_module} টি
+                    </p>
+                  </div>
+                )}
+
+                {/* Batch Start Date */}
+                {courseData.batch.batch_starting_date && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-white/60">
+                      শুরুর তারিখ
+                    </h4>
+                    <p className="text-white font-medium">
+                      {new Date(
+                        courseData.batch.batch_starting_date,
+                      ).toLocaleDateString("bn-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                )}
+
+                {/* Batch End Date */}
+                {courseData.batch.batch_ending_date && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-white/60">
+                      শেষের তারিখ
+                    </h4>
+                    <p className="text-white font-medium">
+                      {new Date(
+                        courseData.batch.batch_ending_date,
+                      ).toLocaleDateString("bn-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Enrollment Details */}
+              {courseData.batch.enrolled_type &&
+                courseData.batch.enrolled_type.length > 0 && (
+                  <>
+                    <Separator className="my-6" />
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      নথিভুক্তির তথ্য
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {courseData.batch.enrolled_type.map(
+                        (type, index) => (
+                          <div key={index} className="space-y-2">
+                            <h4 className="text-sm font-medium text-white/60">
+                              {type.type === "Online"
+                                ? "অনলাইন ক্লাস"
+                                : "অফলাইন ক্লাস"}
+                            </h4>
+                            <div className="flex items-center justify-between">
+                              <span className="text-white">
+                                নথিভুক্ত শিক্ষার্থী:
+                              </span>
+                              <span className="text-secondary font-bold">
+                                {type.enrolled}/{type.max_student}
+                              </span>
+                            </div>
+                            <div className="w-full bg-white/10 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-secondary to-primary h-2 rounded-full transition-all duration-500"
+                                style={{
+                                  width: `${(type.enrolled / type.max_student) * 100}%`,
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-white/40">
+                              {type.max_student - type.enrolled} টি
+                              আসন বাকি
+                            </p>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </>
+                )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="border-2 border-white/20 shadow-xl bg-gradient-to-br from-[#03050A] to-[#0a0c15] mt-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:p-8">
@@ -192,7 +391,8 @@ export default function CourseDetailContent({
               </div>
 
               <p className="text-white/80 leading-relaxed mt-4">
-                {instructor?.bio || "এই কোর্সটি পরিচালনা করছেন একজন অভিজ্ঞ ডিজাইনার, যিনি ১০ বছরেরও বেশি সময় ধরে UI/UX ডিজাইন নিয়ে কাজ করছেন। তার কাজের মধ্যে রয়েছে বিভিন্ন আন্তর্জাতিক ব্র্যান্ডের জন্য ডিজাইন করা প্রজেক্ট, এবং তিনি ইউটিউবে হাজার হাজার শিক্ষার্থীকে ডিজাইন শেখাচ্ছেন। তার শিক্ষাদানের পদ্ধতি সহজবোধ্য এবং প্র্যাকটিক্যাল, যা শিক্ষার্থীদের হাতে-কলমে শিখতে সাহায্য করে।"}
+                {instructor?.bio ||
+                  "এই কোর্সটি পরিচালনা করছেন একজন অভিজ্ঞ ডিজাইনার, যিনি ১০ বছরেরও বেশি সময় ধরে UI/UX ডিজাইন নিয়ে কাজ করছেন। তার কাজের মধ্যে রয়েছে বিভিন্ন আন্তর্জাতিক ব্র্যান্ডের জন্য ডিজাইন করা প্রজেক্ট, এবং তিনি ইউটিউবে হাজার হাজার শিক্ষার্থীকে ডিজাইন শেখাচ্ছেন। তার শিক্ষাদানের পদ্ধতি সহজবোধ্য এবং প্র্যাকটিক্যাল, যা শিক্ষার্থীদের হাতে-কলমে শিখতে সাহায্য করে।"}
               </p>
 
               {/* Statistics Section */}
