@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 import DashboardLoader from "@/components/UserDashboard/dashboard/DashboardLoader";
 import DashboardError from "@/components/UserDashboard/dashboard/DashboardError";
 import {IEnrolledCourse, ITransformedCourse} from "@/types";
+import { notify } from "@/utils/notify";
 
 
 export default function UserDashboard() {
@@ -27,23 +28,21 @@ export default function UserDashboard() {
 
   const enrolledCourseData: IEnrolledCourse[] = data?.data || [];
 
-  // Transform API data to match CourseCard props
+
   const transformedCourses: ITransformedCourse[] = useMemo(() => {
     return enrolledCourseData.map((enrolled) => {
-      // Get instructor name (first instructor or default)
+      
       const instructorName =
         enrolled.course.instructor?.[0]?.name || "TBA";
 
-      // Get batch name (first batch or default)
       const batchName = enrolled.batch?.[0]?.batch_name || "No Batch";
 
-      // Calculate total modules and completed modules
       const totalModules = enrolled.batch?.[0]?.total_module || 0;
       const completedModules =
         Math.floor((enrolled.progress / 100) * totalModules) || 0;
 
       return {
-        id: enrolled._id,
+        id: enrolled.course._id,
         title: enrolled.course.title,
         instructor: instructorName,
         category: enrolled.course.category?.name || "Uncategorized",
@@ -59,7 +58,6 @@ export default function UserDashboard() {
     });
   }, [enrolledCourseData]);
 
-  // Filter courses based on status
   const filteredCourses = useMemo(() => {
     return transformedCourses.filter((course) => {
       if (filterStatus === "completed") {
@@ -73,27 +71,23 @@ export default function UserDashboard() {
     });
   }, [transformedCourses, filterStatus]);
 
-  // Get user's name from session or email
+ 
   const userName =
     user?.name || user?.email?.split("@")[0] || "Learner";
 
-  // Handle continue course action
-  const handleContinueCourse = (courseId: string, slug: string) => {
-    // Navigate to course learning page
-    router.push(`/dashboard/course/${slug}/lesson/l1`);
+  const handleContinueCourse = (courseId: string) => {
+    router.push(`/dashboard/course/${courseId}/module/asdasdasd/lesson/l1`);
   };
 
-  // Handle view outline action
   const handleViewOutline = (courseId: string, slug: string) => {
-    router.push(`/courses/${slug}/outline`);
+    notify.warning("coming soon");
+    
   };
 
-  // Loading state
   if (isLoading) {
     return <DashboardLoader />
   }
 
-  // Error state
   if (isError) {
     return (
       <DashboardError refetch={refetch} />
@@ -187,7 +181,7 @@ export default function UserDashboard() {
                 key={course.id}
                 course={course}
                 onContinue={() =>
-                  handleContinueCourse(course.id, course.slug)
+                  handleContinueCourse(course.id)
                 }
                 onOutline={() =>
                   handleViewOutline(course.id, course.slug)

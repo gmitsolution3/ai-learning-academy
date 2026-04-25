@@ -69,10 +69,14 @@ export default function LessonManagementPage({
     moduleId,
   );
 
-  const lessonList: ILesson[] = data?.data?.lessons || [];
+  const lessonList: ILesson[] = useMemo(() => {
+      return data?.data?.lessons?.length > 0
+        ? [...data.data?.lessons].sort((a, b) => a.order_index - b.order_index)
+        : [];
+    }, [data?.data?.lessons, isLoading]);
 
   const nextLessonOrder = useMemo(() => {
-    return lessonList.sort((a, b) => b.order_index - a.order_index)[0]?.order_index + 1 || 0;
+    return [...lessonList].sort((a, b) => b.order_index - a.order_index)[0]?.order_index + 1 || 0;
   }, [lessonList])
 
   const columns: ColumnDef<ILesson>[] = [

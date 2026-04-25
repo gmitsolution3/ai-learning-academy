@@ -1,24 +1,19 @@
-// app/course/[courseSlug]/lesson/[lessonId]/page.tsx
+// app/course/[courseId]/lesson/[lessonId]/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
-  Play,
-  CheckCircle,
   Lock,
-  Menu,
-  X,
   Maximize2,
+  Menu,
   Minimize2,
   Volume2,
   VolumeX,
-  Settings,
-  ListVideo,
 } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +24,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useFetchById } from "@/hooks/swr/useFetchById";
 import SidebarContent from "./SidebarContent";
 
 // Mock modules data
@@ -191,8 +187,18 @@ export default function PlayerPage() {
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const courseSlug = params.courseSlug as string;
+  const courseId = params.courseId as string;
   const lessonId = params.lessonId as string;
+
+  const {
+    data: moduleData,
+    isLoading: moduleIsLoading,
+    isError: moduleIsError,
+  } = useFetchById("/modules/get-modules-by-course-id", courseId);
+
+  const moduleList = moduleData?.data || [];
+
+  // todo: need lesson detail by id api
 
   // Find current lesson
   const allLessons = modules.flatMap((m) => m.lessons);
@@ -224,7 +230,7 @@ export default function PlayerPage() {
             asChild
             className="rounded-full bg-gradient-to-r from-secondary to-primary"
           >
-            <Link href={`/course/${courseSlug}`}>Back to Course</Link>
+            <Link href={`/course/${courseId}`}>Back to Course</Link>
           </Button>
         </div>
       </div>
@@ -257,10 +263,7 @@ export default function PlayerPage() {
                   className="w-80 p-0 bg-black/95 border-r border-white/10"
                 >
                   <SidebarContent
-                    modules={modules}
-                    currentLessonId={lessonId}
-                    courseSlug={courseSlug}
-                    onLessonClick={() => setIsSidebarOpen(false)}
+                    modules={moduleList}
                   />
                 </SheetContent>
               </Sheet>
@@ -271,7 +274,7 @@ export default function PlayerPage() {
                 asChild
                 className="text-white/70 hover:text-white hover:bg-white/10"
               >
-                <Link href={`/course/${courseSlug}`}>
+                <Link href={`/course/${courseId}`}>
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Back
                 </Link>
@@ -284,7 +287,7 @@ export default function PlayerPage() {
                   variant="outline"
                   className="border-secondary/50 text-secondary text-xs"
                 >
-                  {courseSlug.replace(/-/g, " ")}
+                  {/* {courseId.replace(/-/g, " ")} */}
                 </Badge>
               </div>
             </div>
@@ -364,7 +367,7 @@ export default function PlayerPage() {
                         size="sm"
                         onClick={() =>
                           router.push(
-                            `/course/${courseSlug}/lesson/${prevLesson.id}`,
+                            `/course/${courseId}/lesson/${prevLesson.id}`,
                           )
                         }
                         className="border-white/20 bg-white/5 text-white hover:bg-white/10 rounded-full"
@@ -377,7 +380,7 @@ export default function PlayerPage() {
                       <Button
                         onClick={() =>
                           router.push(
-                            `/course/${courseSlug}/lesson/${nextLesson.id}`,
+                            `/course/${courseId}/lesson/${nextLesson.id}`,
                           )
                         }
                         className="bg-gradient-to-r from-secondary to-primary text-white rounded-full shadow-lg shadow-secondary/25"
@@ -410,10 +413,7 @@ export default function PlayerPage() {
           {/* Right: Desktop Sidebar */}
           <div className="hidden lg:block w-96 border-l border-white/10 bg-black/30 backdrop-blur-sm">
             <SidebarContent
-              modules={modules}
-              currentLessonId={lessonId}
-              courseSlug={courseSlug}
-              onLessonClick={() => {}}
+              modules={moduleList}
             />
           </div>
         </div>

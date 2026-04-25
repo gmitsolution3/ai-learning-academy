@@ -49,7 +49,7 @@ import {
   Plus,
   RefreshCw,
 } from "lucide-react";
-import { use, useState } from "react";
+import { use, useMemo, useState } from "react";
 
 // Table columns definition
 const columns: ColumnDef<IModule>[] = [
@@ -158,10 +158,15 @@ export default function ModuleManagementPage({
     courseId,
   );
 
-  const moduleList: IModule[] = data?.data || [];
+  const moduleList: IModule[] = useMemo(() => {
+    return data?.data
+      ? [...data.data].sort((a, b) => a.order_index - b.order_index)
+      : [];
+  }, [data?.data, isLoading]);
+
 
   const nextOrderIndex =
-    moduleList.sort((a, b) => b.order_index - a.order_index)[0]
+    [...moduleList].sort((a, b) => b.order_index - a.order_index)[0]
       ?.order_index + 1 || 0;
 
   const table = useReactTable({
