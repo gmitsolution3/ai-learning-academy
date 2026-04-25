@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ListVideo,
   Play,
+  Lock
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -40,7 +41,7 @@ export default function SidebarContent({
 }: {
   modules: IModule[];
 }) {
-  const { courseId, moduleId, lessonId } = useParams();
+  const { courseId, moduleId, lessonSlug } = useParams();
   const router = useRouter();
   const [expandedModule, setExpandedModule] = useState<string | null>(
     null,
@@ -69,7 +70,7 @@ export default function SidebarContent({
     setExpandedModule(moduleId);
     // Update URL with the selected module
     router.push(
-      `/dashboard/course/${courseId}/module/${moduleId}/lesson/${lessonId || ""}`,
+      `/dashboard/course/${courseId}/module/${moduleId}/lesson/${lessonSlug || ""}`,
     );
   };
 
@@ -147,7 +148,7 @@ export default function SidebarContent({
                       {lessonList?.length > 0 ? (
                         lessonList?.map(
                           (lesson: ILesson, lessonIndex: number) => {
-                            const isActive = lesson.slug === lessonId;
+                            const isActive = lesson.slug === lessonSlug;
                             return (
                               <button
                                 key={lesson.slug}
@@ -171,7 +172,7 @@ export default function SidebarContent({
                                     ) : isActive ? (
                                       <Play className="h-4 w-4 text-secondary" />
                                     ) : (
-                                      <div className="h-4 w-4 rounded-full border border-white/30" />
+                                      <Lock className="h-4 w-4 text-red-500" />
                                     )}
                                   </div>
                                   <div className="flex-1 min-w-0">

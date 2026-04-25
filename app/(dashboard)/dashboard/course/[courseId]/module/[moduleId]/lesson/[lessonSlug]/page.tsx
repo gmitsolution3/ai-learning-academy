@@ -24,8 +24,11 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useFetch } from "@/hooks/swr/useFetch";
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import SidebarContent from "./SidebarContent";
+import { getYouTubeEmbedUrl } from "@/utils";
+import { ILesson } from '@/types';
 
 // Mock modules data
 const modules = [
@@ -188,7 +191,8 @@ export default function PlayerPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const courseId = params.courseId as string;
-  const lessonId = params.lessonId as string;
+  const lessonSlug = params.lessonSlug as string;
+  const moduleId = params.moduleId as string;
 
   const {
     data: moduleData,
@@ -199,9 +203,22 @@ export default function PlayerPage() {
   const moduleList = moduleData?.data || [];
 
   // todo: need lesson detail by id api
+  const {
+    data: lessonDetail,
+    isLoading: lessonDetailIsLoading,
+    isError: lessonDetailIsError,
+  } = useFetch(`/lessons/get-single-lesson/${lessonSlug}`, {
+    params: {
+      module_id: moduleId,
+    },
+  });
+
+  const currentLesson: ILesson = lessonDetail?.data;
+
+  console.log(currentLesson)
 
   // Find current lesson
-  const allLessons = modules.flatMap((m) => m.lessons);
+  /* const allLessons = modules.flatMap((m) => m.lessons);
   const currentLesson = allLessons.find((l) => l.id === lessonId);
   const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
   const prevLesson =
@@ -209,11 +226,11 @@ export default function PlayerPage() {
   const nextLesson =
     currentIndex < allLessons.length - 1
       ? allLessons[currentIndex + 1]
-      : null;
+      : null; */
 
   const overallProgress = calculateProgress();
 
-  if (!currentLesson) {
+  if (!lessonDetail) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -262,9 +279,7 @@ export default function PlayerPage() {
                   side="left"
                   className="w-80 p-0 bg-black/95 border-r border-white/10"
                 >
-                  <SidebarContent
-                    modules={moduleList}
-                  />
+                  <SidebarContent modules={moduleList} />
                 </SheetContent>
               </Sheet>
 
@@ -337,7 +352,7 @@ export default function PlayerPage() {
               <div className="relative aspect-video bg-black">
                 <iframe
                   className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${currentLesson.youtubeId}?autoplay=1&modestbranding=1&rel=0`}
+                  src={getYouTubeEmbedUrl(currentLesson.content_url) as string}
                   title={currentLesson.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -349,7 +364,7 @@ export default function PlayerPage() {
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div className="space-y-2">
                     <Badge className="bg-gradient-to-r from-secondary to-primary text-white border-none">
-                      Lesson {currentIndex + 1} of {allLessons.length}
+                      {/* Lesson {currentIndex + 1} of {allLessons.length} */}
                     </Badge>
                     <h1 className="text-xl md:text-2xl font-bold text-white">
                       {currentLesson.title}
@@ -361,7 +376,7 @@ export default function PlayerPage() {
 
                   {/* Navigation Buttons */}
                   <div className="flex gap-2">
-                    {prevLesson && (
+                    {/* {prevLesson && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -375,8 +390,8 @@ export default function PlayerPage() {
                         <ChevronLeft className="h-4 w-4 mr-1" />
                         Previous
                       </Button>
-                    )}
-                    {nextLesson && (
+                    )} */}
+                    {/* {nextLesson && (
                       <Button
                         onClick={() =>
                           router.push(
@@ -389,7 +404,7 @@ export default function PlayerPage() {
                         Next
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
-                    )}
+                    )} */}
                   </div>
                 </div>
 
@@ -412,9 +427,7 @@ export default function PlayerPage() {
 
           {/* Right: Desktop Sidebar */}
           <div className="hidden lg:block w-96 border-l border-white/10 bg-black/30 backdrop-blur-sm">
-            <SidebarContent
-              modules={moduleList}
-            />
+            <SidebarContent modules={moduleList} />
           </div>
         </div>
       </div>
