@@ -76,7 +76,7 @@ export default function UserDashboard() {
     user?.name || user?.email?.split("@")[0] || "Learner";
 
   const handleContinueCourse = (courseId: string) => {
-    router.push(`/dashboard/course/${courseId}/module/asdasdasd/lesson/l1`);
+    router.push(`/dashboard/course/69db51968b0c69dd761f4b27/module/69ec9a03d7a6777bdd276dcc/lesson/text-content-for-module`);
   };
 
   const handleViewOutline = (courseId: string, slug: string) => {
