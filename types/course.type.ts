@@ -31,3 +31,30 @@ export interface ICourse {
 export interface ICourseDetail extends ICourse {
   instructor: IUserProfile[];
 }
+
+export interface IEnrolledCourse {
+  _id: string;
+  created_at: string;
+  enroll_date: string;
+  user_email: string;
+  progress: number;
+  last_accessed: string;
+  course_type: string;
+  course: ICourseDetail;
+  batch: IBatch[];
+}
+
+export interface ITransformedCourse {
+  id: string;
+  title: string;
+  instructor: string;
+  category: string;
+  batch: string;
+  progress: number;
+  totalModules: number;
+  completedModules: number;
+  image?: string;
+  thumbnail?: string;
+  lastAccessed?: string;
+  slug: string;
+}

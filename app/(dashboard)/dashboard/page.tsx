@@ -8,58 +8,10 @@ import { useSession } from "@/lib/auth-context";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import DashboardLoader from "@/components/UserDashboard/dashboard/DashboardLoader";
+import DashboardError from "@/components/UserDashboard/dashboard/DashboardError";
+import {IEnrolledCourse, ITransformedCourse} from "@/types";
 
-// Type for enrolled course data from API
-interface EnrolledCourse {
-  _id: string;
-  created_at: string;
-  enroll_date: string;
-  user_email: string;
-  progress: number;
-  last_accessed: string;
-  course_type: string;
-  course: {
-    _id: string;
-    title: string;
-    slug: string;
-    thumbnail: string;
-    category: {
-      _id: string;
-      name: string;
-      parent_id: string | null;
-      image: string;
-    };
-    instructors: Array<{
-      _id?: string;
-      name?: string;
-      email?: string;
-    }>;
-  };
-  batch: Array<{
-    _id: string;
-    batch_name: string;
-    total_module: number;
-    batch_starting_date: string;
-    batch_ending_date: string;
-    enrolled_type: Array<{ type: string }>;
-  }>;
-}
-
-// Transformed course type for CourseCard component
-interface TransformedCourse {
-  id: string;
-  title: string;
-  instructor: string;
-  category: string;
-  batch: string;
-  progress: number;
-  totalModules: number;
-  completedModules: number;
-  image?: string;
-  thumbnail?: string;
-  lastAccessed?: string;
-  slug: string;
-}
 
 export default function UserDashboard() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -68,19 +20,19 @@ export default function UserDashboard() {
 
   const user = session?.user;
 
-  const { data, isLoading, isError } = useFetchById(
+  const { data, isLoading, isError, refetch } = useFetchById(
     "/tracking/get-user-track-data",
     user?.email,
   );
 
-  const enrolledCourseData: EnrolledCourse[] = data?.data || [];
+  const enrolledCourseData: IEnrolledCourse[] = data?.data || [];
 
   // Transform API data to match CourseCard props
-  const transformedCourses: TransformedCourse[] = useMemo(() => {
+  const transformedCourses: ITransformedCourse[] = useMemo(() => {
     return enrolledCourseData.map((enrolled) => {
       // Get instructor name (first instructor or default)
       const instructorName =
-        enrolled.course.instructors?.[0]?.name || "TBA";
+        enrolled.course.instructor?.[0]?.name || "TBA";
 
       // Get batch name (first batch or default)
       const batchName = enrolled.batch?.[0]?.batch_name || "No Batch";
@@ -128,7 +80,7 @@ export default function UserDashboard() {
   // Handle continue course action
   const handleContinueCourse = (courseId: string, slug: string) => {
     // Navigate to course learning page
-    router.push(`/dashboard/course/${slug}`);
+    router.push(`/dashboard/course/${slug}/lesson/l1`);
   };
 
   // Handle view outline action
@@ -138,49 +90,13 @@ export default function UserDashboard() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <section className="min-h-screen py-20 md:py-28 lg:py-32 bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-secondary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-              <p className="mt-4 text-white/60">
-                Loading your courses...
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+    return <DashboardLoader />
   }
 
   // Error state
   if (isError) {
     return (
-      <section className="min-h-screen py-20 md:py-28 lg:py-32 bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-            <div className="relative mb-6">
-              <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 backdrop-blur-sm border border-red-500/30">
-                <BookOpen className="h-10 w-10 text-red-500" />
-              </div>
-            </div>
-            <h4 className="text-xl font-semibold text-white mb-2">
-              Failed to load courses
-            </h4>
-            <p className="text-white/50 text-sm mb-6">
-              There was an error loading your enrolled courses. Please
-              try again later.
-            </p>
-            <Button
-              onClick={() => window.location.reload()}
-              className="rounded-full bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-secondary/25 p-5 border-0"
-            >
-              Try Again
-            </Button>
-          </div>
-        </div>
-      </section>
+      <DashboardError refetch={refetch} />
     );
   }
 
