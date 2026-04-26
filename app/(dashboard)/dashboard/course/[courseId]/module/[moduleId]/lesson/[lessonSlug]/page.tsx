@@ -3,7 +3,6 @@
 
 import {
   ChevronLeft,
-  ChevronRight,
   Lock,
   Maximize2,
   Menu,
@@ -13,22 +12,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import VideoPlayer from "@/components/UserDashboard/dashboard/VideoPlayer";
 import { useFetch } from "@/hooks/swr/useFetch";
 import { useFetchById } from "@/hooks/swr/useFetchById";
+import { ILesson } from "@/types";
 import SidebarContent from "./SidebarContent";
-import { getYouTubeEmbedUrl } from "@/utils";
-import { ILesson } from '@/types';
 
 // Mock modules data
 const modules = [
@@ -190,6 +188,8 @@ export default function PlayerPage() {
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const playerRef = useRef<HTMLIFrameElement>(null);
+
   const courseId = params.courseId as string;
   const lessonSlug = params.lessonSlug as string;
   const moduleId = params.moduleId as string;
@@ -215,7 +215,7 @@ export default function PlayerPage() {
 
   const currentLesson: ILesson = lessonDetail?.data;
 
-  console.log(currentLesson)
+  console.log(currentLesson);
 
   // Find current lesson
   /* const allLessons = modules.flatMap((m) => m.lessons);
@@ -306,124 +306,16 @@ export default function PlayerPage() {
                 </Badge>
               </div>
             </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white/70 hover:text-white hover:bg-white/10"
-                onClick={() => setIsMuted(!isMuted)}
-              >
-                {isMuted ? (
-                  <VolumeX className="h-4 w-4" />
-                ) : (
-                  <Volume2 className="h-4 w-4" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white/70 hover:text-white hover:bg-white/10"
-                onClick={() => setIsFullscreen(!isFullscreen)}
-              >
-                {isFullscreen ? (
-                  <Minimize2 className="h-4 w-4" />
-                ) : (
-                  <Maximize2 className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="h-0.5 bg-white/10">
-            <div
-              className="h-full bg-gradient-to-r from-secondary to-primary transition-all duration-300"
-              style={{ width: `${overallProgress}%` }}
-            />
           </div>
         </div>
 
         <div className="flex">
           {/* Left: Video Player Area */}
-          <div className="flex-1 min-w-0">
-            <div className="sticky top-14 bg-black/90">
-              {/* Video Player */}
-              <div className="relative aspect-video bg-black">
-                <iframe
-                  className="w-full h-full"
-                  src={getYouTubeEmbedUrl(currentLesson.content_url) as string}
-                  title={currentLesson.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-
-              {/* Video Info */}
-              <div className="p-4 md:p-6 space-y-4">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div className="space-y-2">
-                    <Badge className="bg-gradient-to-r from-secondary to-primary text-white border-none">
-                      {/* Lesson {currentIndex + 1} of {allLessons.length} */}
-                    </Badge>
-                    <h1 className="text-xl md:text-2xl font-bold text-white">
-                      {currentLesson.title}
-                    </h1>
-                    <p className="text-white/50 text-sm">
-                      Duration: {currentLesson.duration}
-                    </p>
-                  </div>
-
-                  {/* Navigation Buttons */}
-                  <div className="flex gap-2">
-                    {/* {prevLesson && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(
-                            `/course/${courseId}/lesson/${prevLesson.id}`,
-                          )
-                        }
-                        className="border-white/20 bg-white/5 text-white hover:bg-white/10 rounded-full"
-                      >
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        Previous
-                      </Button>
-                    )} */}
-                    {/* {nextLesson && (
-                      <Button
-                        onClick={() =>
-                          router.push(
-                            `/course/${courseId}/lesson/${nextLesson.id}`,
-                          )
-                        }
-                        className="bg-gradient-to-r from-secondary to-primary text-white rounded-full shadow-lg shadow-secondary/25"
-                        size="sm"
-                      >
-                        Next
-                        <ChevronRight className="h-4 w-4 ml-1" />
-                      </Button>
-                    )} */}
-                  </div>
-                </div>
-
-                {/* Course Progress */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-white/50">
-                    <span>Course Progress</span>
-                    <span className="text-secondary">
-                      {Math.round(overallProgress)}% Complete
-                    </span>
-                  </div>
-                  <Progress
-                    value={overallProgress}
-                    className="h-1.5 bg-white/10 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-primary"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <VideoPlayer
+            currentLesson={currentLesson}
+            overallProgress={overallProgress}
+            playerRef={playerRef}
+          />
 
           {/* Right: Desktop Sidebar */}
           <div className="hidden lg:block w-96 border-l border-white/10 bg-black/30 backdrop-blur-sm">
