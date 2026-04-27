@@ -1,3 +1,5 @@
+import { ILesson } from "./lesson.type";
+
 export interface IModule {
   _id: string;
   course_id: string;
@@ -7,4 +9,9 @@ export interface IModule {
   created_at: string;
   updated_at: string;
   order_index: number;
+}
+
+export interface IModuleList extends IModule {
+  module_id: string;
+  lessons: ILesson[];
 }

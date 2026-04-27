@@ -1,15 +1,7 @@
 // app/course/[courseId]/lesson/[lessonId]/page.tsx
 "use client";
 
-import {
-  ChevronLeft,
-  Lock,
-  Maximize2,
-  Menu,
-  Minimize2,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { ChevronLeft, Lock, Menu } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -24,7 +16,7 @@ import {
 } from "@/components/ui/sheet";
 import VideoPlayer from "@/components/UserDashboard/dashboard/VideoPlayer";
 import { useFetch } from "@/hooks/swr/useFetch";
-import { useFetchById } from "@/hooks/swr/useFetchById";
+import { useSession } from "@/lib/auth-context";
 import { ILesson } from "@/types";
 import SidebarContent from "./SidebarContent";
 
@@ -185,8 +177,7 @@ export default function PlayerPage() {
   const params = useParams();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const { session } = useSession();
 
   const playerRef = useRef<HTMLIFrameElement>(null);
 
@@ -194,15 +185,22 @@ export default function PlayerPage() {
   const lessonSlug = params.lessonSlug as string;
   const moduleId = params.moduleId as string;
 
+  const user = session?.user;
+
   const {
     data: moduleData,
     isLoading: moduleIsLoading,
     isError: moduleIsError,
-  } = useFetchById("/modules/get-modules-by-course-id", courseId);
+  } = useFetch(`/modules/get-modules-with-lessons/${user?.email}`, {
+    params: {
+      course_id: courseId
+    }
+  });
 
-  const moduleList = moduleData?.data || [];
+  const moduleList = moduleData?.data?.modules || [];
 
-  // todo: need lesson detail by id api
+  console.log(moduleList);
+
   const {
     data: lessonDetail,
     isLoading: lessonDetailIsLoading,

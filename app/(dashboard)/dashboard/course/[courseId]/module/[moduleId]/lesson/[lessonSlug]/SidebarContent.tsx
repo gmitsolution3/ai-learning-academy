@@ -6,40 +6,22 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useFetchById } from "@/hooks/swr/useFetchById";
-import { ILesson, IModule } from "@/types";
+import { ILesson, IModuleList } from "@/types";
 import {
   CheckCircle,
   ChevronLeft,
   ListVideo,
+  Lock,
   Play,
-  Lock
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Skeleton Loader Component
-const LessonSkeleton = () => {
-  return (
-    <div className="px-4 py-3 animate-pulse">
-      <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 mt-0.5">
-          <div className="h-4 w-4 rounded-full bg-white/10" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="h-4 bg-white/10 rounded w-3/4 mb-2" />
-          <div className="h-3 bg-white/10 rounded w-1/4" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export default function SidebarContent({
   modules,
 }: {
-  modules: IModule[];
+  modules: IModuleList[];
 }) {
   const { courseId, moduleId, lessonSlug } = useParams();
   const router = useRouter();
@@ -51,28 +33,10 @@ export default function SidebarContent({
   useEffect(() => {
     if (moduleId) {
       setExpandedModule(moduleId as string);
-    } else if (modules.length > 0) {
+    } else if (modules?.length > 0) {
       setExpandedModule(modules[0]._id);
     }
   }, [moduleId, modules]);
-
-  const {
-    data: lessonData,
-    isLoading: lessonIsLoading,
-    isError: lessonIsError,
-  } = useFetchById(
-    "/lessons/get-lesson-by-module-id",
-    expandedModule as string,
-    { dedupingInterval: 60000 },
-  );
-
-  const onModuleClick = (moduleId: string) => {
-    setExpandedModule(moduleId);
-    // Update URL with the selected module
-    router.push(
-      `/dashboard/course/${courseId}/module/${moduleId}/lesson/${lessonSlug || ""}`,
-    );
-  };
 
   const onLessonClick = (
     courseId: string,
@@ -83,8 +47,6 @@ export default function SidebarContent({
       `/dashboard/course/${courseId}/module/${moduleId}/lesson/${lessonSlug}`,
     );
   };
-
-  const lessonList = lessonData?.data?.lessons || [];
 
   return (
     <div className="h-full flex flex-col">
@@ -102,60 +64,47 @@ export default function SidebarContent({
         <div className="pb-4">
           <Accordion
             type="single"
-            value={expandedModule || undefined}
-            onValueChange={(value) => value && onModuleClick(value)}
+            collapsible
+            value={expandedModule ?? ""}
+            onValueChange={(val) => setExpandedModule(val)}
             className="space-y-2"
           >
-            {modules.map((module: IModule, moduleIndex: number) => (
-              <AccordionItem
-                key={module._id}
-                value={module._id}
-                className=""
-              >
-                <AccordionTrigger className="px-4 py-3 transition-colors [&[data-state=open]>div>svg]:rotate-180">
-                  <div className="flex items-center justify-between w-full pr-4">
-                    <div className="flex-1 text-left">
-                      <h3 className="font-medium text-white text-sm">
-                        Module {moduleIndex + 1}: {module.title}
-                      </h3>
-                      <p className="text-xs text-white/40 mt-1">
-                        {/* lessons count will go here */}
-                        {lessonList?.length || 0} lessons
-                      </p>
+            {modules.map(
+              (module: IModuleList, moduleIndex: number) => (
+                <AccordionItem
+                  key={module.module_id}
+                  value={module.module_id}
+                  className=""
+                >
+                  <AccordionTrigger className="px-4 py-3 transition-colors ">
+                    <div className="flex items-center justify-between w-full pr-4">
+                      <div className="flex-1 text-left">
+                        <h3 className="font-medium text-white text-sm">
+                          Module {moduleIndex + 1}: {module.title}
+                        </h3>
+                        <p className="text-xs text-white/40 mt-1">
+                          {module.lessons?.length || 0} lessons
+                        </p>
+                      </div>
+                      <span className="text-xs text-white/40">
+                        module duration will go here
+                      </span>
                     </div>
-                    <span className="text-xs text-white/40">
-                      {/* {module.duration} */} module duration will
-                      go here
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="p-0 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden">
-                  {lessonIsLoading &&
-                  expandedModule === module._id ? (
-                    // Skeleton Loader
+                  </AccordionTrigger>
+                  <AccordionContent className="p-0 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden">
                     <div className="divide-y divide-white/5">
-                      {[1, 2, 3].map((index) => (
-                        <LessonSkeleton key={index} />
-                      ))}
-                    </div>
-                  ) : lessonIsError &&
-                    expandedModule === module._id ? (
-                    <div className="p-4 text-center text-red-400">
-                      Error loading lessons
-                    </div>
-                  ) : (
-                    <div className="divide-y divide-white/5">
-                      {lessonList?.length > 0 ? (
-                        lessonList?.map(
+                      {module.lessons && module.lessons.length > 0 ? (
+                        module.lessons.map(
                           (lesson: ILesson, lessonIndex: number) => {
-                            const isActive = lesson.slug === lessonSlug;
+                            const isActive =
+                              lesson.slug === lessonSlug;
                             return (
                               <button
                                 key={lesson.slug}
                                 onClick={() =>
                                   onLessonClick(
                                     courseId as string,
-                                    module._id,
+                                    module.module_id,
                                     lesson.slug,
                                   )
                                 }
@@ -187,7 +136,7 @@ export default function SidebarContent({
                                       {lesson.title}
                                     </p>
                                     <p className="text-xs text-white/40 mt-0.5">
-                                      {lesson.duration}
+                                      {lesson.duration} min
                                     </p>
                                   </div>
                                 </div>
@@ -201,10 +150,10 @@ export default function SidebarContent({
                         </div>
                       )}
                     </div>
-                  )}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+                  </AccordionContent>
+                </AccordionItem>
+              ),
+            )}
           </Accordion>
         </div>
       </ScrollArea>
