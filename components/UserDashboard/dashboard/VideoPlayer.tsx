@@ -1,8 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ILesson } from "@/types";
-import { formatDuration, getGoogleDocsEmbedUrl, getYouTubeEmbedUrl } from "@/utils";
-import { FileText } from "lucide-react";
+import {
+  formatDuration,
+  getGoogleDocsEmbedUrl,
+  getYouTubeEmbedUrl,
+} from "@/utils";
+import { ExternalLink, FileText, Link2 } from "lucide-react";
 import VideoPlayerError from "./VideoPlayerError";
 
 interface IProps {
@@ -22,11 +26,22 @@ export default function VideoPlayer({
 
   const isTextContent = currentLesson.content_type === "text";
   const isVideoContent = currentLesson.content_type === "video";
+  const isLinkContent = currentLesson.content_type === "link";
+
+  const openLinkInNewTab = () => {
+    if (currentLesson.content_url) {
+      window.open(
+        currentLesson.content_url,
+        "_blank",
+        "noopener,noreferrer",
+      );
+    }
+  };
 
   return (
     <div className="flex-1 min-w-0">
       <div className="sticky top-14 bg-black/90">
-        {/* Content Player - Video or Text */}
+        {/* Content Player - Video, Text, or Link */}
         <div className="relative aspect-video bg-black">
           {isVideoContent ? (
             <iframe
@@ -51,11 +66,55 @@ export default function VideoPlayer({
                 </div>
                 <div className="prose prose-invert max-w-none">
                   <iframe
-                    src={getGoogleDocsEmbedUrl(currentLesson?.content_url)}
+                    src={getGoogleDocsEmbedUrl(
+                      currentLesson?.content_url,
+                    )}
                     className="w-full h-[500px] rounded-lg"
                     title={currentLesson.title}
                   />
                 </div>
+              </div>
+            </div>
+          ) : isLinkContent ? (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] p-6">
+              <div className="text-center max-w-md mx-auto space-y-6">
+                {/* Icon */}
+                <div className="inline-flex p-4 rounded-full bg-secondary/10">
+                  <Link2 className="h-12 w-12 text-secondary" />
+                </div>
+
+                {/* Title */}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-white">
+                    External Resource
+                  </h3>
+                  <p className="text-white/60 text-sm">
+                    This lesson contains an external link that will
+                    open in a new tab
+                  </p>
+                </div>
+
+                {/* URL Preview */}
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                  <p className="text-white/40 text-xs truncate">
+                    {currentLesson.content_url}
+                  </p>
+                </div>
+
+                {/* Open Link Button */}
+                <button
+                  onClick={openLinkInNewTab}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25 transform hover:scale-105"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Open Link
+                </button>
+
+                {/* Instruction */}
+                <p className="text-white/30 text-xs">
+                  After completing the external resource, mark this
+                  lesson as complete to continue
+                </p>
               </div>
             </div>
           ) : (
@@ -75,7 +134,6 @@ export default function VideoPlayer({
                 <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.56 49.56 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
                 <path d="m10 15 5-3-5-3z" />
               </svg>
-
               <p className="text-white/40 ml-2">
                 Content not available
               </p>
@@ -107,6 +165,14 @@ export default function VideoPlayer({
                     Video Lesson
                   </Badge>
                 )}
+                {isLinkContent && (
+                  <Badge
+                    variant="outline"
+                    className="border-secondary/50 text-secondary"
+                  >
+                    External Link
+                  </Badge>
+                )}
               </div>
               <h1 className="text-xl md:text-2xl font-bold text-white">
                 {currentLesson.title}
@@ -118,7 +184,15 @@ export default function VideoPlayer({
 
             {/* Navigation Buttons */}
             <div className="flex gap-2">
-              {/* Navigation buttons can be added here */}
+              {isLinkContent && (
+                <button
+                  onClick={openLinkInNewTab}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-secondary to-primary text-white text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Open Resource
+                </button>
+              )}
             </div>
           </div>
 
@@ -130,6 +204,23 @@ export default function VideoPlayer({
               </h3>
               <p className="text-white/60 text-sm leading-relaxed">
                 {currentLesson.description}
+              </p>
+            </div>
+          )}
+
+          {/* Link URL Display for Link Content */}
+          {isLinkContent && currentLesson.content_url && (
+            <div className="mt-2 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <p className="text-xs text-blue-400">
+                <span className="font-semibold">Resource URL: </span>
+                <a
+                  href={currentLesson.content_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline break-all"
+                >
+                  {currentLesson.content_url}
+                </a>
               </p>
             </div>
           )}
