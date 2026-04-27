@@ -74,7 +74,6 @@ export default function SidebarContent({
                 <AccordionItem
                   key={module.module_id}
                   value={module.module_id}
-                  className=""
                 >
                   <AccordionTrigger className="px-4 py-3 transition-colors ">
                     <div className="flex items-center justify-between w-full pr-4">

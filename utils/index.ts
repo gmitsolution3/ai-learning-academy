@@ -84,3 +84,17 @@ export const getYouTubeEmbedUrl = (url: string) => {
   const videoId = getYouTubeVideoId(url);
   return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
 };
+
+export const getGoogleDocsEmbedUrl = (url: string): string => {
+  const patterns = [/\/d\/([a-zA-Z0-9_-]+)/, /id=([a-zA-Z0-9_-]+)/];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      const docId = match[1];
+      return `https://docs.google.com/document/d/${docId}/preview?usp=embed&dark=true&theme=dark`;
+    }
+  }
+
+  return url;
+};

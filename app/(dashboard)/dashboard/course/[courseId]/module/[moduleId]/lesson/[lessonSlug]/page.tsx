@@ -1,7 +1,7 @@
 // app/course/[courseId]/lesson/[lessonId]/page.tsx
 "use client";
 
-import { ChevronLeft, Lock, Menu } from "lucide-react";
+import { ChevronLeft, Menu } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -15,163 +15,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import VideoPlayer from "@/components/UserDashboard/dashboard/VideoPlayer";
+import VideoPlayerLoader from "@/components/UserDashboard/dashboard/VideoPlayerLoader";
 import { useFetch } from "@/hooks/swr/useFetch";
 import { useSession } from "@/lib/auth-context";
 import { ILesson } from "@/types";
 import SidebarContent from "./SidebarContent";
 
-// Mock modules data
-const modules = [
-  {
-    id: 1,
-    title: "Introduction to Web Development",
-    duration: "45 min",
-    lessons: [
-      {
-        id: "l1",
-        title: "Welcome to the Course",
-        youtubeId: "dQw4w9WgXcQ",
-        duration: "5:23",
-        isCompleted: true,
-      },
-      {
-        id: "l2",
-        title: "Setting Up Development Environment",
-        youtubeId: "ysz5S6PUM-U",
-        duration: "12:45",
-        isCompleted: true,
-      },
-      {
-        id: "l3",
-        title: "How the Web Works",
-        youtubeId: "3fumBcKC6RE",
-        duration: "8:30",
-        isCompleted: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Introduction to Web Development",
-    duration: "45 min",
-    lessons: [
-      {
-        id: "l1",
-        title: "Welcome to the Course",
-        youtubeId: "dQw4w9WgXcQ",
-        duration: "5:23",
-        isCompleted: true,
-      },
-      {
-        id: "l2",
-        title: "Setting Up Development Environment",
-        youtubeId: "ysz5S6PUM-U",
-        duration: "12:45",
-        isCompleted: true,
-      },
-      {
-        id: "l3",
-        title: "How the Web Works",
-        youtubeId: "3fumBcKC6RE",
-        duration: "8:30",
-        isCompleted: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "HTML & CSS Fundamentals",
-    duration: "2.5 hours",
-    lessons: [
-      {
-        id: "l4",
-        title: "HTML Basics",
-        youtubeId: "dQw4w9WgXcQ",
-        duration: "15:20",
-        isCompleted: false,
-      },
-      {
-        id: "l5",
-        title: "CSS Styling",
-        youtubeId: "ysz5S6PUM-U",
-        duration: "22:10",
-        isCompleted: false,
-      },
-      {
-        id: "l6",
-        title: "Responsive Design",
-        youtubeId: "3fumBcKC6RE",
-        duration: "18:45",
-        isCompleted: false,
-      },
-    ],
-  },
-  {
-    id: 5,
-    title: "HTML & CSS Fundamentals",
-    duration: "2.5 hours",
-    lessons: [
-      {
-        id: "l4",
-        title: "HTML Basics",
-        youtubeId: "dQw4w9WgXcQ",
-        duration: "15:20",
-        isCompleted: false,
-      },
-      {
-        id: "l5",
-        title: "CSS Styling",
-        youtubeId: "ysz5S6PUM-U",
-        duration: "22:10",
-        isCompleted: false,
-      },
-      {
-        id: "l6",
-        title: "Responsive Design",
-        youtubeId: "3fumBcKC6RE",
-        duration: "18:45",
-        isCompleted: false,
-      },
-    ],
-  },
-  {
-    id: 4,
-    title: "JavaScript Core Concepts",
-    duration: "3 hours",
-    lessons: [
-      {
-        id: "l7",
-        title: "Variables & Data Types",
-        youtubeId: "dQw4w9WgXcQ",
-        duration: "14:30",
-        isCompleted: false,
-      },
-      {
-        id: "l8",
-        title: "Functions & Scope",
-        youtubeId: "ysz5S6PUM-U",
-        duration: "20:15",
-        isCompleted: false,
-      },
-      {
-        id: "l9",
-        title: "DOM Manipulation",
-        youtubeId: "3fumBcKC6RE",
-        duration: "25:40",
-        isCompleted: false,
-      },
-    ],
-  },
-];
-
-// Calculate overall progress
-const calculateProgress = () => {
-  const allLessons = modules.flatMap((m) => m.lessons);
-  const completedLessons = allLessons.filter(
-    (l) => l.isCompleted,
-  ).length;
-  return (completedLessons / allLessons.length) * 100;
-};
 
 export default function PlayerPage() {
   const params = useParams();
@@ -193,13 +42,13 @@ export default function PlayerPage() {
     isError: moduleIsError,
   } = useFetch(`/modules/get-modules-with-lessons/${user?.email}`, {
     params: {
-      course_id: courseId
-    }
+      course_id: courseId,
+    },
   });
 
   const moduleList = moduleData?.data?.modules || [];
-
-  console.log(moduleList);
+  const moduleMeta = moduleData?.data || {};
+  console.log(moduleMeta);
 
   const {
     data: lessonDetail,
@@ -213,44 +62,9 @@ export default function PlayerPage() {
 
   const currentLesson: ILesson = lessonDetail?.data;
 
-  console.log(currentLesson);
-
-  // Find current lesson
-  /* const allLessons = modules.flatMap((m) => m.lessons);
-  const currentLesson = allLessons.find((l) => l.id === lessonId);
-  const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
-  const prevLesson =
-    currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-  const nextLesson =
-    currentIndex < allLessons.length - 1
-      ? allLessons[currentIndex + 1]
-      : null; */
-
-  const overallProgress = calculateProgress();
-
-  if (!lessonDetail) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="inline-flex rounded-full p-[1px] bg-gradient-to-r from-secondary to-primary">
-            <div className="inline-flex items-center gap-2 rounded-full bg-black/80 px-4 py-2 text-sm text-white">
-              <Lock className="h-4 w-4 text-secondary" />
-              <span>Lesson Not Found</span>
-            </div>
-          </div>
-          <p className="text-white/60">
-            The lesson you're looking for doesn't exist.
-          </p>
-          <Button
-            asChild
-            className="rounded-full bg-gradient-to-r from-secondary to-primary"
-          >
-            <Link href={`/course/${courseId}`}>Back to Course</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const overallProgress =
+    (moduleMeta?.completed_module / moduleMeta?.remaining_module) *
+    100;
 
   return (
     <div className="bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] py-[200px]">
@@ -309,11 +123,14 @@ export default function PlayerPage() {
 
         <div className="flex">
           {/* Left: Video Player Area */}
-          <VideoPlayer
-            currentLesson={currentLesson}
-            overallProgress={overallProgress}
-            playerRef={playerRef}
-          />
+          {lessonDetailIsLoading ? (
+            <VideoPlayerLoader />
+          ) : (
+            <VideoPlayer
+              currentLesson={currentLesson}
+              overallProgress={overallProgress}
+            />
+          )}
 
           {/* Right: Desktop Sidebar */}
           <div className="hidden lg:block w-96 border-l border-white/10 bg-black/30 backdrop-blur-sm">
