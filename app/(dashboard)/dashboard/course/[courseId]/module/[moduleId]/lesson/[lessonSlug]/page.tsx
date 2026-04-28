@@ -16,9 +16,12 @@ import {
 import VideoPlayer from "@/components/UserDashboard/dashboard/VideoPlayer/VideoPlayer";
 import VideoPlayerLoader from "@/components/UserDashboard/dashboard/VideoPlayer/VideoPlayerLoader";
 import { useFetch } from "@/hooks/swr/useFetch";
+import { useFetchById } from "@/hooks/swr/useFetchById";
+import { usePost } from "@/hooks/swr/usePost";
 import { useSession } from "@/lib/auth-context";
-import { ILesson } from "@/types";
+import { ILesson, IEnrolledCourse } from "@/types";
 import SidebarContent from "./SidebarContent";
+import { notify } from "@/utils/notify";
 
 export default function PlayerPage() {
   const params = useParams();
@@ -42,6 +45,11 @@ export default function PlayerPage() {
     },
   });
 
+  const { data: userData, isLoading: userDetailIsLoading } =
+    useFetchById("/enrolled/get-user-enrolled-data", user?.email);
+
+  const userDetail = userData?.data || {};
+
   const moduleList = moduleData?.data?.modules || [];
   const moduleMeta = moduleData?.data || {};
 
@@ -56,11 +64,35 @@ export default function PlayerPage() {
     },
   });
 
+  const {
+    mutate: unlockNextModule,
+    isLoading: unlockNextModuleIsLoading,
+  } = usePost("/tracking/track/updated-user-data", {
+    revalidateKey: `/modules/get-modules-with-lessons/${user?.email}`,
+  });
+
   const currentLesson: ILesson = lessonDetail?.data;
 
   const overallProgress =
     (moduleMeta?.completed_module / moduleMeta?.remaining_module) *
     100;
+
+  const onUnlockNextModule = async () => {
+    const payload = {
+      user_email: user?.email,
+      batch: userDetail?.batch?._id,
+      course_id: courseId,
+      module_id: moduleId,
+    };
+
+    const res = await unlockNextModule(payload);
+
+    if(res.sucess) {
+      notify.success("Next module unlocked!")
+    }
+
+    console.log(res);
+  };
 
   return (
     <div className="bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] py-[200px]">
@@ -115,7 +147,7 @@ export default function PlayerPage() {
 
         <div className="flex">
           {/* Left: Video Player Area */}
-          {lessonDetailIsLoading ? (
+          {lessonDetailIsLoading || userDetailIsLoading ? (
             <VideoPlayerLoader />
           ) : (
             <VideoPlayer
@@ -123,6 +155,7 @@ export default function PlayerPage() {
               overallProgress={overallProgress}
               lessonDetailIsError={lessonDetailIsError}
               onRetry={lessonRefetch}
+              onUnlockNextModule={onUnlockNextModule}
             />
           )}
 

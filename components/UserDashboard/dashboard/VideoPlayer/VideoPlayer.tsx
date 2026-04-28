@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ILesson } from "@/types";
 import {
@@ -6,7 +7,7 @@ import {
   getGoogleDocsEmbedUrl,
   getYouTubeEmbedUrl,
 } from "@/utils";
-import { ExternalLink, FileText, Link2 } from "lucide-react";
+import { ExternalLink, FileText, Link2, Lock, Unlock } from "lucide-react";
 import VideoNotFound from "./VideoNotFound";
 import VideoPlayerError from "./VideoPlayerError";
 
@@ -15,6 +16,9 @@ interface IProps {
   overallProgress: number;
   lessonDetailIsError: boolean;
   onRetry: () => void;
+  onUnlockNextModule: () => void;
+  isLastLesson?: boolean;
+  isModuleCompleted?: boolean;
 }
 
 export default function VideoPlayer({
@@ -22,8 +26,10 @@ export default function VideoPlayer({
   overallProgress,
   lessonDetailIsError,
   onRetry,
+  onUnlockNextModule,
+  isLastLesson = true,
+  isModuleCompleted = true,
 }: IProps) {
-
   if (lessonDetailIsError) {
     return <VideoPlayerError onRetry={onRetry} courseId="" />;
   }
@@ -31,7 +37,6 @@ export default function VideoPlayer({
   if (!currentLesson) {
     return <VideoNotFound />;
   }
-
 
   const isTextContent = currentLesson.content_type === "text";
   const isVideoContent = currentLesson.content_type === "video";
@@ -46,6 +51,9 @@ export default function VideoPlayer({
       );
     }
   };
+
+  // Check if all lessons in current module are completed
+  const canUnlockNextModule = isLastLesson && isModuleCompleted;
 
   return (
     <div className="flex-1 min-w-0">
@@ -135,9 +143,9 @@ export default function VideoPlayer({
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="lucide lucide-youtube"
               >
                 <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.56 49.56 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
@@ -231,6 +239,32 @@ export default function VideoPlayer({
                   {currentLesson.content_url}
                 </a>
               </p>
+            </div>
+          )}
+
+          {/* Unlock Next Module Button */}
+          {canUnlockNextModule && (
+            <div className="pt-4">
+              <Button
+                onClick={onUnlockNextModule}
+                className="w-full bg-gradient-to-r from-secondary to-primary  text-white rounded-full py-6 text-lg font-semibold transition-all duration-300 cursor-pointer"
+              >
+                <Unlock className="h-5 w-5 mr-2" />
+                Unlock Next Module
+              </Button>
+            </div>
+          )}
+
+          {/* Locked Next Module Button (if not completed) */}
+          {isLastLesson && !isModuleCompleted && (
+            <div className="pt-4">
+              <Button
+                disabled
+                className="w-full bg-white/10 text-white/40 rounded-full py-6 text-lg font-semibold cursor-not-allowed"
+              >
+                <Lock className="h-5 w-5 mr-2" />
+                Complete All Lessons to Unlock Next Module
+              </Button>
             </div>
           )}
 
