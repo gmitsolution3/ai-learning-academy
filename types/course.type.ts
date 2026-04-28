@@ -1,4 +1,4 @@
-import { IBatch, ICategoryListType, IUserProfile } from "@/types";
+import { IBatch, ICategoryListType, ITrack, IUserProfile } from "@/types";
 export interface ICourse {
   _id: string;
   created_at: string;
@@ -42,6 +42,7 @@ export interface IEnrolledCourse {
   course_type: string;
   course: ICourseDetail;
   batch: IBatch[];
+  track: ITrack;
 }
 
 export interface ITransformedCourse {
@@ -53,8 +54,9 @@ export interface ITransformedCourse {
   progress: number;
   totalModules: number;
   completedModules: number;
-  image?: string;
-  thumbnail?: string;
-  lastAccessed?: string;
+  track: ITrack;
+  image: string;        
+  thumbnail: string;    
+  lastAccessed?: string; 
   slug: string;
 }

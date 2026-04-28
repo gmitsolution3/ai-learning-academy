@@ -1,18 +1,16 @@
-// app/user-dashboard/page.tsx
 "use client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseCard from "@/components/UserDashboard/CourseCard";
+import DashboardError from "@/components/UserDashboard/dashboard/DashboardError";
+import DashboardLoader from "@/components/UserDashboard/dashboard/DashboardLoader";
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import { useSession } from "@/lib/auth-context";
+import { IEnrolledCourse, ITransformedCourse } from "@/types";
+import { notify } from "@/utils/notify";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import DashboardLoader from "@/components/UserDashboard/dashboard/DashboardLoader";
-import DashboardError from "@/components/UserDashboard/dashboard/DashboardError";
-import {IEnrolledCourse, ITransformedCourse} from "@/types";
-import { notify } from "@/utils/notify";
-
 
 export default function UserDashboard() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -28,10 +26,8 @@ export default function UserDashboard() {
 
   const enrolledCourseData: IEnrolledCourse[] = data?.data || [];
 
-
   const transformedCourses: ITransformedCourse[] = useMemo(() => {
-    return enrolledCourseData.map((enrolled) => {
-      
+    return enrolledCourseData.map((enrolled: IEnrolledCourse) => {
       const instructorName =
         enrolled.course.instructor?.[0]?.name || "TBA";
 
@@ -40,6 +36,8 @@ export default function UserDashboard() {
       const totalModules = enrolled.batch?.[0]?.total_module || 0;
       const completedModules =
         Math.floor((enrolled.progress / 100) * totalModules) || 0;
+
+      const track = enrolled.track;
 
       return {
         id: enrolled.course._id,
@@ -50,6 +48,7 @@ export default function UserDashboard() {
         progress: enrolled.progress,
         totalModules: totalModules,
         completedModules: completedModules,
+        track,
         image: enrolled.course.thumbnail,
         thumbnail: enrolled.course.thumbnail,
         lastAccessed: enrolled.last_accessed,
@@ -71,27 +70,28 @@ export default function UserDashboard() {
     });
   }, [transformedCourses, filterStatus]);
 
- 
   const userName =
     user?.name || user?.email?.split("@")[0] || "Learner";
 
-  const handleContinueCourse = (courseId: string) => {
-    router.push(`/dashboard/course/69db51968b0c69dd761f4b27/module/69ec9a35d7a6777bdd276dcd/lesson/text-content-for-module`);
+  const handleContinueCourse = (
+    courseId: string,
+    lastModule: any,
+  ) => {
+    router.push(
+      `/dashboard/course/${courseId}/module/${lastModule.module_id}/lesson/module-summery`,
+    );
   };
 
   const handleViewOutline = (courseId: string, slug: string) => {
     notify.warning("coming soon");
-    
   };
 
   if (isLoading) {
-    return <DashboardLoader />
+    return <DashboardLoader />;
   }
 
   if (isError) {
-    return (
-      <DashboardError refetch={refetch} />
-    );
+    return <DashboardError refetch={refetch} />;
   }
 
   return (
@@ -181,7 +181,12 @@ export default function UserDashboard() {
                 key={course.id}
                 course={course}
                 onContinue={() =>
-                  handleContinueCourse(course.id)
+                  handleContinueCourse(
+                    course.id,
+                    course?.track?.completed_modules[
+                      course?.track?.completed_modules?.length - 1
+                    ],
+                  )
                 }
                 onOutline={() =>
                   handleViewOutline(course.id, course.slug)
