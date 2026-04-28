@@ -19,7 +19,7 @@ import { useFetch } from "@/hooks/swr/useFetch";
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import { usePost } from "@/hooks/swr/usePost";
 import { useSession } from "@/lib/auth-context";
-import { ILesson, IEnrolledCourse } from "@/types";
+import { ILesson } from "@/types";
 import SidebarContent from "./SidebarContent";
 import { notify } from "@/utils/notify";
 
@@ -87,11 +87,9 @@ export default function PlayerPage() {
 
     const res = await unlockNextModule(payload);
 
-    if(res.sucess) {
+    if(res.success) {
       notify.success("Next module unlocked!")
     }
-
-    console.log(res);
   };
 
   return (
@@ -156,6 +154,7 @@ export default function PlayerPage() {
               lessonDetailIsError={lessonDetailIsError}
               onRetry={lessonRefetch}
               onUnlockNextModule={onUnlockNextModule}
+              unlockNextModuleIsLoading={unlockNextModuleIsLoading}
             />
           )}
 

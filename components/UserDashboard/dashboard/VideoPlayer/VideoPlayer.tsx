@@ -7,7 +7,14 @@ import {
   getGoogleDocsEmbedUrl,
   getYouTubeEmbedUrl,
 } from "@/utils";
-import { ExternalLink, FileText, Link2, Lock, Unlock } from "lucide-react";
+import {
+  ExternalLink,
+  FileText,
+  Link2,
+  Lock,
+  Unlock,
+  Loader2
+} from "lucide-react";
 import VideoNotFound from "./VideoNotFound";
 import VideoPlayerError from "./VideoPlayerError";
 
@@ -19,6 +26,7 @@ interface IProps {
   onUnlockNextModule: () => void;
   isLastLesson?: boolean;
   isModuleCompleted?: boolean;
+  unlockNextModuleIsLoading: boolean;
 }
 
 export default function VideoPlayer({
@@ -29,6 +37,7 @@ export default function VideoPlayer({
   onUnlockNextModule,
   isLastLesson = true,
   isModuleCompleted = true,
+  unlockNextModuleIsLoading,
 }: IProps) {
   if (lessonDetailIsError) {
     return <VideoPlayerError onRetry={onRetry} courseId="" />;
@@ -246,11 +255,20 @@ export default function VideoPlayer({
           {canUnlockNextModule && (
             <div className="pt-4">
               <Button
+                disabled={unlockNextModuleIsLoading}
                 onClick={onUnlockNextModule}
                 className="w-full bg-gradient-to-r from-secondary to-primary  text-white rounded-full py-6 text-lg font-semibold transition-all duration-300 cursor-pointer"
               >
-                <Unlock className="h-5 w-5 mr-2" />
-                Unlock Next Module
+                {unlockNextModuleIsLoading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" /> Unlocking...
+                  </>
+                ) : (
+                  <>
+                    <Unlock className="h-5 w-5 mr-2" />
+                    Unlock Next Module
+                  </>
+                )}
               </Button>
             </div>
           )}
