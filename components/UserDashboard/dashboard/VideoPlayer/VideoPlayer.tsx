@@ -7,22 +7,31 @@ import {
   getYouTubeEmbedUrl,
 } from "@/utils";
 import { ExternalLink, FileText, Link2 } from "lucide-react";
+import VideoNotFound from "./VideoNotFound";
 import VideoPlayerError from "./VideoPlayerError";
 
 interface IProps {
   currentLesson: ILesson;
   overallProgress: number;
+  lessonDetailIsError: boolean;
+  onRetry: () => void;
 }
 
 export default function VideoPlayer({
   currentLesson,
   overallProgress,
+  lessonDetailIsError,
+  onRetry,
 }: IProps) {
-  if (!currentLesson) {
-    return <VideoPlayerError />;
+
+  if (lessonDetailIsError) {
+    return <VideoPlayerError onRetry={onRetry} courseId="" />;
   }
 
-  console.log(currentLesson);
+  if (!currentLesson) {
+    return <VideoNotFound />;
+  }
+
 
   const isTextContent = currentLesson.content_type === "text";
   const isVideoContent = currentLesson.content_type === "video";

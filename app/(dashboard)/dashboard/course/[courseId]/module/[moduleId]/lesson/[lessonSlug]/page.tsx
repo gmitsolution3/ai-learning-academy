@@ -3,32 +3,27 @@
 
 import { ChevronLeft, Menu } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import VideoPlayer from "@/components/UserDashboard/dashboard/VideoPlayer";
-import VideoPlayerLoader from "@/components/UserDashboard/dashboard/VideoPlayerLoader";
+import VideoPlayer from "@/components/UserDashboard/dashboard/VideoPlayer/VideoPlayer";
+import VideoPlayerLoader from "@/components/UserDashboard/dashboard/VideoPlayer/VideoPlayerLoader";
 import { useFetch } from "@/hooks/swr/useFetch";
 import { useSession } from "@/lib/auth-context";
 import { ILesson } from "@/types";
 import SidebarContent from "./SidebarContent";
 
-
 export default function PlayerPage() {
   const params = useParams();
-  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { session } = useSession();
-
-  const playerRef = useRef<HTMLIFrameElement>(null);
 
   const courseId = params.courseId as string;
   const lessonSlug = params.lessonSlug as string;
@@ -40,6 +35,7 @@ export default function PlayerPage() {
     data: moduleData,
     isLoading: moduleIsLoading,
     isError: moduleIsError,
+    refetch: moduleRefetch,
   } = useFetch(`/modules/get-modules-with-lessons/${user?.email}`, {
     params: {
       course_id: courseId,
@@ -48,12 +44,12 @@ export default function PlayerPage() {
 
   const moduleList = moduleData?.data?.modules || [];
   const moduleMeta = moduleData?.data || {};
-  console.log(moduleMeta);
 
   const {
     data: lessonDetail,
     isLoading: lessonDetailIsLoading,
     isError: lessonDetailIsError,
+    refetch: lessonRefetch,
   } = useFetch(`/lessons/get-single-lesson/${lessonSlug}`, {
     params: {
       module_id: moduleId,
@@ -91,7 +87,12 @@ export default function PlayerPage() {
                   side="left"
                   className="w-80 p-0 bg-black/95 border-r border-white/10"
                 >
-                  <SidebarContent modules={moduleList} />
+                  <SidebarContent
+                    modules={moduleList}
+                    moduleIsLoading={moduleIsLoading}
+                    moduleIsError={moduleIsError}
+                    onRetry={moduleRefetch}
+                  />
                 </SheetContent>
               </Sheet>
 
@@ -108,15 +109,6 @@ export default function PlayerPage() {
               </Button>
 
               <div className="hidden sm:block h-6 w-px bg-white/20" />
-
-              <div className="hidden sm:block">
-                <Badge
-                  variant="outline"
-                  className="border-secondary/50 text-secondary text-xs"
-                >
-                  {/* {courseId.replace(/-/g, " ")} */}
-                </Badge>
-              </div>
             </div>
           </div>
         </div>
@@ -129,12 +121,19 @@ export default function PlayerPage() {
             <VideoPlayer
               currentLesson={currentLesson}
               overallProgress={overallProgress}
+              lessonDetailIsError={lessonDetailIsError}
+              onRetry={lessonRefetch}
             />
           )}
 
           {/* Right: Desktop Sidebar */}
           <div className="hidden lg:block w-96 border-l border-white/10 bg-black/30 backdrop-blur-sm">
-            <SidebarContent modules={moduleList} />
+            <SidebarContent
+              modules={moduleList}
+              moduleIsLoading={moduleIsLoading}
+              moduleIsError={moduleIsError}
+              onRetry={moduleRefetch}
+            />
           </div>
         </div>
       </div>

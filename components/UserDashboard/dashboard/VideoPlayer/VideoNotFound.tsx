@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Link, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import Link from "next/link";
 
-export default function VideoPlayerError() {
+export default function VideoNotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] flex items-center justify-center">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#05010F] via-[#0A0418] to-[#0F0720] flex items-center justify-center">
       <div className="text-center space-y-4">
         <div className="inline-flex rounded-full p-[1px] bg-gradient-to-r from-secondary to-primary">
           <div className="inline-flex items-center gap-2 rounded-full bg-black/80 px-4 py-2 text-sm text-white">
