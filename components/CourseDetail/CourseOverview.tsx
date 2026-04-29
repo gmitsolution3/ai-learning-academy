@@ -72,7 +72,7 @@ export default function CourseOverview({
 
   const disablePurchase =
     availableSeats === 0 ||
-    new Date(courseData?.batch?.batch_ending_date) < new Date() ||
+    new Date(courseData?.batch?.batch_ending_date) > new Date() ||
     courseData?.batch?.batch_status !== "ongoing";
 
   return (

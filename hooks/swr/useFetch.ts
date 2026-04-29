@@ -12,7 +12,7 @@ export const useFetch = <T = any>(
   options?: UseFetchOptions<T>,
 ) => {
   const { params, ...swrOptions } = options || {};
-
+  
   const key = url ? (params ? [url, params] : url) : null;
 
   const { data, error, isLoading, mutate, isValidating } = useSWR<T>(

@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseCard from "@/components/UserDashboard/CourseCard";
 import DashboardError from "@/components/UserDashboard/dashboard/DashboardError";
 import DashboardLoader from "@/components/UserDashboard/dashboard/DashboardLoader";
+import { useFetch } from "@/hooks/swr/useFetch";
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import { useSession } from "@/lib/auth-context";
 import { IEnrolledCourse, ITransformedCourse } from "@/types";
@@ -25,6 +26,13 @@ export default function UserDashboard() {
   );
 
   const enrolledCourseData: IEnrolledCourse[] = data?.data || [];
+
+  const {
+    data: moduleData,
+    isLoading: moduleIsLoading,
+  } = useFetch(`/modules/get-all-modules`);
+
+  const moduleList = moduleData?.data || [];
 
   const transformedCourses: ITransformedCourse[] = useMemo(() => {
     return enrolledCourseData.map((enrolled: IEnrolledCourse) => {
@@ -73,12 +81,15 @@ export default function UserDashboard() {
   const userName =
     user?.name || user?.email?.split("@")[0] || "Learner";
 
-  const handleContinueCourse = (
-    courseId: string,
-    lastModule: any,
-  ) => {
+  const handleContinueCourse = (course: any, lastModule: any) => {
+    const courseId = course?.id;
+
+    const firstModuleOfCourse = moduleList
+      .filter((module: any) => module.course_id === courseId)
+      .sort((a: any, b: any) => a.order_index - b.order_index)[0];
+
     router.push(
-      `/dashboard/course/${courseId}/module/${lastModule.module_id}/lesson/module-summery`,
+      `/dashboard/course/${courseId}/module/${lastModule ? lastModule.module_id : firstModuleOfCourse._id}/lesson/module-summery`,
     );
   };
 
@@ -86,7 +97,7 @@ export default function UserDashboard() {
     notify.warning("coming soon");
   };
 
-  if (isLoading) {
+  if (isLoading || moduleIsLoading) {
     return <DashboardLoader />;
   }
 
@@ -182,7 +193,7 @@ export default function UserDashboard() {
                 course={course}
                 onContinue={() =>
                   handleContinueCourse(
-                    course.id,
+                    course,
                     course?.track?.completed_modules[
                       course?.track?.completed_modules?.length - 1
                     ],

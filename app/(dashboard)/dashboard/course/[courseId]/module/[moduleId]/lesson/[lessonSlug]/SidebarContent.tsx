@@ -38,8 +38,6 @@ export default function SidebarContent({
     null,
   );
 
-  console.log(modules);
-
   // Set initial expanded module based on URL moduleId
   useEffect(() => {
     if (moduleId) {

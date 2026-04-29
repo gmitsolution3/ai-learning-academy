@@ -21,6 +21,7 @@ import { usePost } from "@/hooks/swr/usePost";
 import { useSession } from "@/lib/auth-context";
 import { ILesson } from "@/types";
 import { notify } from "@/utils/notify";
+import { mutate } from "swr";
 import SidebarContent from "./SidebarContent";
 
 export default function PlayerPage() {
@@ -39,8 +40,6 @@ export default function PlayerPage() {
 
   const userDetail = userData?.data || {};
 
-  console.log(user.email)
-
   const {
     data: moduleData,
     isLoading: moduleIsLoading,
@@ -56,8 +55,8 @@ export default function PlayerPage() {
   const moduleList = moduleData?.data?.modules || [];
   const moduleMeta = moduleData?.data?.user_track || {};
 
-  // console.log({moduleList})
-  // console.log({moduleMeta})
+  console.log({ moduleList });
+  console.log({ moduleMeta });
 
   const {
     data: lessonDetail,
@@ -74,14 +73,15 @@ export default function PlayerPage() {
     mutate: unlockNextModule,
     isLoading: unlockNextModuleIsLoading,
   } = usePost("/tracking/track/updated-user-data", {
-    revalidateKey: `/modules/get-modules-with-lessons/${user?.email}`,
+    revalidateKey: [
+      `/modules/get-modules-with-lessons/${user?.email}`,
+    ],
   });
 
   const currentLesson: ILesson = lessonDetail?.data;
 
   const overallProgress =
-    (moduleMeta?.completed_module / moduleMeta?.remaining_module) *
-    100;
+    (moduleMeta?.completed_module / moduleList?.length) * 100;
 
   const onUnlockNextModule = async () => {
     const payload = {
@@ -95,6 +95,23 @@ export default function PlayerPage() {
 
     if (res.success) {
       notify.success("Next module unlocked!");
+
+      mutate(
+        (key) => {
+          // SWR cache keys with params are often arrays
+          if (Array.isArray(key)) {
+            return (
+              typeof key[0] === "string" &&
+              key[0].startsWith("/modules")
+            );
+          }
+          return (
+            typeof key === "string" && key.startsWith("/modules")
+          );
+        },
+        undefined,
+        { revalidate: true },
+      );
     }
   };
 
