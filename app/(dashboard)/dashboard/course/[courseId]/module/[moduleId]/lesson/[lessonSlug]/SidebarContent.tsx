@@ -13,6 +13,7 @@ import { formatDuration } from "@/utils";
 import {
   CheckCircle,
   ChevronLeft,
+  Circle,
   ListVideo,
   Lock,
   Play,
@@ -40,6 +41,43 @@ export default function SidebarContent({
     null,
   );
 
+  // Calculate which modules are unlocked
+  const getUnlockedModules = () => {
+    const completedModuleIds = new Set(
+      completedModules?.map(cm => cm?.module_id)
+    );
+    
+    // Find the last completed module index
+    let lastCompletedIndex = -1;
+    modules.forEach((module, index) => {
+      if (completedModuleIds.has(module._id)) {
+        lastCompletedIndex = index;
+      }
+    });
+    
+    // Unlock the completed module and the next module (if exists)
+    const unlockedModuleIndices = new Set<number>();
+    if (lastCompletedIndex >= 0) {
+      unlockedModuleIndices.add(lastCompletedIndex);
+      if (lastCompletedIndex + 1 < modules.length) {
+        unlockedModuleIndices.add(lastCompletedIndex + 1);
+      }
+    }
+    // If no modules completed yet, unlock the first module
+    else if (modules.length > 0) {
+      unlockedModuleIndices.add(0);
+    }
+    
+    return unlockedModuleIndices;
+  };
+
+  const unlockedModules = getUnlockedModules();
+
+  // Check if a module is locked
+  const isModuleLocked = (moduleIndex: number) => {
+    return !unlockedModules.has(moduleIndex);
+  };
+
   console.log(modules)
   console.log(completedModules)
 
@@ -56,10 +94,14 @@ export default function SidebarContent({
     courseId: string,
     moduleId: string,
     lessonSlug: string,
+    moduleIndex: number,
   ) => {
-    router.push(
-      `/dashboard/course/${courseId}/module/${moduleId}/lesson/${lessonSlug}`,
-    );
+    // Only allow navigation if module is unlocked
+    if (!isModuleLocked(moduleIndex)) {
+      router.push(
+        `/dashboard/course/${courseId}/module/${moduleId}/lesson/${lessonSlug}`,
+      );
+    }
   };
 
   // Calculate total lessons count
@@ -106,6 +148,7 @@ export default function SidebarContent({
                 (module: IModuleList, moduleIndex: number) => {
                   const lessonDataItem = module.lesson_data?.[0];
                   const lessons = lessonDataItem?.lessons || [];
+                  const moduleLocked = isModuleLocked(moduleIndex);
 
                   const moduleTotalDuration = lessons.reduce(
                     (acc, lesson) => {
@@ -122,9 +165,16 @@ export default function SidebarContent({
                       <AccordionTrigger className="px-4 py-3 transition-colors">
                         <div className="flex items-center justify-between w-full pr-4">
                           <div className="flex-1 text-left">
-                            <h3 className="font-medium text-white text-sm">
-                              Module {moduleIndex + 1}: {module.title}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              {moduleLocked && (
+                                <Lock className="h-3 w-3 text-red-500" />
+                              )}
+                              <h3 className={`font-medium text-sm ${
+                                moduleLocked ? 'text-white/40' : 'text-white'
+                              }`}>
+                                Module {moduleIndex + 1}: {module.title}
+                              </h3>
+                            </div>
                             <p className="text-xs text-white/40 mt-1">
                               {lessons.length} lessons
                             </p>
@@ -144,37 +194,56 @@ export default function SidebarContent({
                               ) => {
                                 const isActive =
                                   lesson.slug === lessonSlug;
+                                const isLessonClickable = !moduleLocked;
+                                
+                                // Determine which icon to show
+                                const getLessonIcon = () => {
+                                  if (lesson.is_completed) {
+                                    return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+                                  }
+                                  if (isActive && !moduleLocked) {
+                                    return <Play className="h-4 w-4 text-secondary" />;
+                                  }
+                                  if (!moduleLocked) {
+                                    // Unlocked but not completed and not active
+                                    return <Circle className="h-4 w-4 text-white/40" />;
+                                  }
+                                  // Locked module
+                                  return <Lock className="h-4 w-4 text-red-500" />;
+                                };
+                                
                                 return (
                                   <button
                                     key={lesson.slug}
                                     onClick={() =>
+                                      isLessonClickable &&
                                       onLessonClick(
                                         courseId as string,
                                         module._id,
                                         lesson.slug,
+                                        moduleIndex,
                                       )
                                     }
+                                    disabled={!isLessonClickable}
                                     className={`w-full text-left px-4 py-3 transition-all duration-200 group ${
-                                      isActive
+                                      isActive && !moduleLocked
                                         ? "bg-gradient-to-r from-secondary/20 to-primary/20 border-l-2 border-secondary"
+                                        : moduleLocked
+                                        ? "cursor-not-allowed opacity-60"
                                         : "hover:bg-white/5"
                                     }`}
                                   >
                                     <div className="flex items-start gap-3">
                                       <div className="flex-shrink-0 mt-0.5">
-                                        {lesson.is_completed ? (
-                                          <CheckCircle className="h-4 w-4 text-emerald-500" />
-                                        ) : isActive ? (
-                                          <Play className="h-4 w-4 text-secondary" />
-                                        ) : (
-                                          <Lock className="h-4 w-4 text-red-500" />
-                                        )}
+                                        {getLessonIcon()}
                                       </div>
                                       <div className="flex-1 min-w-0">
                                         <p
                                           className={`text-sm truncate ${
-                                            isActive
+                                            isActive && !moduleLocked
                                               ? "text-secondary font-medium"
+                                              : moduleLocked
+                                              ? "text-white/40"
                                               : "text-white/70 group-hover:text-white"
                                           }`}
                                         >
