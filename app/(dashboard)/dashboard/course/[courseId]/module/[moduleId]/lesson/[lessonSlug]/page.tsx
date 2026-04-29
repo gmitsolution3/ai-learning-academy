@@ -80,7 +80,7 @@ export default function PlayerPage() {
   const currentLesson: ILesson = lessonDetail?.data;
 
   const overallProgress =
-    (moduleMeta?.completed_module / moduleList?.length) * 100;
+    (moduleMeta?.completed_module / (moduleList?.length - 1)) * 100;
 
   const onUnlockNextModule = async () => {
     const payload = {
