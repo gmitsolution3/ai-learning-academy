@@ -55,7 +55,6 @@ export default function PlayerPage() {
   const moduleList = moduleData?.data?.modules || [];
   const moduleMeta = moduleData?.data?.user_track || {};
 
-  console.log({ moduleList });
   console.log({ moduleMeta });
 
   const {
@@ -142,6 +141,7 @@ export default function PlayerPage() {
                 >
                   <SidebarContent
                     modules={moduleList}
+                    completedModules={moduleMeta.completed_modules}
                     moduleIsLoading={moduleIsLoading}
                     moduleIsError={moduleIsError}
                     onRetry={moduleRefetch}
@@ -185,6 +185,7 @@ export default function PlayerPage() {
           <div className="hidden lg:block w-96 border-l border-white/10 bg-black/30 backdrop-blur-sm">
             <SidebarContent
               modules={moduleList}
+              completedModules={moduleMeta.completed_modules}
               moduleIsLoading={moduleIsLoading}
               moduleIsError={moduleIsError}
               onRetry={moduleRefetch}

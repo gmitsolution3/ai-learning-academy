@@ -23,11 +23,13 @@ import { useEffect, useState } from "react";
 
 export default function SidebarContent({
   modules,
+  completedModules,
   moduleIsLoading,
   moduleIsError,
   onRetry,
 }: {
   modules: IModuleList[];
+  completedModules: { module_id: string; completed_at: string }[];
   moduleIsLoading: boolean;
   moduleIsError: boolean;
   onRetry: () => void;
@@ -37,6 +39,9 @@ export default function SidebarContent({
   const [expandedModule, setExpandedModule] = useState<string | null>(
     null,
   );
+
+  console.log(modules)
+  console.log(completedModules)
 
   // Set initial expanded module based on URL moduleId
   useEffect(() => {
@@ -59,7 +64,8 @@ export default function SidebarContent({
 
   // Calculate total lessons count
   const totalLessons = modules.reduce(
-    (total, module) => total + (module.lesson_data?.[0]?.lessons?.length || 0),
+    (total, module) =>
+      total + (module.lesson_data?.[0]?.lessons?.length || 0),
     0,
   );
 
@@ -98,17 +104,16 @@ export default function SidebarContent({
             >
               {modules.map(
                 (module: IModuleList, moduleIndex: number) => {
-                  
                   const lessonDataItem = module.lesson_data?.[0];
                   const lessons = lessonDataItem?.lessons || [];
-                  
+
                   const moduleTotalDuration = lessons.reduce(
                     (acc, lesson) => {
                       return acc + (lesson.duration || 0);
                     },
                     0,
                   );
-                  
+
                   return (
                     <AccordionItem
                       key={module._id}
