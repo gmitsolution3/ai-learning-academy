@@ -20,8 +20,8 @@ import { useFetchById } from "@/hooks/swr/useFetchById";
 import { usePost } from "@/hooks/swr/usePost";
 import { useSession } from "@/lib/auth-context";
 import { ILesson } from "@/types";
-import SidebarContent from "./SidebarContent";
 import { notify } from "@/utils/notify";
+import SidebarContent from "./SidebarContent";
 
 export default function PlayerPage() {
   const params = useParams();
@@ -34,24 +34,30 @@ export default function PlayerPage() {
 
   const user = session?.user;
 
-  const {
-    data: moduleData,
-    isLoading: moduleIsLoading,
-    isError: moduleIsError,
-    refetch: moduleRefetch,
-  } = useFetch(`/modules/get-modules-with-lessons/${user?.email}`, {
-    params: {
-      course_id: courseId,
-    },
-  });
-
   const { data: userData, isLoading: userDetailIsLoading } =
     useFetchById("/enrolled/get-user-enrolled-data", user?.email);
 
   const userDetail = userData?.data || {};
 
+  console.log(user.email)
+
+  const {
+    data: moduleData,
+    isLoading: moduleIsLoading,
+    isError: moduleIsError,
+    refetch: moduleRefetch,
+  } = useFetch(`/modules/user-track/all-modules/${courseId}`, {
+    params: {
+      email: decodeURIComponent(user?.email),
+      batch_id: userDetail?.batch?._id,
+    },
+  });
+
   const moduleList = moduleData?.data?.modules || [];
-  const moduleMeta = moduleData?.data || {};
+  const moduleMeta = moduleData?.data?.user_track || {};
+
+  // console.log({moduleList})
+  // console.log({moduleMeta})
 
   const {
     data: lessonDetail,
@@ -87,8 +93,8 @@ export default function PlayerPage() {
 
     const res = await unlockNextModule(payload);
 
-    if(res.success) {
-      notify.success("Next module unlocked!")
+    if (res.success) {
+      notify.success("Next module unlocked!");
     }
   };
 

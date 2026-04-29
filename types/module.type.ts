@@ -11,7 +11,15 @@ export interface IModule {
   order_index: number;
 }
 
+export interface ILessonDataForModuleList {
+  _id: string;
+  module_id: string;
+  created_at: string;
+  updated_at: string;
+  lessons: ILesson[];
+}
+
 export interface IModuleList extends IModule {
   module_id: string;
-  lessons: ILesson[];
+  lesson_data: ILessonDataForModuleList[];
 }

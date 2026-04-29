@@ -38,12 +38,14 @@ export default function SidebarContent({
     null,
   );
 
+  console.log(modules);
+
   // Set initial expanded module based on URL moduleId
   useEffect(() => {
     if (moduleId) {
       setExpandedModule(moduleId as string);
     } else if (modules?.length > 0) {
-      setExpandedModule(modules[0].module_id);
+      setExpandedModule(modules[0]._id);
     }
   }, [moduleId, modules]);
 
@@ -59,7 +61,7 @@ export default function SidebarContent({
 
   // Calculate total lessons count
   const totalLessons = modules.reduce(
-    (total, module) => total + (module.lessons?.length || 0),
+    (total, module) => total + (module.lesson_data?.[0]?.lessons?.length || 0),
     0,
   );
 
@@ -98,16 +100,21 @@ export default function SidebarContent({
             >
               {modules.map(
                 (module: IModuleList, moduleIndex: number) => {
-                  const moduleTotalDuration = module.lessons.reduce(
+                  
+                  const lessonDataItem = module.lesson_data?.[0];
+                  const lessons = lessonDataItem?.lessons || [];
+                  
+                  const moduleTotalDuration = lessons.reduce(
                     (acc, lesson) => {
-                      return acc + lesson.duration;
+                      return acc + (lesson.duration || 0);
                     },
                     0,
                   );
+                  
                   return (
                     <AccordionItem
-                      key={module.module_id}
-                      value={module.module_id}
+                      key={module._id}
+                      value={module._id}
                     >
                       <AccordionTrigger className="px-4 py-3 transition-colors">
                         <div className="flex items-center justify-between w-full pr-4">
@@ -116,7 +123,7 @@ export default function SidebarContent({
                               Module {moduleIndex + 1}: {module.title}
                             </h3>
                             <p className="text-xs text-white/40 mt-1">
-                              {module.lessons?.length || 0} lessons
+                              {lessons.length} lessons
                             </p>
                           </div>
                           <span className="text-xs text-white/40">
@@ -126,9 +133,8 @@ export default function SidebarContent({
                       </AccordionTrigger>
                       <AccordionContent className="p-0 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden">
                         <div className="divide-y divide-white/5">
-                          {module.lessons &&
-                          module.lessons.length > 0 ? (
-                            module.lessons.map(
+                          {lessons.length > 0 ? (
+                            lessons.map(
                               (
                                 lesson: ILesson,
                                 lessonIndex: number,
@@ -141,7 +147,7 @@ export default function SidebarContent({
                                     onClick={() =>
                                       onLessonClick(
                                         courseId as string,
-                                        module.module_id,
+                                        module._id,
                                         lesson.slug,
                                       )
                                     }
