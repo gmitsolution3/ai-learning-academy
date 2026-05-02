@@ -22,7 +22,7 @@ export const mainMenuItems = [
     url: dashboardMenu.defineUrl("/"),
     icon: LayoutDashboard,
   },
-  {
+  /* {
     title: "Recent Activities",
     url: "/appointments",
     icon: Calendar,
@@ -31,7 +31,7 @@ export const mainMenuItems = [
     title: "Notifications",
     url: "/patients",
     icon: Bell,
-  },
+  }, */
 ];
 
 export const courseManagement = [
@@ -60,15 +60,15 @@ export const courseManagement = [
     url: dashboardMenu.defineUrl("/draft-courses"),
     icon: PackageOpen,
   },
-  {
+  /* {
     title: "Course Curriculmn",
     url: dashboardMenu.defineUrl("/records"),
     icon: FileText,
-  },
+  }, */
 ];
 
 export const userManagement = [
-  {
+  /* {
     title: "Students",
     url: dashboardMenu.defineUrl("/students"),
     icon: Users,
@@ -77,7 +77,7 @@ export const userManagement = [
     title: "Instructors",
     url: dashboardMenu.defineUrl("/instructors"),
     icon: Users,
-  },
+  }, */
 ];
 
 export const settingsItems = [
@@ -86,5 +86,5 @@ export const settingsItems = [
     url: dashboardMenu.defineUrl("/profile"),
     icon: UserCircle,
   },
-  { title: "Settings", url: "/settings", icon: Settings },
+  // { title: "Settings", url: "/settings", icon: Settings },
 ];

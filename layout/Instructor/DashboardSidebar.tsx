@@ -125,7 +125,7 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         {/* User Management */}
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {!isCollapsed && "User Management"}
           </SidebarGroupLabel>
@@ -147,7 +147,7 @@ export function DashboardSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
 
         {/* Settings */}
         <SidebarGroup className="mt-4">

@@ -54,10 +54,10 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               {[
-                { label: "About Us", href: "/about" },
-                { label: "Services", href: "/services" },
-                { label: "Packages", href: "/packages" },
-                { label: "FAQ", href: "/faq" },
+                { label: "Courses", href: "/courses" },
+                { label: "About Us", href: "/about-us" },
+                { label: "Reviews", href: "/student-reviews" },
+                { label: "Our Team", href: "/our-team" },
               ].map((item) => (
                 <li key={item.href}>
                   <Link
@@ -127,7 +127,7 @@ export default function Footer() {
                   href="mailto:info@ifsolution.com"
                   className="text-gray-400 text-sm hover:text-white"
                 >
-                  info@ifsolution.com
+                  info@ailearningacademy.com
                 </a>
               </div>
             </address>

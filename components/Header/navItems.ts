@@ -9,11 +9,11 @@ export const navItems: INavItem[] = [
     href: "/student-reviews",
   },
   { label: "আমাদের টিম", key: "our-team", href: "/our-team" },
-  {
-    label: "লাইভ সেশন",
-    href: "/live-sessions",
-    key: "live-session",
-  },
+  // {
+  //   label: "লাইভ সেশন",
+  //   href: "/live-sessions",
+  //   key: "live-session",
+  // },
   {
     label: "অন্যান্য",
     key: "others",

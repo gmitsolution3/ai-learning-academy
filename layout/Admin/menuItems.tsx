@@ -21,12 +21,12 @@ export const mainMenuItems = [
     url: dashboardMenu.defineUrl("/"),
     icon: LayoutDashboard,
   },
-  {
-    title: "Recent Activities",
-    url: "/appointments",
-    icon: Calendar,
-  },
-  { title: "Notifications", url: "/patients", icon: Users },
+  // {
+  //   title: "Recent Activities",
+  //   url: "/appointments",
+  //   icon: Calendar,
+  // },
+  // { title: "Notifications", url: "/patients", icon: Users },
 ];
 
 export const courseManagement = [
@@ -55,11 +55,11 @@ export const courseManagement = [
     url: dashboardMenu.defineUrl("/draft-courses"),
     icon: PackageOpen,
   },
-  {
-    title: "Course Curriculmn",
-    url: dashboardMenu.defineUrl("/records"),
-    icon: FileText,
-  },
+  // {
+  //   title: "Course Curriculmn",
+  //   url: dashboardMenu.defineUrl("/records"),
+  //   icon: FileText,
+  // },
 ];
 
 export const userManagement = [
@@ -73,7 +73,7 @@ export const userManagement = [
     url: dashboardMenu.defineUrl("/students"),
     icon: Users,
   },
-  {
+  /* {
     title: "Instructors",
     url: dashboardMenu.defineUrl("/instructors"),
     icon: Users,
@@ -82,7 +82,7 @@ export const userManagement = [
     title: "Admin",
     url: dashboardMenu.defineUrl("/all-courses"),
     icon: Users,
-  },
+  }, */
 ];
 
 export const settingsItems = [
@@ -91,5 +91,5 @@ export const settingsItems = [
     url: dashboardMenu.defineUrl("/profile"),
     icon: UserCircle,
   },
-  { title: "Settings", url: "/settings", icon: Settings },
+  // { title: "Settings", url: "/settings", icon: Settings },
 ];
