@@ -18,7 +18,13 @@ export default function AboutUsPage() {
       </GlobalBanner>
 
       <div className="container mx-auto px-5 lg:px-0 relative z-10">
-        <div className="-mt-35 md:-mt-50 lg:-mt-70 pb-16 md:pb-20 lg:pb-24">
+        <div className="
+            -mt-24             
+            md:-mt-32           
+            lg:-mt-40       
+            xl:-mt-60          
+            pb-16 md:pb-20 lg:pb-24
+          ">
           <AboutUsContainer />
         </div>
       </div>
