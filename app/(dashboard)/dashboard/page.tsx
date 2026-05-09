@@ -91,7 +91,7 @@ export default function UserDashboard() {
       .sort((a: any, b: any) => a.order_index - b.order_index)[0];
 
     router.push(
-      `/dashboard/course/${courseId}/module/${lastModule ? lastModule.module_id : firstModuleOfCourse._id}/lesson/module-summery`,
+      `/dashboard/course/${courseId}/module/${lastModule ? lastModule.module_id : firstModuleOfCourse._id}/lesson/start-lesson`,
     );
   };
 

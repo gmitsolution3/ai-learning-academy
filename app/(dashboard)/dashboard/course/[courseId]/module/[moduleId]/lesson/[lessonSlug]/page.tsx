@@ -247,6 +247,7 @@ export default function PlayerPage() {
             <VideoPlayerLoader />
           ) : (
             <VideoPlayer
+            lessonSlug={lessonSlug}
               currentLesson={currentLesson}
               overallProgress={overallProgress}
               lessonDetailIsError={lessonDetailIsError}

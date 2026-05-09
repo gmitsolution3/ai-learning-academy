@@ -18,8 +18,10 @@ import {
 } from "lucide-react";
 import VideoNotFound from "./VideoNotFound";
 import VideoPlayerError from "./VideoPlayerError";
+import SelectLesson from "./SelectLesson";
 
 interface IProps {
+  lessonSlug: string;
   currentLesson: ILesson;
   overallProgress: number;
   lessonDetailIsError: boolean;
@@ -33,6 +35,7 @@ interface IProps {
 }
 
 export default function VideoPlayer({
+  lessonSlug,
   currentLesson,
   overallProgress,
   lessonDetailIsError,
@@ -44,6 +47,11 @@ export default function VideoPlayer({
   isModuleCompleted = true,
   unlockNextModuleIsLoading,
 }: IProps) {
+
+  if(lessonSlug === "start-lesson") {
+    return <SelectLesson />
+  }
+
   if (lessonDetailIsError) {
     return <VideoPlayerError onRetry={onRetry} courseId="" />;
   }
