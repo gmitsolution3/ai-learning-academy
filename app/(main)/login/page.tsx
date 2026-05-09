@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import { useSearchParams } from 'next/navigation'
 
 const loginSchema = z.object({
   email: z
@@ -31,7 +32,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams()
+ 
   const { setSession } = useSession();
+  const from = searchParams.get('from');
 
   const {
     register,
@@ -56,7 +60,12 @@ export default function LoginPage() {
       const user = res?.data?.user;
       notify.success("Login to successful!");
 
-      router.push(ROLE_ROUTE[user?.role as ROLE] || "/");
+      if(user?.role === "user") {
+        router.push(from || ROLE_ROUTE[user?.role as ROLE] || "/");
+      } else {
+        router.push(ROLE_ROUTE[user?.role as ROLE] || "/");
+      }
+
     } else {
       notify.error(res?.error?.message as string);
     }
