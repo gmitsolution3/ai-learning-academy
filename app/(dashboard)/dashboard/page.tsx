@@ -84,6 +84,8 @@ export default function UserDashboard() {
   const handleContinueCourse = (course: any, lastModule: any) => {
     const courseId = course?.id;
 
+    console.log(course)
+
     const firstModuleOfCourse = moduleList
       .filter((module: any) => module.course_id === courseId)
       .sort((a: any, b: any) => a.order_index - b.order_index)[0];

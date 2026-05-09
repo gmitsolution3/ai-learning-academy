@@ -1,6 +1,8 @@
-import LiveSessionClient from "./LiveSessionClient";
 import LiveSessionForm from "@/components/Home/LiveSession/LiveSessionForm";
-import SectionHeading from "./../../SectionHeading";
+import { Button } from "@/components/ui/button";
+import { headers } from "next/headers";
+import Link from "next/link";
+import LiveSessionClient from "./LiveSessionClient";
 
 const videos = [
   {
@@ -33,7 +35,13 @@ const videos = [
   },
 ];
 
-export default function LiveSession() {
+export default async function LiveSession() {
+  const headerList = await headers();
+
+  const pathname = headerList.get("x-current-path");
+
+  const isLiveSessionPage = pathname === "/live-session";
+
   return (
     <section
       className="relative py-14 sm:py-16 md:py-20 overflow-hidden"
@@ -47,18 +55,53 @@ export default function LiveSession() {
           />
 
           <div className="relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              <LiveSessionClient videos={videos} />
-
-              {/* Form (can remain server if no state) */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8">
-                <h3 className="text-white text-xl sm:text-2xl font-semibold mb-6">
-                  যোগাযোগ করুন
-                </h3>
-
-                <LiveSessionForm />
+            {isLiveSessionPage ? (
+              /* Only Form - Centered with max-w-4xl */
+              <div className="flex justify-center items-center">
+                <div className="w-full max-w-4xl mx-auto">
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8">
+                    <h3 className="text-white text-xl sm:text-2xl font-semibold mb-6 text-center sm:text-left">
+                      সেশন বুক করুন
+                    </h3>
+                    <LiveSessionForm />
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Grid Layout with Videos and Form */
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                <LiveSessionClient videos={videos} />
+
+                {/* Navigation area */}
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8 w-full flex items-start justify-center w-full">
+                  <div className="space-y-6 lg:space-y-8 w-full">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent py-5">
+                      অনলাইন সেশন
+                    </h3>
+
+                    <div className="space-y-3 text-white/80 text-base sm:text-lg md:text-xl">
+                      <p className="leading-relaxed">
+                        অনলাইন সেশন বা কন্সাল্টেন্সি নিন{" "}
+                        <span className="text-[#F9D49B] font-semibold">
+                          ফ্রি তে
+                        </span>
+                      </p>
+                      <p className="text-sm sm:text-base text-white/60">
+                        এক্সপার্ট দের সাথে সরাসরি আলোচনা করুন, আপনার
+                        ক্যারিয়ারকে দিন নতুন দিকে
+                      </p>
+                    </div>
+
+                    <Button
+                      asChild
+                      className="bg-gradient-to-r from-secondary to-primary text-white py-6 px-8 rounded-full hover:scale-105 transition-transform duration-300 w-full"
+                    >
+                      <Link href="/live-session">বুক করুন</Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

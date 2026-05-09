@@ -68,7 +68,7 @@ export default function LiveSessionForm() {
   }, [reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 w-full">
       
       {/* Name */}
       <div className="space-y-2">

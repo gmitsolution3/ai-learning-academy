@@ -37,7 +37,7 @@ export default async function RootLayout({
       lang="bn"
       className={`${inter.className} ${anekBangla.className} h-full antialiased`}
     >
-      <body className="min-h-full">
+      <body suppressHydrationWarning className="min-h-full">
         <AuthProvider session={session}>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster />

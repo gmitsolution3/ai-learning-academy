@@ -4,7 +4,7 @@
 import { ChevronLeft, Menu } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -19,13 +19,16 @@ import { useFetch } from "@/hooks/swr/useFetch";
 import { useFetchById } from "@/hooks/swr/useFetchById";
 import { usePost } from "@/hooks/swr/usePost";
 import { useSession } from "@/lib/auth-context";
-import { ILesson } from "@/types";
+import { ILesson, IModuleList } from "@/types";
 import { notify } from "@/utils/notify";
+import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import SidebarContent from "./SidebarContent";
 
 export default function PlayerPage() {
   const params = useParams();
+  const router = useRouter();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { session } = useSession();
 
@@ -55,8 +58,6 @@ export default function PlayerPage() {
   const moduleList = moduleData?.data?.modules || [];
   const moduleMeta = moduleData?.data?.user_track || {};
 
-  console.log({ moduleMeta });
-
   const {
     data: lessonDetail,
     isLoading: lessonDetailIsLoading,
@@ -80,7 +81,50 @@ export default function PlayerPage() {
   const currentLesson: ILesson = lessonDetail?.data;
 
   const overallProgress =
-    (moduleMeta?.completed_module / (moduleList?.length)) * 100;
+    (moduleMeta?.completed_module / moduleList?.length) * 100;
+
+  //? logic for getting last lesson
+
+  const currentModule = useMemo(
+    () =>
+      moduleList.find((module: IModuleList) =>
+        module.lesson_data.some((ld: any) =>
+          ld.lessons.some(
+            (lesson: any) => lesson.slug === currentLesson?.slug,
+          ),
+        ),
+      ),
+    [moduleList, currentLesson?.slug],
+  );
+
+  const moduleLessons = useMemo(
+    () =>
+      currentModule
+        ? currentModule.lesson_data
+            .flatMap((ld: any) => [...ld.lessons])
+            .sort((a: any, b: any) => a.order_index - b.order_index)
+        : [],
+    [currentModule],
+  );
+
+  const currentIndex = useMemo(
+    () =>
+      moduleLessons.findIndex(
+        (lesson: any) => lesson.slug === currentLesson?.slug,
+      ),
+    [moduleLessons, currentLesson?.slug],
+  );
+
+  const isLastLesson = currentIndex === moduleLessons.length - 1;
+
+  //? logic for next module
+  const currentModuleIndex = moduleList.findIndex(
+    (module: any) => module._id === moduleId,
+  );
+
+  const nextModule = moduleList[currentModuleIndex + 1];
+  const isLastModule = currentModuleIndex === moduleList.length - 1;
+  const nextModuleFirstLesson = nextModule?.lesson_data[0]?.lessons[0];
 
   const onUnlockNextModule = async () => {
     const payload = {
@@ -111,7 +155,38 @@ export default function PlayerPage() {
         undefined,
         { revalidate: true },
       );
+
+      router.push(
+      `/dashboard/course/${courseId}/module/${nextModule._id}/lesson/${nextModuleFirstLesson.slug}`,
+    );
     }
+  };
+
+  const onPlayNextVideo = () => {
+    
+    const allLessons = moduleList.flatMap((module: IModuleList) =>
+      module.lesson_data.flatMap((ld) =>
+        [...ld.lessons].sort((a, b) => a.order_index - b.order_index),
+      ),
+    );
+
+    const currentIndex = allLessons.findIndex(
+      (lesson: any) => lesson.slug === currentLesson.slug,
+    );
+
+    if (
+      currentIndex === -1 ||
+      currentIndex === allLessons.length - 1
+    ) {
+      console.log("No next lesson available");
+      return null;
+    }
+
+    const nextLesson = allLessons[currentIndex + 1];
+
+    router.push(
+      `/dashboard/course/${courseId}/module/${moduleId}/lesson/${nextLesson.slug}`,
+    );
   };
 
   return (
@@ -177,6 +252,9 @@ export default function PlayerPage() {
               lessonDetailIsError={lessonDetailIsError}
               onRetry={lessonRefetch}
               onUnlockNextModule={onUnlockNextModule}
+              onPlayNextVideo={onPlayNextVideo}
+              isLastLesson={isLastLesson}
+              isLastModule={isLastModule}
               unlockNextModuleIsLoading={unlockNextModuleIsLoading}
             />
           )}

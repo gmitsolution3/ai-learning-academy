@@ -1,8 +1,11 @@
 import GlobalBanner from "@/components/GlobalBanner";
-import SectionHeading from "@/components/SectionHeading";
 import LiveSession from "@/components/Home/LiveSession/LiveSession";
+import SectionHeading from "@/components/SectionHeading";
+import { requireAuth } from "@/lib/requireAuth";
 
-export default function LiveSessionPage() {
+export default async function LiveSessionPage() {
+  await requireAuth(["admin", "instructor", "user"]);
+
   return (
     <div className="relative min-h-screen">
       <GlobalBanner>
@@ -19,7 +22,15 @@ export default function LiveSessionPage() {
 
       <div className="container mx-auto px-5 lg:px-0 relative z-10">
         <div className="relative">
-          <div className="-mt-25 md:-mt-40 lg:-mt-70 pb-16 md:pb-20 lg:pb-24">
+          <div
+            className="
+            -mt-24             
+            md:-mt-32           
+            lg:-mt-40       
+            xl:-mt-60          
+            pb-16 md:pb-20 lg:pb-24
+          "
+          >
             <LiveSession />
           </div>
         </div>

@@ -5,6 +5,7 @@ import { getDB } from "./mongodb";
 const db = await getDB();
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   database: mongodbAdapter(db),
 
   emailAndPassword: {

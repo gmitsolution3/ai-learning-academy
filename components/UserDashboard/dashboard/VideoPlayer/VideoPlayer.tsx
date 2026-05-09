@@ -11,9 +11,10 @@ import {
   ExternalLink,
   FileText,
   Link2,
+  Loader2,
   Lock,
+  Play,
   Unlock,
-  Loader2
 } from "lucide-react";
 import VideoNotFound from "./VideoNotFound";
 import VideoPlayerError from "./VideoPlayerError";
@@ -24,7 +25,9 @@ interface IProps {
   lessonDetailIsError: boolean;
   onRetry: () => void;
   onUnlockNextModule: () => void;
+  onPlayNextVideo: () => void;
   isLastLesson?: boolean;
+  isLastModule?: boolean;
   isModuleCompleted?: boolean;
   unlockNextModuleIsLoading: boolean;
 }
@@ -35,7 +38,9 @@ export default function VideoPlayer({
   lessonDetailIsError,
   onRetry,
   onUnlockNextModule,
-  isLastLesson = true,
+  onPlayNextVideo,
+  isLastLesson,
+  isLastModule,
   isModuleCompleted = true,
   unlockNextModuleIsLoading,
 }: IProps) {
@@ -251,27 +256,51 @@ export default function VideoPlayer({
             </div>
           )}
 
-          {/* Unlock Next Module Button */}
-          {canUnlockNextModule && (
-            <div className="pt-4">
-              <Button
-                disabled={unlockNextModuleIsLoading}
-                onClick={onUnlockNextModule}
-                className="w-full bg-gradient-to-r from-secondary to-primary  text-white rounded-full py-6 text-lg font-semibold transition-all duration-300 cursor-pointer"
-              >
-                {unlockNextModuleIsLoading ? (
+          <div className="flex items-center justify-end gap-x-5">
+            {/* Unlock Next Module Button */}
+            {canUnlockNextModule && (
+              <div className="pt-4">
+                <Button
+                  disabled={unlockNextModuleIsLoading || isLastModule}
+                  onClick={onUnlockNextModule}
+                  className="w-full bg-gradient-to-r from-secondary to-primary  text-white rounded-full py-5 text-base font-normal transition-all duration-300 cursor-pointer"
+                >
+                  {unlockNextModuleIsLoading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />{" "}
+                      Unlocking...
+                    </>
+                  ) : (
+                    <>
+                      {isLastModule ? (
+                        "No Module left"
+                      ) : (
+                        <>
+                          <Unlock className="h-5 w-5 mr-2" />
+                          Unlock Next Module
+                        </>
+                      )}
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {!isLastLesson && (
+              <div className="pt-4">
+                <Button
+                  disabled={unlockNextModuleIsLoading}
+                  onClick={onPlayNextVideo}
+                  className="w-full bg-gradient-to-r from-secondary to-primary  text-white rounded-full py-5 text-base font-normal transition-all duration-300 cursor-pointer"
+                >
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin" /> Unlocking...
+                    <Play className="h-5 w-5 mr-2" />
+                    Play Next Lesson
                   </>
-                ) : (
-                  <>
-                    <Unlock className="h-5 w-5 mr-2" />
-                    Unlock Next Module
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
+                </Button>
+              </div>
+            )}
+          </div>
 
           {/* Locked Next Module Button (if not completed) */}
           {isLastLesson && !isModuleCompleted && (
