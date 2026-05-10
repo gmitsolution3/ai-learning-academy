@@ -1,8 +1,4 @@
-interface User {
-  name: string;
-  email: string;
-  phone: string;
-}
+import { IUser } from "./user.type";
 
 interface CourseDetails {
   course: {
@@ -18,7 +14,7 @@ interface CourseDetails {
 export interface IConsultation {
   _id: string;
   created_at: string;
-  user: User;
+  user: IUser;
   consultancy_type: "Online" | "Offline" | "Hybrid";
   topic: string;
   isEnrolledCourse: boolean;

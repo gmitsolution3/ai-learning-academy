@@ -3,14 +3,11 @@ import {
   BringToFront,
   Calendar,
   FileText,
+  GraduationCap,
   LayoutDashboard,
   LayoutList,
-  Settings,
-  UserCircle,
-  Users,
   PackageOpen,
-  Bell,
-  GraduationCap
+  UserCircle,
 } from "lucide-react";
 
 const baseDashboardUrl = "/instructor-dashboard";
@@ -22,11 +19,12 @@ export const mainMenuItems = [
     url: dashboardMenu.defineUrl("/"),
     icon: LayoutDashboard,
   },
-  /* {
-    title: "Recent Activities",
-    url: "/appointments",
+  {
+    title: "Consultation Request",
+    url: dashboardMenu.defineUrl("/consultation-request"),
     icon: Calendar,
   },
+  /* ,
   {
     title: "Notifications",
     url: "/patients",
