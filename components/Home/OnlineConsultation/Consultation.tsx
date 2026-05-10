@@ -73,7 +73,8 @@ export default async function OnlineConsultation() {
                 <ConsultationClient videos={videos} />
 
                 {/* Navigation area */}
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8 w-full flex items-start justify-center w-full">
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8 w-full flex items-center justify-center w-full">
+                
                   <div className="space-y-6 lg:space-y-8 w-full">
                     <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent py-5">
                       অনলাইন সেশন
