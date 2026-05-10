@@ -21,11 +21,11 @@ export const mainMenuItems = [
     url: dashboardMenu.defineUrl("/"),
     icon: LayoutDashboard,
   },
-  // {
-  //   title: "Recent Activities",
-  //   url: "/appointments",
-  //   icon: Calendar,
-  // },
+  {
+    title: "Consultation Management",
+    url: dashboardMenu.defineUrl("/consultation-management"),
+    icon: Calendar,
+  },
   // { title: "Notifications", url: "/patients", icon: Users },
 ];
 
