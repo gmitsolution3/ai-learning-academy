@@ -17,6 +17,7 @@ import { usePost } from "@/hooks/swr/usePost";
 import { useSession } from "@/lib/auth-context";
 import { notify } from "@/utils/notify";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -121,6 +122,8 @@ export default function ConsultationForm() {
     useState<EnrolledCourse | null>(null);
 
   const { session } = useSession();
+  const router = useRouter();
+
   const user = session?.user;
 
   const { data: userData, isLoading: userDetailIsLoading } =
@@ -170,6 +173,8 @@ export default function ConsultationForm() {
         (c) => c._id === selectedCourseId,
       );
       setSelectedCourse(course || null);
+
+      setValue("isEnrolledCourse", true);
     } else {
       setSelectedCourse(null);
     }
@@ -237,18 +242,22 @@ export default function ConsultationForm() {
 
         const res = await submitData(payload);
 
-        console.log(res);
-        /* 
-        reset({
-          name: user?.name || "",
-          email: user?.email || "",
-          phone: user?.phone || "",
-          topic: "",
-          description: "",
-          isEnrolledCourse: false,
-          courseId: "",
-        });
-        setSelectedCourse(null); */
+        if (res.success) {
+          notify.success("Consultation booked successfully.");
+
+          reset({
+            name: user?.name || "",
+            email: user?.email || "",
+            phone: user?.phone || "",
+            topic: "",
+            description: "",
+            isEnrolledCourse: false,
+            courseId: "",
+          });
+          setSelectedCourse(null);
+
+          router.push("/");
+        }
       } catch (error) {
         console.error("Form submission error:", error);
         notify.error(
@@ -371,6 +380,7 @@ export default function ConsultationForm() {
         <Checkbox
           id="isEnrolledCourse"
           checked={isEnrolledCourse}
+          disabled={!isEnrolledCourse}
           onCheckedChange={(checked) => {
             setValue("isEnrolledCourse", checked as boolean);
             if (!checked) {
