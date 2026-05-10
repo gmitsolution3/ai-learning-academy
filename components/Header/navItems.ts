@@ -23,6 +23,11 @@ export const navItems: INavItem[] = [
         key: "about-us",
         href: "/about-us",
       },
+      {
+        label: "অনলাইন কন্সাল্টেশন",
+        key: "about-us",
+        href: "/online-consultation",
+      },
     ],
   },
   // You can add dropdowns like this:

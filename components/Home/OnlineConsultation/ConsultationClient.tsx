@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import LiveSessionPreview from "./LiveSessionPreview";
+import ConsultationPreview from "./ConsultationPreview";
 import PreviewVideoModal from "@/components/modal/PreviewVideoModal";
 
 type Video = {
@@ -11,7 +11,7 @@ type Video = {
   videoUrl: string;
 };
 
-export default function LiveSessionClient({
+export default function ConsultationClient({
   videos,
 }: {
   videos: Video[];
@@ -36,7 +36,7 @@ export default function LiveSessionClient({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {videos.map((video) => (
-            <LiveSessionPreview
+            <ConsultationPreview
               key={video.id}
               video={video}
               onClick={handleVideoClick}

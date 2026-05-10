@@ -116,7 +116,7 @@ interface Payload {
   instructorId: string;
 }
 
-export default function LiveSessionForm() {
+export default function ConsultationForm() {
   const [selectedCourse, setSelectedCourse] =
     useState<EnrolledCourse | null>(null);
 

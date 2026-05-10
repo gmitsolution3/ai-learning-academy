@@ -8,7 +8,7 @@ type Video = {
   videoUrl: string;
 };
 
-export default function LiveSessionPreview({
+export default function ConsultationPreview({
   video,
   onClick,
 }: {

@@ -1,8 +1,8 @@
-import LiveSessionForm from "@/components/Home/LiveSession/LiveSessionForm";
+import ConsultationForm from "@/components/Home/OnlineConsultation/ConsultationForm";
 import { Button } from "@/components/ui/button";
 import { headers } from "next/headers";
 import Link from "next/link";
-import LiveSessionClient from "./LiveSessionClient";
+import ConsultationClient from "./ConsultationClient";
 
 const videos = [
   {
@@ -35,17 +35,17 @@ const videos = [
   },
 ];
 
-export default async function LiveSession() {
+export default async function OnlineConsultation() {
   const headerList = await headers();
 
   const pathname = headerList.get("x-current-path");
 
-  const isLiveSessionPage = pathname === "/live-session";
+  const isConsultationPage = pathname === "/online-consultation";
 
   return (
     <section
       className="relative py-14 sm:py-16 md:py-20 overflow-hidden"
-      aria-labelledby="live-session-heading"
+      aria-labelledby="online-consultation"
     >
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden p-5 sm:p-8 md:p-10 lg:p-14">
@@ -55,7 +55,7 @@ export default async function LiveSession() {
           />
 
           <div className="relative z-10">
-            {isLiveSessionPage ? (
+            {isConsultationPage ? (
               /* Only Form - Centered with max-w-4xl */
               <div className="flex justify-center items-center">
                 <div className="w-full max-w-4xl mx-auto">
@@ -63,14 +63,14 @@ export default async function LiveSession() {
                     <h3 className="text-white text-xl sm:text-2xl font-semibold mb-6 text-center sm:text-left">
                       সেশন বুক করুন
                     </h3>
-                    <LiveSessionForm />
+                    <ConsultationForm />
                   </div>
                 </div>
               </div>
             ) : (
               /* Grid Layout with Videos and Form */
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                <LiveSessionClient videos={videos} />
+                <ConsultationClient videos={videos} />
 
                 {/* Navigation area */}
                 <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 sm:p-8 w-full flex items-start justify-center w-full">
@@ -96,7 +96,7 @@ export default async function LiveSession() {
                       asChild
                       className="bg-gradient-to-r from-secondary to-primary text-white py-6 px-8 rounded-full hover:scale-105 transition-transform duration-300 w-full"
                     >
-                      <Link href="/live-session">বুক করুন</Link>
+                      <Link href="/online-consultation">বুক করুন</Link>
                     </Button>
                   </div>
                 </div>
